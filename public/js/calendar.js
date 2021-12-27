@@ -18,15 +18,19 @@ $(function() {
             }
         }
         var stop = false;
+        // aggiungo celle fino a quando non riempo ogni riga
         for (var day_number = 0;!stop; day_number++) {
             if (day_number >= daysOfMonth.length && (counter+day_number) % 7 == 0){
+                // Riga riempita devo uscire
                 stop = true;
                 break;
-            }
-            if (day_number >= daysOfMonth.length) {
+            }else if (day_number >= daysOfMonth.length) {
+                // riempo con cella vuota
                 calendar_content.append('<div class="blank"></div>')
             } else {
+                // aggiungo cella contenete la data
                 var day = daysOfMonth[day_number].day;
+                // se è la data di oggi cambia colore di sfondo grazie alla classe today
                 var date_div = isSameDate(new Date(year, month - 1, day)) ? '<div class="today">' : "<div>";
                 calendar_content.append(date_div + "" + day + "</div>")
             }
@@ -35,7 +39,7 @@ $(function() {
         header.css("background-color", color).find("h1").text(months[month - 1] + " " + year);
         week_days.find("div").css("color", color);
         calendar_content.find(".today").css("background-color", color);
-        d()
+        setCalendarStyle()
     }
 
     function getDaysOfMonth() {
@@ -59,15 +63,15 @@ $(function() {
         }
     }
 
-    function d() {
+    function setCalendarStyle() {
         var t;
-        var n = $("#calendar").css("width", calendar_width + "px");
-        n.find(t = "#calendar_weekdays, #calendar_content").css("width", calendar_width + "px").find("div").css({
+        var calendar = $("#calendar").css("width", calendar_width + "px");
+        calendar.find(t = "#calendar_weekdays, #calendar_content").css("width", calendar_width + "px").find("div").css({
             width: calendar_width / 7 + "px",
             height: calendar_width / 7 + "px",
             "line-height": calendar_width / 7 + "px"
         });
-        n.find("#calendar_header").css({
+        calendar.find("#calendar_header").css({
             height: calendar_width * (1 / 7) + "px"
         }).find('i[class^="icon-chevron"]').css("line-height", calendar_width * (1 / 7) + "px")
     }
@@ -94,7 +98,7 @@ $(function() {
     }
 
     function getCurrentDate() {
-        var date = new Date(year, month);
+        var date = new Date;
         year = date.getFullYear();
         month = date.getMonth() + 1
     }
