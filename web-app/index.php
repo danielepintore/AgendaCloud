@@ -40,7 +40,7 @@
         <!--Orari-->
         <div class="col-12 col-md mt-4">
           <!--Card servizi-->
-          <div class="card">
+          <div class="card blur active" id="orari">
             <div class="card-header">
               Orari disponibili:
             </div>

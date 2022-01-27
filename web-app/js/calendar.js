@@ -116,7 +116,7 @@ function isSameDate(date) {
 }
 
 function getFormattedDate(date) {
-    return date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate()
+    return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
 }
 
 function isOldDate(date) {
