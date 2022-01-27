@@ -32,7 +32,7 @@ function get_services(){
             }
         }
     } catch (ErrorException $e) {
-        return json_encode(array("error" => true, "info" => $e->getMessage())); // TODO change this (remove getMessage)
+        return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
     }
 }
 
@@ -58,7 +58,7 @@ function get_dipendenti($service = null){
             return array("error" => true, "info" => "Contattare l'assistenza");
         }
     } catch (ErrorException $e) {
-        return json_encode(array("error" => true, "info" => $e->getMessage())); // TODO change this (remove getMessage)
+        return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
     }
 }
 
@@ -90,7 +90,7 @@ function get_slots(){
                     $date = new DateTime($service_info["OraInizio"]);
                     $endDate = new DateTime($service_info["OraFine"]);
                     do {
-                        $interval = array("start_time" => $date->format('H:i:s'), "end_time" => $date->add($tempoIntevallo)->format('H:i:s'));
+                        $interval = array("start_time" => $date->format('H:i'), "end_time" => $date->add($tempoIntevallo)->format('H:i'));
                         $isFree = true;
                         foreach ($orari as $o){
                             if ($interval["start_time"] < $o["start_time"] && $interval["end_time"] <= $o["start_time"] ||
@@ -107,30 +107,17 @@ function get_slots(){
                             $generated_slots[] = $interval;
                         }
                     } while($date < $endDate);
-                    return $generated_slots;
+                    return array("error" => false, "response" => $generated_slots);
                 } else {
-                    // TODO error
+                    return array("error" => true, "info" => "Contattare l'assistenza");
                 }
-                //return array("error" => false, "response" => $response);
             } else {
                 return array("error" => true, "info" => "Contattare l'assistenza");
             }
         } else {
-            $sql = "SELECT * FROM Servizio";
-            $stmt = $db->prepare($sql);
-            if ($stmt->execute()) {
-                //Success
-                $result = $stmt->get_result();
-                $response = array();
-                foreach ($result as $r){
-                    $response[] = $r;
-                }
-                return(array("error" => false, "response" => $response));
-            } else {
-                return array("error" => true, "info" => "Contattare l'assistenza");
-            }
+            return array("error" => true);
         }
     } catch (ErrorException $e) {
-        return json_encode(array("error" => true, "info" => $e->getMessage())); // TODO change this (remove getMessage)
+        return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
     }
 }

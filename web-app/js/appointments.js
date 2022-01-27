@@ -5,6 +5,8 @@ function loadServices() {
         $('#lista_dipendenti').prop('disabled', true);
         // rimuovi giorno calendario se gia selezionato
         $('.day-selected').removeClass('day-selected');
+        // rimuovo gli orari selezionati
+        $('#lista-orari').empty()
         // selezionato il primo elemento che non ha valori
         if ($(this).val() == -1){
             addBlur("#scelta_dipendente")
@@ -62,13 +64,20 @@ function addBlur(element){
 
 // This function generates the slots
 function getTimeSlots(date, serviceId, workerId) {
+    $('#lista-orari').prop('disabled', true);
     $.get("api/get_slots.php", {date: date, serviceId: serviceId, workerId: workerId})
-    .done(function(){
-        //request done
-    })
-    .fail(function(){
-        //request failed
-    })
+        .done(function(data){
+            $('#lista-orari').empty()
+            if (!data.error && data.length > 0){
+                data.forEach(element => {
+                    $('#lista-orari').append('<option value="'+element.start_time+'|'+element.end_time + '">'+ element.start_time + '-' + element.end_time + '</option>')
+                });
+                $('#lista-orari').prop('disabled', false);
+            }
+        })
+        .fail(function (){
+            $('#lista-orari').empty()
+        });
 }
 // function to launch when the DOM is loaded
 $(function(){

@@ -1,12 +1,16 @@
 <?php
-/*
-$date = new DateTime('10:00:00');
-$date->add(new DateInterval('PT10H30S'));
-echo $date->format('H:i:s') . "\n";
-*/
-
-
 include("utils.php");
 header('Content-Type: application/json; charset=utf-8');
 $slots = get_slots();
-print(json_encode($slots));
+// se non ci sono stati errori fornisci la risposta
+if (!$slots["error"]) {
+    if (count($slots["response"]) == 0){
+        print(json_encode(array()));
+    } else {
+        print(json_encode($slots["response"]));
+    }
+} else {
+    // TODO: send log
+    // there is an error
+    print(json_encode(array("error" => true)));
+}
