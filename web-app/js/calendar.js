@@ -1,3 +1,10 @@
+function setDayListener() {
+    $(".enabled-date").on('click', function(){
+        removeBlur()
+        getTimeSlots($(this).attr('value'), $("#tipoServizio").val())
+    })
+}
+
 function printCalendar() {
     printDays();
     var daysOfMonth = getDaysOfMonth();
@@ -58,6 +65,7 @@ function printCalendar() {
                        alert("Non puoi selezionare una data già passata.");
                    } */
     })
+    setDayListener()
 }
 
 function getDaysOfMonth() {

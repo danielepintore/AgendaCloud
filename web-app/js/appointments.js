@@ -39,16 +39,8 @@ function getTimeSlots(date, serviceId) {
         //request failed
     })
 }
-
-function setDayListener() {
-    $(".enabled-date").on('click', function(){
-        removeBlur()
-        getTimeSlots($(this).attr('value'), $("#tipoServizio").val()) 
-    })
-}
 // function to launch when the DOM is loaded
 $(function(){
     startCalendar()
     loadServices()
-    setDayListener()
 })
