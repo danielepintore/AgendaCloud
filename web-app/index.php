@@ -2,6 +2,7 @@
 include("api/utils.php");
 ?>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='css/calendar.css' rel='stylesheet' type='text/css'>
@@ -80,6 +81,7 @@ include("api/utils.php");
               </select>
             </div>
           </div>
+            <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota"></input>
         </div>
       </div>
     </div>

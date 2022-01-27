@@ -1,6 +1,7 @@
 function setDayListener() {
     $(".enabled-date").on('click', function(){
         removeBlur("#orari")
+        removeBlur("#prenota_btn")
         getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
     })
 }
@@ -128,7 +129,7 @@ function getFormattedDate(date) {
 }
 
 function isOldDate(date) {
-    return Date.parse(getFormattedDate(new Date)) > Date.parse(getFormattedDate(date))
+    return new Date > date
 }
 
 function fetchOrari(date_str) {

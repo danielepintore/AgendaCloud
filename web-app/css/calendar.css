@@ -39,8 +39,8 @@ body{
     background-color: rgb(218, 218, 218);
   }
   #calendar_content div.old-date{
-    background-color: #E8E8E8;
-    cursor: not-allowed;
+    background-color: #E8E8E8 !important;
+    cursor: not-allowed !important;
   }
   #calendar_content div.blank:hover{
     background-color: white;

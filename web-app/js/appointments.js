@@ -12,6 +12,7 @@ function loadServices() {
             addBlur("#scelta_dipendente")
             addBlur("#calendar")
             addBlur("#orari")
+            addBlur("#prenota_btn")
             return
         }
         $.get("api/get_dipendenti.php", {service: $(this).val()})
@@ -28,6 +29,7 @@ function loadServices() {
                     addBlur("#scelta_dipendente")
                     addBlur("#calendar")
                     addBlur("#orari")
+                    addBlur("#prenota_btn")
                 }
             })
             .fail(function (){
