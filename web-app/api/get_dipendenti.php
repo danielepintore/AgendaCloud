@@ -1,13 +1,13 @@
 <?php
 include("utils.php");
 header('Content-Type: application/json; charset=utf-8');
-$services = get_services();
+$dipendenti = get_dipendenti();
 // se non ci sono stati errori fornisci la risposta
-if (!$services["error"]) {
-    if (count($services["response"]) == 0){
+if (!$dipendenti["error"]) {
+    if (count($dipendenti["response"]) == 0){
         print(json_encode(array()));
     } else {
-        print(json_encode($services["response"]));
+        print(json_encode($dipendenti["response"]));
     }
 } else {
     // TODO: send log

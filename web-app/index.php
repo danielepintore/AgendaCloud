@@ -1,3 +1,6 @@
+<?php
+include("api/utils.php");
+?>
 <head>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
@@ -18,16 +21,43 @@
               Servizi disponibili:
             </div>
             <div class="card-body">
-              <h5 class="card-title">Scegli un servizio da qua sotto:</h5>
+              <h5 class="card-title">Scegli un servizio:</h5>
               <select id="tipoServizio" class="form-select" aria-label="Default select example">
+                  <option value="-1" selected disabled hidden">Seleziona un servizio</option>
+                  <?php
+                  $services = get_services();
+                  if (!$services["error"]) {
+                      // se non è presente un errore
+                      foreach ($services["response"] as $s){
+                          if ($s["Durata"] >= 60 ){
+                              if ($s["Durata"] % 60 != 0){
+                                  $ore = (int)($s["Durata"] / 60);
+                                  $minuti = $s["Durata"] - (60 * $ore);
+                                  $time = "$ore ore e $minuti minuti";
+                              } else if ($s["Durata"] / 60 > 1){
+                                  $time = ($s["Durata"] / 60)." ore";
+                              } else {
+                                  $time = ($s["Durata"] / 60)." ora";
+                              }
+                          } else {
+                              $time = $s["Durata"]." minuti";
+                          }
+                          print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
+                      }
+                  }
+                  ?>
               </select>
-              <p id="durataServizio" class="card-text mt-2"></p>
+                <div id="scelta_dipendente" class="blur active no-click">
+                    <h5 class="card-title mt-2">Scegli un dipendente:</h5>
+                    <select id="lista_dipendenti" class="form-select" disabled="true">
+                    </select>
+                </div>
             </div>
           </div>
         </div>
         <!--Calendar-->
         <div class="col-auto calendar-col mt-4">
-          <div id="calendar">
+          <div id="calendar" class="blur active no-click">
             <div id="calendar_header">
                 <i class="icon-chevron-left"></i>
                 <h1></h1>
@@ -40,7 +70,7 @@
         <!--Orari-->
         <div class="col-12 col-md mt-4">
           <!--Card servizi-->
-          <div class="card blur active" id="orari">
+          <div class="card blur active no-click" id="orari">
             <div class="card-header">
               Orari disponibili:
             </div>

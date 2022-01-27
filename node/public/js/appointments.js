@@ -30,8 +30,8 @@ function removeBlur(){
 }
 
 // This function generates the slots
-function getTimeSlots(date, serviceId) {
-    $.get("api/get_slots", {date: date, serviceId: serviceId})
+function getTimeSlots(date, serviceId, workerId) {
+    $.get("api/get_slots", {date: date, serviceId: serviceId, workerId: workerId})
     .done(function(){
         //request done
     })

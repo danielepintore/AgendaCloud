@@ -3,7 +3,7 @@ define('DB_SERVER', '127.0.0.1'); // TODO: change it
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', 'root');
 define('DB_DATABASE', 'agenda-cloud');
-define("DEBUG", true); //TODO: change this in production
+define("DEBUG", false); //TODO: change this in production
 
 if (DEBUG) {
 error_reporting(E_ALL);

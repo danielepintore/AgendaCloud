@@ -1,7 +1,7 @@
 function setDayListener() {
     $(".enabled-date").on('click', function(){
-        removeBlur()
-        getTimeSlots($(this).attr('value'), $("#tipoServizio").val())
+        removeBlur("#orari")
+        getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
     })
 }
 
