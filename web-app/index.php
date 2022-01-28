@@ -7,7 +7,10 @@ include("api/utils.php");
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='css/calendar.css' rel='stylesheet' type='text/css'>
     <link href='https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css' rel='stylesheet' type='text/css'>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
     <script type="text/javascript" src="js/calendar.js"></script>
     <script type="text/javascript" src="js/appointments.js"></script>
 </head>
@@ -81,8 +84,51 @@ include("api/utils.php");
               </select>
             </div>
           </div>
-            <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota"></input>
+            <!--Card i tuoi dati-->
+            <div class="card blur active no-click mt-4" id="dati_personali">
+                <div class="card-header">
+                    I tuoi dati:
+                </div>
+                <div class="card-body">
+                    <form id="form_dati_personali">
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="nomeInput" name="nomeInput" placeholder="Il tuo nome">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="cognomeInput" name="cognomeInput" placeholder="Il tuo nome">
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col">
+                                <input type="email" class="form-control" id="emailInput" name="emailInput" placeholder="La tua email">
+                            </div>
+                            <div class="col">
+                                <input type="tel" class="form-control" id="phoneInput" name="phoneInput" placeholder="Il tuo numero telefonico">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota" disabled></input>
         </div>
       </div>
+    </div>
+    <!-- Modal for confirming output -->
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalEsito">Prenotazione</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="modalBodyResult" class="modal-body">
+                    <p id="modalBodyResultParagraph"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
+                </div>
+            </div>
+        </div>
     </div>
   </body>

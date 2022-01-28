@@ -2,6 +2,8 @@ function setDayListener() {
     $(".enabled-date").on('click', function(){
         removeBlur("#orari")
         removeBlur("#prenota_btn")
+        removeBlur("#dati_personali")
+        $('#prenota_btn').prop('disabled', false);
         getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
     })
 }
@@ -150,7 +152,7 @@ var month = 10;
 var r = [];
 var months = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
 var days = ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"];
-var color_palette = ["#16a085", "#1abc9c", "#c0392b", "#27ae60", "#FF6860", "#f39c12", "#f1c40f", "#e67e22", "#2ecc71", "#e74c3c", "#d35400", "#2c3e50"];
+//var color_palette = ["#16a085", "#1abc9c", "#c0392b", "#27ae60", "#FF6860", "#f39c12", "#f1c40f", "#e67e22", "#2ecc71", "#e74c3c", "#d35400", "#2c3e50"];
 var calendar;
 var header;
 var week_days;
@@ -164,6 +166,10 @@ function startCalendar() {
     getCurrentDate();
     printCalendar();
     header.find('i[class^="icon-chevron"]').on("click", function() {
+        // rimuovo gli orari selezionati
+        $('#lista-orari').empty()
+        // disabilita il pulsante
+        $('#prenota_btn').prop('disabled', true);
         var e = $(this);
         var r = function(e) {
             month = e == "next" ? month + 1 : month - 1;
