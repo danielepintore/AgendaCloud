@@ -7,3 +7,10 @@ view if in index.php we can bypass the form with hidden elements
 control if we need api/book.php because i think that we don't need it anymore
 add an admin panel with login
 implement docker (last thing to do)
+
+Useful command:
+For debugging ->
+stripe listen --forward-to localhost:3000/payments/evade.php
+For installation ->
+composer require stripe/stripe-php
+composer require vlucas/phpdotenv
