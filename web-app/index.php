@@ -25,32 +25,64 @@ include("api/utils.php");
               Servizi disponibili:
             </div>
             <div class="card-body">
-              <h5 class="card-title">Scegli un servizio:</h5>
-              <select id="tipoServizio" class="form-select" aria-label="Default select example">
-                  <option value="-1" selected disabled hidden">Seleziona un servizio</option>
-                  <?php
-                  $services = get_services();
-                  if (!$services["error"]) {
-                      // se non è presente un errore
-                      foreach ($services["response"] as $s){
-                          if ($s["Durata"] >= 60 ){
-                              if ($s["Durata"] % 60 != 0){
-                                  $ore = (int)($s["Durata"] / 60);
-                                  $minuti = $s["Durata"] - (60 * $ore);
-                                  $time = "$ore ore e $minuti minuti";
-                              } else if ($s["Durata"] / 60 > 1){
-                                  $time = ($s["Durata"] / 60)." ore";
-                              } else {
-                                  $time = ($s["Durata"] / 60)." ora";
-                              }
-                          } else {
-                              $time = $s["Durata"]." minuti";
-                          }
-                          print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
-                      }
-                  }
-                  ?>
-              </select>
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <h5 class="card-title">Scegli un servizio:</h5>
+                        <select id="tipoServizio" class="form-select mb-2" aria-label="Default select example">
+                            <option value="-1" selected disabled hidden">Seleziona un servizio</option>
+                            <?php
+                            $services = get_services();
+                            if (!$services["error"]) {
+                                // se non è presente un errore
+                                foreach ($services["response"] as $s){
+                                    if ($s["Durata"] >= 60 ){
+                                        if ($s["Durata"] % 60 != 0){
+                                            $ore = (int)($s["Durata"] / 60);
+                                            $minuti = $s["Durata"] - (60 * $ore);
+                                            $time = "$ore ore e $minuti minuti";
+                                        } else if ($s["Durata"] / 60 > 1){
+                                            $time = ($s["Durata"] / 60)." ore";
+                                        } else {
+                                            $time = ($s["Durata"] / 60)." ora";
+                                        }
+                                    } else {
+                                        $time = $s["Durata"]." minuti";
+                                    }
+                                    print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <h5 class="card-title">Scegli un metodo di pagamento:</h5>
+                        <select id="tipoServizio" class="form-select" aria-label="Default select example">
+                            <option value="-1" selected disabled hidden">Seleziona un servizio</option>
+                            <?php
+                            $services = get_services();
+                            if (!$services["error"]) {
+                                // se non è presente un errore
+                                foreach ($services["response"] as $s){
+                                    if ($s["Durata"] >= 60 ){
+                                        if ($s["Durata"] % 60 != 0){
+                                            $ore = (int)($s["Durata"] / 60);
+                                            $minuti = $s["Durata"] - (60 * $ore);
+                                            $time = "$ore ore e $minuti minuti";
+                                        } else if ($s["Durata"] / 60 > 1){
+                                            $time = ($s["Durata"] / 60)." ore";
+                                        } else {
+                                            $time = ($s["Durata"] / 60)." ora";
+                                        }
+                                    } else {
+                                        $time = $s["Durata"]." minuti";
+                                    }
+                                    print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
+                                }
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
                 <div id="scelta_dipendente" class="blur active no-click">
                     <h5 class="card-title mt-2">Scegli un dipendente:</h5>
                     <select id="lista_dipendenti" class="form-select" disabled="true">
@@ -92,18 +124,18 @@ include("api/utils.php");
                 <div class="card-body">
                     <form id="form_dati_personali">
                         <div class="row">
-                            <div class="col">
+                            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
                                 <input type="text" class="form-control" id="nomeInput" name="nomeInput" placeholder="Il tuo nome">
                             </div>
-                            <div class="col">
+                            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                 <input type="text" class="form-control" id="cognomeInput" name="cognomeInput" placeholder="Il tuo nome">
                             </div>
                         </div>
                         <div class="row mt-2">
-                            <div class="col">
+                            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 mb-2">
                                 <input type="email" class="form-control" id="emailInput" name="emailInput" placeholder="La tua email">
                             </div>
-                            <div class="col">
+                            <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
                                 <input type="tel" class="form-control" id="phoneInput" name="phoneInput" placeholder="Il tuo numero telefonico">
                             </div>
                         </div>
