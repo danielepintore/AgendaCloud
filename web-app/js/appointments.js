@@ -76,7 +76,19 @@ function loadServices() {
             }
         })
         if($("#form_dati_personali").valid()){
-            $.post("api/book.php", {date: $(".day-selected").attr("value"), serviceId: $("#tipoServizio").val(), workerId: $("#lista_dipendenti").val(), slot: $("#lista-orari").val(), client:{nome: $("#nomeInput").val(), cognome: $("#cognomeInput").val(), email: $("#emailInput").val(), phone: $("#phoneInput").val()}})
+            //set hidden form value
+            $("#dayPOST").val($(".day-selected").attr("value"))
+            $("#idServicePOST").val($("#tipoServizio").val())
+            $("#idWorkerPOST").val($("#lista_dipendenti").val())
+            $("#slotPOST").val($("#lista-orari").val())
+            $("#clientNomePOST").val($("#nomeInput").val())
+            $("#clientCognomePOST").val($("#cognomeInput").val())
+            $("#clientEmailPOST").val($("#emailInput").val())
+            $("#clientPhonePOST").val($("#phoneInput").val())
+            //start form
+            $("#paymentForm").trigger('submit');
+            return
+            $.post("payments/checkout.php", {date: $(".day-selected").attr("value"), serviceId: $("#tipoServizio").val(), workerId: $("#lista_dipendenti").val(), slot: $("#lista-orari").val(), client:{nome: $("#nomeInput").val(), cognome: $("#cognomeInput").val(), email: $("#emailInput").val(), phone: $("#phoneInput").val()}})
                 .done(function(data){
                     if (!data.error){
                         $("#modalEsito").html("Prenotazione completata")

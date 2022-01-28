@@ -1,13 +1,13 @@
 <?php
 include("db.php");
 
-function get_services(){
+function get_services($serviceId = null){
     try {
         $db = getDB();
-        if (isset($_GET['service']) && is_numeric($_GET['service'])){
+        if (isset($serviceId) && is_numeric($serviceId)){
             $sql = "SELECT * FROM Servizio WHERE id = ?";
             $stmt = $db->prepare($sql);
-            $stmt ->bind_param('i', $_GET['service']);
+            $stmt ->bind_param('i', $serviceId);
             if ($stmt->execute()) {
                 //Success
                 $result = $stmt->get_result();
@@ -116,7 +116,7 @@ function get_slots($serviceId, $workerId, $date){
     }
 }
 
-function book($serviceId, $workerId, $date, $my_slot, $client){
+function book($serviceId, $workerId, $date, $my_slot, $client, $session_id){
     try {
         $db = getDB();
         // all variables are set
@@ -142,14 +142,14 @@ function book($serviceId, $workerId, $date, $my_slot, $client){
                 }
                 if ($isAvailable){
                     // slot presente tra quelli generati dall'api procedere con la prenotazione
-                    $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato) VALUES (NULL, ?, ?, ?, ?, ?, ?, \"Pending\") ";
+                    $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId) VALUES (NULL, ?, ?, ?, ?, ?, ?, \"Pending payment\", ?) ";
                     $stmt = $db->prepare($sql);
-                    $stmt ->bind_param('iiisss', $client_id, $serviceId, $workerId, $date, $selected_slot[0], $selected_slot[1]);
+                    $stmt ->bind_param('iiissss', $client_id, $serviceId, $workerId, $date, $selected_slot[0], $selected_slot[1], $session_id);
                     if ($stmt->execute()) {
                         //Success
                         return array("error" => false, "response" => "ok");
                     } else {
-                        return array("error" => true, "info" => "Contattare l'assistenza");
+                        return array("error" => true, "info" => "Contatta l'assistenza");
                     }
                 } else {
                     // slot non esiste non inserire
@@ -160,7 +160,7 @@ function book($serviceId, $workerId, $date, $my_slot, $client){
                 return array("error" => true, "info" => "Contatta l'assistenza");
             }
         } else {
-            return array("error" => true, "info" => "Contattare l'assistenza");
+            return array("error" => true, "info" => "Contatta l'assistenza");
         }
     } catch (ErrorException $e) {
         return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)

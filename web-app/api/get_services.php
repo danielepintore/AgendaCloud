@@ -1,7 +1,11 @@
 <?php
 include("utils.php");
 header('Content-Type: application/json; charset=utf-8');
-$services = get_services();
+if (isset($_GET['service']) && is_numeric($_GET['service'])){
+    $services = get_services($_GET['service']);
+} else {
+    $services = get_services();
+}
 // se non ci sono stati errori fornisci la risposta
 if (!$services["error"]) {
     if (count($services["response"]) == 0){

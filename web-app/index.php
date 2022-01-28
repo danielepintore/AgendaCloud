@@ -110,7 +110,17 @@ include("api/utils.php");
                     </form>
                 </div>
             </div>
-            <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota" disabled></input>
+            <form action="/payments/checkout.php" method="post" id="paymentForm">
+                <input type="hidden" id="dayPOST" name="date">
+                <input type="hidden" id="idServicePOST" name="serviceId">
+                <input type="hidden" id="idWorkerPOST" name="workerId">
+                <input type="hidden" id="slotPOST" name="slot">
+                <input type="hidden" id="clientNomePOST" name="clientNome">
+                <input type="hidden" id="clientCognomePOST" name="clientCognome">
+                <input type="hidden" id="clientEmailPOST" name="clientEmail">
+                <input type="hidden" id="clientPhonePOST" name="clientPhone">
+                <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota" disabled>
+            </form>
         </div>
       </div>
     </div>
