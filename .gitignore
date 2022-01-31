@@ -4,6 +4,9 @@
 # Distribution files
 dist/
 
+# vendor dir
+vendor
+
 # Logs
 logs
 *.log
