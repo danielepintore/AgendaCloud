@@ -1,6 +1,10 @@
 <?php
 include("db.php");
 
+function print_log($val) {
+    return file_put_contents('php://stderr', print_r($val, TRUE));
+}
+
 function get_services($serviceId = null){
     try {
         $db = getDB();
@@ -79,7 +83,7 @@ function get_slots($serviceId, $workerId, $date){
                 foreach ($result as $r){
                     $startDate = new DateTime($r["OraInizio"]);
                     $endDate = new DateTime($r["OraFine"]);
-                    $orari[] = array("start_time" =>  $startDate-> format('H:i'), "end_time" => $endDate->format('H.i'));
+                    $orari[] = array("start_time" =>  $startDate-> format('H:i'), "end_time" => $endDate->format('H:i'));
                 }
                 // generazione slots liberi
                 $total_inteval_time = $service_info["Durata"] + $service_info["TempoPausa"];
