@@ -128,7 +128,7 @@ include("api/utils.php");
                                 <input type="text" class="form-control" id="nomeInput" name="nomeInput" placeholder="Il tuo nome">
                             </div>
                             <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                                <input type="text" class="form-control" id="cognomeInput" name="cognomeInput" placeholder="Il tuo nome">
+                                <input type="text" class="form-control" id="cognomeInput" name="cognomeInput" placeholder="Il tuo cognome">
                             </div>
                         </div>
                         <div class="row mt-2">
