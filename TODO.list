@@ -1,9 +1,13 @@
+use the webhook to mark an appointment as payed so in the success page we check the appointment by the id and the the fact that is been evaded
+Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes)
+add the price on the service list
 add propriety of service like images, description
 add timestamp to inserted appointments to view hom much time is passed and delete the ones that aren't payed
 add a success and failure page with cool graphics
 manage the errors in a better way and fix some of the error messages
 make the code better, fix indentation
 view if in index.php we can bypass the form with hidden elements
+add the list of payment methods
 control if we need api/book.php because i think that we don't need it anymore
 add an admin panel with login
 implement docker (last thing to do)
