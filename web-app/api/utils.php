@@ -40,6 +40,27 @@ function get_services($serviceId = null){
     }
 }
 
+function get_payments_provider(){
+    try {
+        $db = getDB();
+        $sql = "SELECT * FROM MetodoPagamento WHERE Stato = TRUE";
+        $stmt = $db->prepare($sql);
+        if ($stmt->execute()) {
+            //Success
+            $result = $stmt->get_result();
+            $response = array();
+            foreach ($result as $r){
+                $response[] = $r;
+            }
+            return(array("error" => false, "response" => $response));
+        } else {
+            return array("error" => true, "info" => "Contattare l'assistenza");
+        }
+    } catch (ErrorException $e) {
+        return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
+    }
+}
+
 function get_dipendenti($service){
     try {
         $db = getDB();
@@ -120,7 +141,7 @@ function get_slots($serviceId, $workerId, $date){
     }
 }
 
-function book($serviceId, $workerId, $date, $my_slot, $client, $session_id){
+function book($serviceId, $workerId, $date, $my_slot, $client, $session_id, $payment_status){
     try {
         $db = getDB();
         // all variables are set
@@ -146,9 +167,9 @@ function book($serviceId, $workerId, $date, $my_slot, $client, $session_id){
                 }
                 if ($isAvailable){
                     // slot presente tra quelli generati dall'api procedere con la prenotazione
-                    $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId) VALUES (NULL, ?, ?, ?, ?, ?, ?, \"Pending payment\", ?) ";
+                    $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?) ";
                     $stmt = $db->prepare($sql);
-                    $stmt ->bind_param('iiissss', $client_id, $serviceId, $workerId, $date, $selected_slot[0], $selected_slot[1], $session_id);
+                    $stmt ->bind_param('iiisssss', $client_id, $serviceId, $workerId, $date, $selected_slot[0], $selected_slot[1], $payment_status, $session_id);
                     if ($stmt->execute()) {
                         //Success
                         return array("error" => false, "response" => "ok");
@@ -165,6 +186,23 @@ function book($serviceId, $workerId, $date, $my_slot, $client, $session_id){
             }
         } else {
             return array("error" => true, "info" => "Contatta l'assistenza");
+        }
+    } catch (ErrorException $e) {
+        return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
+    }
+}
+
+function set_order_as_paid($session_id){
+    try {
+        $db = getDB();
+        $sql = "UPDATE Appuntamento SET Stato = 'Payment success' WHERE SessionId = ?";
+        $stmt = $db->prepare($sql);
+        $stmt ->bind_param('s', $session_id);
+        if ($stmt->execute()) {
+            //Success
+            //pagamento confermato
+        } else {
+            //errore nel pagamento
         }
     } catch (ErrorException $e) {
         return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)

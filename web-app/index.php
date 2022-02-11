@@ -35,48 +35,22 @@ include("api/utils.php");
                             if (!$services["error"]) {
                                 // se non è presente un errore
                                 foreach ($services["response"] as $s){
-                                    if ($s["Durata"] >= 60 ){
-                                        if ($s["Durata"] % 60 != 0){
-                                            $ore = (int)($s["Durata"] / 60);
-                                            $minuti = $s["Durata"] - (60 * $ore);
-                                            $time = "$ore ore e $minuti minuti";
-                                        } else if ($s["Durata"] / 60 > 1){
-                                            $time = ($s["Durata"] / 60)." ore";
-                                        } else {
-                                            $time = ($s["Durata"] / 60)." ora";
-                                        }
-                                    } else {
-                                        $time = $s["Durata"]." minuti";
-                                    }
-                                    print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
+                                    print('<option value="'.$s["id"].'">'.$s["Nome"].'</option>');
                                 }
                             }
                             ?>
                         </select>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                    <div id="scelta_metodo_pagamento" class="blur active no-click col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <h5 class="card-title">Scegli un metodo di pagamento:</h5>
-                        <select id="tipoServizio" class="form-select" aria-label="Default select example">
-                            <option value="-1" selected disabled hidden">Seleziona un servizio</option>
+                        <select id="tipoPagamento" class="form-select" aria-label="Default select example">
+                            <option value="-1" selected disabled hidden">Seleziona un metodo di pagamento</option>
                             <?php
-                            $services = get_services();
-                            if (!$services["error"]) {
+                            $payments_provider = get_payments_provider();
+                            if (!$payments_provider["error"]) {
                                 // se non è presente un errore
-                                foreach ($services["response"] as $s){
-                                    if ($s["Durata"] >= 60 ){
-                                        if ($s["Durata"] % 60 != 0){
-                                            $ore = (int)($s["Durata"] / 60);
-                                            $minuti = $s["Durata"] - (60 * $ore);
-                                            $time = "$ore ore e $minuti minuti";
-                                        } else if ($s["Durata"] / 60 > 1){
-                                            $time = ($s["Durata"] / 60)." ore";
-                                        } else {
-                                            $time = ($s["Durata"] / 60)." ora";
-                                        }
-                                    } else {
-                                        $time = $s["Durata"]." minuti";
-                                    }
-                                    print('<option value="'.$s["id"].'">'.$s["Nome"].' ['.$time.']</option>');
+                                foreach ($payments_provider["response"] as $r){
+                                    print('<option value="'.$r["id"].'">'.$r["Nome"].'</option>');
                                 }
                             }
                             ?>
@@ -87,6 +61,12 @@ include("api/utils.php");
                     <h5 class="card-title mt-2">Scegli un dipendente:</h5>
                     <select id="lista_dipendenti" class="form-select" disabled="true">
                     </select>
+                </div>
+                <div id="info-servizio" class="mt-2 blur active no-click">
+                    <span>Durata servizio: </span>
+                    <span id="time-lenght"></span>
+                    <span>costo servizio: </span>
+                    <span id="prezzo-servizio"></span>
                 </div>
             </div>
           </div>

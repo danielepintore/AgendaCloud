@@ -52,7 +52,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     ]);
 
     // aggiungere lo slot
-    $book = book($_POST['serviceId'], $_POST['workerId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id);
+    $book = book($_POST['serviceId'], $_POST['workerId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, "Pending Payment");
     // se non ci sono stati errori fornisci la risposta
     if (!$book["error"]) {
         // lo slot è prenotato

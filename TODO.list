@@ -1,6 +1,14 @@
-use the webhook to mark an appointment as payed so in the success page we check the appointment by the id and the the fact that is been evaded
+Done:
+
+Finire la modifica per quanto riguarda le informazioni sul servizio DONE
+use the webhook to mark an appointment as payed so in the success page we check the appointment by the id and the the fact that is been evaded DONE
+add the price on the service list DONE
+
+-----------------------------------------------------------------
+
+TO DO:
+Aggiungere un controllo sullo stato dell'ordine alla fine su success page
 Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes)
-add the price on the service list
 add propriety of service like images, description
 add timestamp to inserted appointments to view hom much time is passed and delete the ones that aren't payed
 add a success and failure page with cool graphics

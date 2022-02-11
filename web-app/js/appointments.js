@@ -1,6 +1,10 @@
 function loadServices() {
-
+    // set the default selected service
+    $("#tipoServizio").val(-1)
+    $("#tipoPagamento").val($("#tipoPagamento option:eq(1)").val());
+    var serviceId;
     $('#tipoServizio').on('change', function(){
+        serviceId = $(this).val()
         // disabilita lista dipendenti
         $('#lista_dipendenti').prop('disabled', true);
         // rimuovi giorno calendario se gia selezionato
@@ -10,33 +14,41 @@ function loadServices() {
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
         // selezionato il primo elemento che non ha valori
-        if ($(this).val() == -1){
+        if (serviceId == -1){
             addBlur("#scelta_dipendente")
             addBlur("#calendar")
             addBlur("#orari")
             addBlur("#prenota_btn")
             addBlur("#dati_personali")
+            addBlur("#info-servizio")
+            addBlur("#scelta_metodo_pagamento")
             return
         }
-        $.get("api/get_dipendenti.php", {service: $(this).val()})
+        $.get("api/get_dipendenti.php", {service: serviceId})
             .done(function(data){
                 $('#lista_dipendenti').empty()
                 if (!data.error && data.length > 0){
                     data.forEach(element => {
                         $('#lista_dipendenti').append('<option value="'+element.id+'">'+element.Nominativo+'</option>')
                     });
+                    getSelectedServiceInfo(serviceId)
                     $('#lista_dipendenti').prop('disabled', false);
                     removeBlur("#scelta_dipendente")
                     removeBlur("#calendar")
+                    removeBlur("#info-servizio")
+                    removeBlur("#scelta_metodo_pagamento")
                 } else {
                     addBlur("#scelta_dipendente")
                     addBlur("#calendar")
                     addBlur("#orari")
                     addBlur("#prenota_btn")
                     addBlur("#dati_personali")
+                    addBlur("#info-servizio")
+                    addBlur("#scelta_metodo_pagamento")
                 }
             })
             .fail(function (){
+                $("#info-servizio").addClass("d-none")
                 $('#lista_dipendenti').empty()
             });
     });
@@ -106,6 +118,54 @@ function loadServices() {
                 });
         }
     })
+}
+
+function getSelectedServiceInfo(serviceId){
+    $.get("api/get_services.php", {service: serviceId})
+        .done(function(data){
+            if (!data.error){
+                // set durata
+                // we need to convert it if it's bigger than an hour
+                var durata = data.Durata
+                var minutiStr;
+                if (durata >= 60){
+                    if (durata % 60 !== 0){
+                        var ore = parseInt(durata / 60)
+                        var minuti = durata - (ore * 60)
+                        if (minuti > 1){
+                            minutiStr = " minuti,"
+                        } else {
+                            minutiStr = " minuto,"
+                        }
+                        if (ore > 1) {
+                            $("#time-lenght").text(ore + " ore e " + minuti + minutiStr)
+                        } else if (ore === 1 && minuti !== 0) {
+                            $("#time-lenght").text(ore + " ora e " + minuti + minutiStr)
+                        }
+                    } else {
+                        $("#time-lenght").text(durata / 60 + " ora,")
+                    }
+                } else {
+                    if (durata > 1){
+                        $("#time-lenght").text(durata + " minuti,")
+                    } else {
+                        $("#time-lenght").text(durata + " minuto,")
+                    }
+                }
+                // set cost
+                $("#prezzo-servizio").text(data.Costo + "€")
+                // set div visible if it isn't
+                if ($("#info-servizio").hasClass("d-none")){
+                    $("#info-servizio").removeClass("d-none")
+                }
+            } else {
+                // hide the info
+                $("#info-servizio").addClass("d-none")
+            }
+        })
+        .fail(function (){
+            $("#info-servizio").addClass("d-none")
+        });
 }
 
 function removeBlur(element){

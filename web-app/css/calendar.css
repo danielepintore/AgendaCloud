@@ -124,3 +124,6 @@ body{
   label.error{
     margin-top: .5rem;
   }
+  #prezzo-servizio, #currency{
+    font-weight: bold;
+  }
