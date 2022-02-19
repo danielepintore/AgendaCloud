@@ -7,6 +7,7 @@ add the price on the service list DONE
 -----------------------------------------------------------------
 
 TO DO:
+Aggiungere un controllo per gli expire url di stripe per evitare che una persona posa comprare lo stesso slot, dato che il link rimane valido
 Aggiungere un controllo sullo stato dell'ordine alla fine su success page
 Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes)
 add propriety of service like images, description

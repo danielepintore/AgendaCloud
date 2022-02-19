@@ -49,6 +49,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         'mode' => 'payment',
         'success_url' => $domain . 'payments/success.php?session_id={CHECKOUT_SESSION_ID}',
         'cancel_url' => $domain,
+        'expires_at' => time() + (3600 * $_ENV['URL_EXPIRE_TIME']),
     ]);
 
     // aggiungere lo slot
