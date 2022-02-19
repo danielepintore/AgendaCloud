@@ -3,9 +3,9 @@
  * From composer we load the dotEnv module and we fetch the variables that are located in the project .env file
  */
 
-require '../vendor/autoload.php';
+require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 
-$dotenv = Dotenv\Dotenv::createImmutable("../");
+$dotenv = Dotenv\Dotenv::createImmutable(realpath(dirname(__FILE__, 2)));
 $dotenv->load();
 $config = array(
     "db" => array(
