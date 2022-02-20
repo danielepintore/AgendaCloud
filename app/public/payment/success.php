@@ -36,7 +36,7 @@ if (isset($_GET["sessionId"])){
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 d-flex align-items-center justify-content-center">
-                        <p class="card-text">Grazie <?php print($customer->name)?>!, a breve riceverai una mail di conferma all'indirizzo: <em><?php print($customer->email)?></em></p>
+                        <p class="card-text">Grazie <?php print($customer->name)?>! a breve riceverai una mail di conferma all'indirizzo: <em><?php print($customer->email)?></em></p>
                     </div>
                 </div>
                 <div class="row">
