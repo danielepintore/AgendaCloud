@@ -1,5 +1,5 @@
 <?php
-include("api/utils.php");
+require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 ?>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -31,7 +31,7 @@ include("api/utils.php");
                         <select id="tipoServizio" class="form-select mb-2" aria-label="Default select example">
                             <option value="-1" selected disabled hidden">Seleziona un servizio</option>
                             <?php
-                            $services = get_services();
+                            $services = Services::getAllServices();
                             if (!$services["error"]) {
                                 // se non è presente un errore
                                 foreach ($services["response"] as $s){
@@ -46,10 +46,10 @@ include("api/utils.php");
                         <select id="tipoPagamento" class="form-select" aria-label="Default select example">
                             <option value="-1" selected disabled hidden">Seleziona un metodo di pagamento</option>
                             <?php
-                            $payments_provider = get_payments_provider();
-                            if (!$payments_provider["error"]) {
+                            $paymentMethods = Payment::getPaymentMethods();
+                            if (!$paymentMethods["error"]) {
                                 // se non è presente un errore
-                                foreach ($payments_provider["response"] as $r){
+                                foreach ($paymentMethods["response"] as $r){
                                     print('<option value="'.$r["id"].'">'.$r["Nome"].'</option>');
                                 }
                             }
@@ -122,7 +122,7 @@ include("api/utils.php");
                     </form>
                 </div>
             </div>
-            <form action="/payments/checkout.php" method="post" id="paymentForm">
+            <form action="/payment/checkout.php" method="post" id="paymentForm">
                 <input type="hidden" id="dayPOST" name="date">
                 <input type="hidden" id="idServicePOST" name="serviceId">
                 <input type="hidden" id="idWorkerPOST" name="workerId">

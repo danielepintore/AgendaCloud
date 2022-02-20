@@ -1,18 +1,17 @@
 <?php
-require '../vendor/autoload.php';
-require '../api/utils.php';
-use Dotenv\Dotenv;
-$dotenv = Dotenv::createImmutable('../'); //.env location file
-$dotenv->load();
+require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
+require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
+
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
-\Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_API_KEY']);
+\Stripe\Stripe::setApiKey($config['stripe']['secret_api_key']);
 
 // You can find your endpoint's secret in your webhook settings
-$endpoint_secret = $_ENV['STRIPE_ENDPOINT_SECRET'];
+$endpoint_secret = $config['stripe']['endpoint_secret'];
 
 $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+
 $event = null;
 try {
     $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
@@ -26,16 +25,13 @@ try {
     exit();
 }
 
-function complete_order($session) {
-    set_order_as_paid($session->id);
-}
-
 // Handle the checkout.session.completed event
 if ($event->type == 'checkout.session.completed') {
     $session = $event->data->object;
     // Fulfill the purchase...
     // Change DB order status
-    complete_order($session);
+    Order::markAsPaid($session->id);
+
 }
 http_response_code(200);
 exit();

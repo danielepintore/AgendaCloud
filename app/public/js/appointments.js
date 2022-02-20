@@ -24,7 +24,7 @@ function loadServices() {
             addBlur("#scelta_metodo_pagamento")
             return
         }
-        $.get("api/get_dipendenti.php", {service: serviceId})
+        $.get("api/get_employees.php", {serviceId: serviceId})
             .done(function(data){
                 $('#lista_dipendenti').empty()
                 if (!data.error && data.length > 0){
@@ -100,28 +100,12 @@ function loadServices() {
             //start form
             $("#paymentForm").trigger('submit');
             return
-            $.post("payments/checkout.php", {date: $(".day-selected").attr("value"), serviceId: $("#tipoServizio").val(), workerId: $("#lista_dipendenti").val(), slot: $("#lista-orari").val(), client:{nome: $("#nomeInput").val(), cognome: $("#cognomeInput").val(), email: $("#emailInput").val(), phone: $("#phoneInput").val()}})
-                .done(function(data){
-                    if (!data.error){
-                        $("#modalEsito").html("Prenotazione completata")
-                        $("#modalBodyResultParagraph").html("Prenotazione completata con sucesso!<br>Riceverai a breve una mail di conferma.")
-                        $('#resultModal').modal('show');
-                    } else {
-                        // output an error
-                        $("#modalEsito").html("Prenotazione non completata")
-                        $("#modalBodyResultParagraph").html("C'è stato un errore 😓, per favore riprova.")
-                        $('#resultModal').modal('show');
-                    }
-                })
-                .fail(function (){
-                    // output an error
-                });
         }
     })
 }
 
 function getSelectedServiceInfo(serviceId){
-    $.get("api/get_services.php", {service: serviceId})
+    $.get("api/get_services.php", {serviceId: serviceId})
         .done(function(data){
             if (!data.error){
                 // set durata

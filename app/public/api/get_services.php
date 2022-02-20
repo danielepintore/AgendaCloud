@@ -1,10 +1,10 @@
 <?php
-include("utils.php");
-header('Content-Type: application/json; charset=utf-8');
-if (isset($_GET['service']) && is_numeric($_GET['service'])){
-    $services = get_services($_GET['service']);
+require_once(realpath(dirname(__FILE__, 3)) . '/src/Api/loader.php');
+if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId'])){
+    $serviceObject = new Service($_GET['serviceId']);
+    $services = $serviceObject->getServiceInfo();
 } else {
-    $services = get_services();
+    $services = Services::getAllServices();
 }
 // se non ci sono stati errori fornisci la risposta
 if (!$services["error"]) {

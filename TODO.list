@@ -27,3 +27,6 @@ stripe listen --forward-to localhost:3000/payments/evade.php
 For installation ->
 composer require stripe/stripe-php
 composer require vlucas/phpdotenv
+
+use this to add new classes to autoload 
+composer dump-autoload

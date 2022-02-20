@@ -4,7 +4,6 @@
  */
 
 require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
-
 $dotenv = Dotenv\Dotenv::createImmutable(realpath(dirname(__FILE__, 2)));
 $dotenv->load();
 $config = array(
@@ -26,8 +25,11 @@ $config = array(
     "urls" => array(
         "baseUrl" => "http://" . $_ENV['DOMAIN_NAME'] // TODO change to https in production
     ),
+    "stripe" => array(
+        "secret_api_key" => $_ENV['STRIPE_SECRET_API_KEY'],
+        "endpoint_secret" => $_ENV['STRIPE_ENDPOINT_SECRET'],
+    ),
 );
-
 /*
     Creating constants for heavily used paths makes things a lot easier.
     ex. require_once(LIBRARY_PATH . "Paginator.php")
