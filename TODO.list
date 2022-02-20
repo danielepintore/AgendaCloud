@@ -23,7 +23,7 @@ implement docker (last thing to do)
 
 Useful command:
 For debugging ->
-stripe listen --forward-to localhost:3000/payment/evade.php
+stripe listen --forward-to localhost:3000/payment/process_order.php
 For installation ->
 composer require stripe/stripe-php
 composer require vlucas/phpdotenv
