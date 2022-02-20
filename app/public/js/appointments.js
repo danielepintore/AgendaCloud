@@ -11,6 +11,8 @@ function loadServices() {
         $('.day-selected').removeClass('day-selected');
         // rimuovo gli orari selezionati
         $('#lista-orari').empty()
+        // disabilito la box per la scelta degli orari
+        $('#lista-orari').prop('disabled', true);
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
         // selezionato il primo elemento che non ha valori

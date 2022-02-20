@@ -19,7 +19,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     // Sign in to see your own test API key embedded in code samples.
     \Stripe\Stripe::setApiKey($config['stripe']['secret_api_key']);
 
-    header('Content-Type: application/json');
+    //header('Content-Type: application/json');
 
     $domain = $config['urls']['baseUrl'];
 
@@ -36,7 +36,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $domain . '/payment/success.php?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}',
             'cancel_url' => $domain,
         ]);
     } else {
@@ -50,7 +50,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => $domain . '/payment/success.php?session_id={CHECKOUT_SESSION_ID}',
+            'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}',
             'cancel_url' => $domain,
         ]);
     }

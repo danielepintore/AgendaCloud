@@ -6,6 +6,7 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='css/calendar.css' rel='stylesheet' type='text/css'>
+    <link href='css/fontawesome.css' rel='stylesheet' type='text/css'>
     <link href='https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -15,7 +16,7 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
     <script type="text/javascript" src="js/appointments.js"></script>
 </head>
   <body>
-    <div class="container h-100">
+    <div class="container">
       <div class="row">
         <!--Servizi-->
         <div class="col-12 col-md-12 mt-4">

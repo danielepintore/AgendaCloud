@@ -3,21 +3,24 @@ Done:
 Finire la modifica per quanto riguarda le informazioni sul servizio DONE
 use the webhook to mark an appointment as payed so in the success page we check the appointment by the id and the the fact that is been evaded DONE
 add the price on the service list DONE
+add propriety of service like images, description DONE
+control if we need api/book.php because i think that we don't need it anymore DONE
+Aggiungere un controllo per gli expire url di stripe per evitare che una persona posa comprare lo stesso slot, dato che il link rimane valido per 24h DONE
+add timestamp to inserted appointments to view hom much time is passed and delete the ones that aren't payed DONE
+add a success and failure page with cool graphics DONE
+view if in index.php we can bypass the form with hidden elements DONE
 
 -----------------------------------------------------------------
 
 TO DO:
-Aggiungere un controllo per gli expire url di stripe per evitare che una persona posa comprare lo stesso slot, dato che il link rimane valido
-Aggiungere un controllo sullo stato dell'ordine alla fine su success page
+
 Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes)
-add propriety of service like images, description
-add timestamp to inserted appointments to view hom much time is passed and delete the ones that aren't payed
-add a success and failure page with cool graphics
 manage the errors in a better way and fix some of the error messages
 make the code better, fix indentation
-view if in index.php we can bypass the form with hidden elements
 add the list of payment methods
-control if we need api/book.php because i think that we don't need it anymore
+add a bootstrap script that download all bootstraps and jquery css an js
+Obfuscate the code
+
 add an admin panel with login
 implement docker (last thing to do)
 

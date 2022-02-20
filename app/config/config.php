@@ -12,6 +12,8 @@ $config = array(
         "username" => $_ENV['DB_USER'],
         "password" => $_ENV['DB_PWD'],
         "host" => $_ENV['DB_HOST'],
+        "expire_user" => $_ENV['DB_EXPIRE_USER'],
+        "expire_pwd" => $_ENV['DB_EXPIRE_PWD'],
     ),
     /*
      * The environment array can be like this:
@@ -28,6 +30,7 @@ $config = array(
     "stripe" => array(
         "secret_api_key" => $_ENV['STRIPE_SECRET_API_KEY'],
         "endpoint_secret" => $_ENV['STRIPE_ENDPOINT_SECRET'],
+        "session_timeout" => 5,
     ),
 );
 /*

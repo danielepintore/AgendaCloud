@@ -109,7 +109,7 @@ class Appointment {
                     }
                     if ($isAvailable){
                         // slot presente tra quelli generati dall'api procedere con la prenotazione
-                        $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?) ";
+                        $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId, AddedAt) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP());";
                         $stmt = $db->prepare($sql);
                         $stmt ->bind_param('iiisssss', $client_id, $this->serviceId, $this->employeeId, $this->date, $selected_slot[0], $selected_slot[1], $this->paymentStatus, $this->sessionId);
                         if ($stmt->execute()) {

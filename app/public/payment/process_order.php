@@ -31,6 +31,7 @@ if ($event->type == 'checkout.session.completed') {
     // Fulfill the purchase...
     // Change DB order status
     Order::markAsPaid($session->id);
+    //TODO send confermation email
 
 }
 http_response_code(200);
