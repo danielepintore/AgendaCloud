@@ -3,7 +3,7 @@ require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
 
 if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
-    isset($_POST['workerId']) && is_numeric($_POST['workerId']) && isset($_POST['slot']) &&
+    isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
     isset($_POST['clientNome']) && isset($_POST['clientCognome']) && isset($_POST['clientEmail']) && isset($_POST['clientPhone'])){
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
     $service = new Service($_POST['serviceId']);
@@ -56,7 +56,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     }
 
     // now we need to make the appointment as booked
-    $appointment = new Appointment($_POST['serviceId'], $_POST['workerId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, "Pending Payment");
+    $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, "Pending Payment");
     $bookResponse = $appointment->book();
     // se non ci sono stati errori fornisci la risposta
     if (!$bookResponse["error"]) {

@@ -93,7 +93,7 @@ function loadServices() {
             //set hidden form value
             $("#dayPOST").val($(".day-selected").attr("value"))
             $("#idServicePOST").val($("#tipoServizio").val())
-            $("#idWorkerPOST").val($("#lista_dipendenti").val())
+            $("#employeeIdPOST").val($("#lista_dipendenti").val())
             $("#slotPOST").val($("#lista-orari").val())
             $("#clientNomePOST").val($("#nomeInput").val())
             $("#clientCognomePOST").val($("#cognomeInput").val())
@@ -172,9 +172,9 @@ function addBlur(element){
 }
 
 // This function generates the slots
-function getTimeSlots(date, serviceId, workerId) {
+function getTimeSlots(date, serviceId, employeeId) {
     $('#lista-orari').prop('disabled', true);
-    $.get("api/get_slots.php", {date: date, serviceId: serviceId, workerId: workerId})
+    $.get("api/get_slots.php", {date: date, serviceId: serviceId, employeeId: employeeId})
         .done(function(data){
             $('#lista-orari').empty()
             if (!data.error && data.length > 0){

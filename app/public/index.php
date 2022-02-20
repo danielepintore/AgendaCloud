@@ -125,7 +125,7 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
             <form action="/payment/checkout.php" method="post" id="paymentForm">
                 <input type="hidden" id="dayPOST" name="date">
                 <input type="hidden" id="idServicePOST" name="serviceId">
-                <input type="hidden" id="idWorkerPOST" name="workerId">
+                <input type="hidden" id="employeeIdPOST" name="employeeId">
                 <input type="hidden" id="slotPOST" name="slot">
                 <input type="hidden" id="clientNomePOST" name="clientNome">
                 <input type="hidden" id="clientCognomePOST" name="clientCognome">
