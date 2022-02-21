@@ -124,7 +124,7 @@ class Appointment {
                         return array("error" => true, "info" => "Slot non disponibile");
                     }
                 } else {
-                    //error from the method to get the slots availables
+                    //error from the method to get the available slots
                     return array("error" => true, "info" => "Contatta l'assistenza");
                 }
             } else {
