@@ -14,7 +14,7 @@ class Order {
             } else {
                 //errore nel pagamento
             }
-        } catch (ErrorException $e) {
+        } catch (Exception $e) {
             return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
         }
     }

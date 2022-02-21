@@ -18,7 +18,7 @@ class Payment {
             } else {
                 return array("error" => true, "info" => "Contattare l'assistenza");
             }
-        } catch (ErrorException $e) {
+        } catch (Exception $e) {
             return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
         }
     }

@@ -9,7 +9,7 @@ require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 // connect to database
 $db = new mysqli($config['db']['host'], $config['db']['expire_user'], $config['db']['expire_pwd'], $config['db']['dbname']);
 if ($db->connect_errno) {
-    throw new ErrorException("Errore con la connessione al database, contatta l'assistenza.");
+    throw new Exception("Errore con la connessione al database, contatta l'assistenza.");
 }
 
 // get all the sessions id, needed to call the expire() method on them
