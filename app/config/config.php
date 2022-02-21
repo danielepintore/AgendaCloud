@@ -51,15 +51,4 @@ or define("PUBLIC_PATH", BASE_PATH . '/public');
 
 defined("COMPOSER_AUTOLOAD")
 or define("COMPOSER_AUTOLOAD", BASE_PATH . '/vendor/autoload.php');
-
-/*
-    Error reporting
-*/
-if ($config["environment"]["debug"]) {
-    // set error reporting to all
-    error_reporting(E_ALL);
-} else {
-    // otherwise, disable error reporting
-    error_reporting(0);
-}
 ?>
