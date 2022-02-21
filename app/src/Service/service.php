@@ -162,9 +162,7 @@ class Service {
     public function getServiceInfo(): array {
         if ($this->success) {
             return array("error" => false, "response" => array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
-                "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost,
-                "TempoPausa" => $this->waitTime, "Descrizione" => $this->description,
-                "ImmagineUrl" => $this->imageUrl, "BookableUntil" => $this->bookableUntil));
+                "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost));
         } else {
             return array("true" => false, "info" => "Contatta l'assistenza"); // TODO edit this error message
         }
