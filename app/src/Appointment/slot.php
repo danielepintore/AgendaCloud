@@ -5,7 +5,7 @@ class Slot {
         try {
             $db = Database::getDB();
             // ottengo informazioni sul servizio richiesto
-            $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa FROM Servizio WHERE id = ?";
+            $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
             $stmt = $db->prepare($sql);
             $stmt ->bind_param('i', $serviceId);
             if ($stmt->execute()) {
@@ -20,24 +20,26 @@ class Slot {
                     //Success
                     $result = $stmt->get_result();
                     // we need to initialize this variable because if we don't do this php will throw an exception
-                    $orari = array();
+                    $orari = array(); // this variable will contain all already taken slots
                     foreach ($result as $r){
                         $startDate = new DateTime($r["OraInizio"]);
                         $endDate = new DateTime($r["OraFine"]);
                         $orari[] = array("start_time" =>  $startDate->format('H:i'), "end_time" => $endDate->format('H:i'));
                     }
                     // generazione slots liberi
-                    $total_inteval_time = $service_info["Durata"] + $service_info["TempoPausa"];
-                    $tempoIntevallo = new DateInterval("PT$total_inteval_time"."M");
+                    $total_interval_time = $service_info["Durata"] + $service_info["TempoPausa"];
+                    $serviceDuration = new DateInterval("PT" . $service_info["Durata"] . "M");
+                    $tempoIntervallo = new DateInterval("PT". $total_interval_time . "M");
+                    $waitInterval = new DateInterval("PT" . $service_info["TempoPausa"] . "M");
                     $date = new DateTime($service_info["OraInizio"]);
                     $endDate = new DateTime($service_info["OraFine"]);
                     $generated_slots = array();
                     do {
-                        $interval = array("start_time" => $date->format('H:i'), "end_time" => $date->add($tempoIntevallo)->format('H:i'));
+                        $interval = new Interval($date->format('H:i'), $serviceDuration, $waitInterval);
                         $isFree = true;
                         foreach ($orari as $o){
-                            if ($interval["start_time"] < $o["start_time"] && $interval["end_time"] <= $o["start_time"] ||
-                                $interval["start_time"] > $o["start_time"] && $interval["start_time"] >= $o["end_time"]){
+                            if ($interval->getStartTime() < $o["start_time"] && $interval->getEndTime() <= $o["start_time"] ||
+                                $interval->getStartTime() > $o["start_time"] && $interval->getStartTime() >= $o["end_time"]){
                                 // lo slot potrebbe essere libero
                             } else {
                                 // lo slot non è libero
@@ -47,8 +49,14 @@ class Slot {
                         // se isFree è rimasto true significa che lo slot è compatibile con tutti gli appuntamenti gia presi
                         // quindi può essere inserito
                         if ($isFree){
-                            $generated_slots[] = $interval;
+                            // we need to check if the end time of a slot is bigger than the actual service end time
+                            if($interval->getEndTime() <= $endDate->format('H:i')){
+                                // we can add the slot
+                                // before adding to the generated slot we remove the wait time because it shouldn't be visible by the client
+                                $generated_slots[] = $interval->getArray();
+                            }
                         }
+                        $date->add($tempoIntervallo);
                     } while($date < $endDate);
                     return array("error" => false, "response" => $generated_slots);
                 } else {

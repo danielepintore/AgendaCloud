@@ -13,7 +13,7 @@ if ($db->connect_errno){
 }
 
 // get all the sessions id, needed to call the expire method on them
-$sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending Payment")';
+$sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending payment")';
 $stmt = $db->prepare($sql);
 if ($stmt->execute()) {
     //Success
@@ -25,7 +25,7 @@ if ($stmt->execute()) {
 }
 
 // delete all the sessions that are in pending status and make this slots available again
-$sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending Payment")';
+$sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending payment")';
 $stmt = $db->prepare($sql);
 if ($stmt->execute()) {
     //Success

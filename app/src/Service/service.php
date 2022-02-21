@@ -115,7 +115,7 @@ class Service {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
             $db = Database::getDB();
-            $sql = "SELECT * FROM Servizio WHERE id = ?";
+            $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
             $stmt = $db->prepare($sql);
             $stmt->bind_param('i', $this->serviceId);
             if ($stmt->execute()) {

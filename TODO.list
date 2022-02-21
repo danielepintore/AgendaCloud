@@ -9,19 +9,23 @@ Aggiungere un controllo per gli expire url di stripe per evitare che una persona
 add timestamp to inserted appointments to view hom much time is passed and delete the ones that aren't payed DONE
 add a success and failure page with cool graphics DONE
 view if in index.php we can bypass the form with hidden elements DONE
+Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes) DONE
+add the list of payment methods with the option to accept cash DONE
 
 -----------------------------------------------------------------
 
 TO DO:
 
-Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes)
 manage the errors in a better way and fix some of the error messages
 make the code better, fix indentation
-add the list of payment methods
-add a bootstrap script that download all bootstraps and jquery css an js
 Obfuscate the code
 
 add an admin panel with login
+Allow merchant to accept order with cash as payment method
+Allow merchant to create services
+Allow merchant to enable/disable services
+Setup mail
+
 implement docker (last thing to do)
 
 Useful command:
@@ -33,3 +37,5 @@ composer require vlucas/phpdotenv
 
 use this to add new classes to autoload 
 composer dump-autoload
+
+obfuscate code at https://www.obfuscator.io/

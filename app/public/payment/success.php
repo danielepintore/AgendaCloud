@@ -1,15 +1,19 @@
 <?php
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
-if (isset($_GET["sessionId"])){
+$method = 0;
+if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == 1){
     try {
         $session = new Session($config['stripe']['secret_api_key']);
         $customer = $session->getCustomerData($_GET["sessionId"]);
+        $method = 1;
     } catch (Exception $e) {
         header("HTTP/1.1 303 See Other");
         header("Location: " . $config['urls']['baseUrl'] . '/payment/fail.php');
         exit(0);
     }
+} elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == 2) {
+    $method = 2;
 } else {
     header("HTTP/1.1 303 See Other");
     header("Location: " . $config['urls']['baseUrl'] . '/payment/fail.php');
@@ -36,7 +40,11 @@ if (isset($_GET["sessionId"])){
                 </div>
                 <div class="row mb-4">
                     <div class="col-12 d-flex align-items-center justify-content-center">
+                        <?php if ($method == 1) {?>
                         <p class="card-text">Grazie <?php print($customer->name)?>! a breve riceverai una mail di conferma all'indirizzo: <em><?php print($customer->email)?></em></p>
+                        <?php } else {?>
+                            <p class="card-text">Grazie! riceverai una mail di conferma quando la tua prenotazione sarà confermata dal commerciante</p>
+                        <?php } ?>
                     </div>
                 </div>
                 <div class="row">

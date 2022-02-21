@@ -99,6 +99,7 @@ function loadServices() {
             $("#clientCognomePOST").val($("#cognomeInput").val())
             $("#clientEmailPOST").val($("#emailInput").val())
             $("#clientPhonePOST").val($("#phoneInput").val())
+            $("#paymentMethodPOST").val($("#tipoPagamento").val())
             //start form
             $("#paymentForm").trigger('submit');
             return

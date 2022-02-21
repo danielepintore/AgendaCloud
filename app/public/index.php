@@ -49,8 +49,8 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
                             $paymentMethods = Payment::getPaymentMethods();
                             if (!$paymentMethods["error"]) {
                                 // se non è presente un errore
-                                foreach ($paymentMethods["response"] as $r){
-                                    print('<option value="'.$r["id"].'">'.$r["Nome"].'</option>');
+                                foreach ($paymentMethods["response"] as $paymentMethod){
+                                    print('<option value="'.$paymentMethod["id"].'">'.$paymentMethod["name"].'</option>');
                                 }
                             }
                             ?>
@@ -75,9 +75,9 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
         <div class="col-auto calendar-col mt-4">
           <div id="calendar" class="blur active no-click">
             <div id="calendar_header">
-                <i class="icon-chevron-left"></i>
+                <i class="icon-chevron fa-solid fa-chevron-left"></i>
                 <h1></h1>
-                <i class="icon-chevron-right"></i>
+                <i class="icon-chevron fa-solid fa-chevron-right"></i>
               </div>
             <div id="calendar_weekdays"></div>
             <div id="calendar_content"></div>
@@ -131,26 +131,10 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
                 <input type="hidden" id="clientCognomePOST" name="clientCognome">
                 <input type="hidden" id="clientEmailPOST" name="clientEmail">
                 <input type="hidden" id="clientPhonePOST" name="clientPhone">
+                <input type="hidden" id="paymentMethodPOST" name="paymentMethod">
                 <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click" value="Prenota" disabled>
             </form>
         </div>
       </div>
-    </div>
-    <!-- Modal for confirming output -->
-    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEsito">Prenotazione</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div id="modalBodyResult" class="modal-body">
-                    <p id="modalBodyResultParagraph"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Ok</button>
-                </div>
-            </div>
-        </div>
     </div>
   </body>

@@ -91,6 +91,7 @@ body{
     float: left;
     width:15%;
     border-radius: 50%;
+    cursor: pointer;
   }
   .card{
     -webkit-border-radius: .75rem .75rem .75rem .75rem;
