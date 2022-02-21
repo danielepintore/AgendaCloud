@@ -51,6 +51,11 @@ body {
     cursor: not-allowed !important;
 }
 
+#calendar_content div.disabled-date {
+    background-color: #E8E8E8 !important;
+    cursor: not-allowed !important;
+}
+
 #calendar_content div.blank:hover {
     background-color: white;
 }
