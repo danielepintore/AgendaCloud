@@ -1,4 +1,5 @@
 <?php
+
 class Interval {
     private $startTime;
     private $endTime;
@@ -49,7 +50,7 @@ class Interval {
     /**
      * @return array
      */
-    public function getArray(){
+    public function getArray() {
         $endTime = new DateTime($this->endTime->format('H:i'));
         // we remove the wait time because the client shouldn't see it
         return array("start_time" => $this->startTime->format('H:i'), "end_time" => $endTime->sub($this->waitInterval)->format('H:i'));

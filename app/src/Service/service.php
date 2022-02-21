@@ -1,4 +1,5 @@
 <?php
+
 class Service {
     private $serviceId;
     private $name;
@@ -84,22 +85,22 @@ class Service {
     }
 
 
-    function get_employees() : array {
+    function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        if ($this->success){
+        if ($this->success) {
             try {
                 $db = Database::getDB();
                 $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
                 $stmt = $db->prepare($sql);
-                $stmt ->bind_param('i', $this->serviceId);
+                $stmt->bind_param('i', $this->serviceId);
                 if ($stmt->execute()) {
                     //Success
                     $result = $stmt->get_result();
                     $response = array();
-                    foreach ($result as $r){
+                    foreach ($result as $r) {
                         $response[] = $r;
                     }
-                    return(array("error" => false, "response" => $response));
+                    return (array("error" => false, "response" => $response));
                 } else {
                     return array("error" => true, "info" => "Contattare l'assistenza");
                 }
@@ -111,7 +112,7 @@ class Service {
         }
     }
 
-    private function setServiceInfo() : void {
+    private function setServiceInfo(): void {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
             $db = Database::getDB();
@@ -154,9 +155,9 @@ class Service {
         }
     }
 
-    public function getServiceInfo() : array {
-        if ($this->success){
-            return array("error" => false, "response" => array("id" => $this->serviceId ,"Nome" => $this->name, "Durata" => $this->duration,
+    public function getServiceInfo(): array {
+        if ($this->success) {
+            return array("error" => false, "response" => array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
                 "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost,
                 "TempoPausa" => $this->waitTime, "Descrizione" => $this->description,
                 "ImmagineUrl" => $this->imageUrl));

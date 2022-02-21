@@ -1,118 +1,141 @@
-body{
+body {
     background-color: #F5F1E9;
-  } 
-  #calendar-test{
+}
+
+#calendar-test {
     margin-left: auto;
     margin-right: auto;
     width: 320px;
     font-family: 'Lato', sans-serif;
-  }
-  #calendar_weekdays div{
-    display:inline-block;
-    vertical-align:top;
-  }
-  #calendar_content, #calendar_weekdays, #calendar_header{
+}
+
+#calendar_weekdays div {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#calendar_content, #calendar_weekdays, #calendar_header {
     position: relative;
     width: 320px;
     overflow: hidden;
     float: left;
     z-index: 10;
-  }
-  #calendar_weekdays div, #calendar_content div{
-    width:40px;
+}
+
+#calendar_weekdays div, #calendar_content div {
+    width: 40px;
     height: 40px;
     overflow: hidden;
     text-align: center;
     background-color: #FFFFFF;
     color: #787878;
-  }
-  #calendar_content{
+}
+
+#calendar_content {
     -webkit-border-radius: 0rem 0rem .75rem .75rem;
-    -moz-border-radius: 0rem 0rem .75rem .75rem; 
+    -moz-border-radius: 0rem 0rem .75rem .75rem;
     border-radius: 0rem 0rem .75rem .75rem;
-  }
-  #calendar_content div{
+}
+
+#calendar_content div {
     float: left;
     transition: 400ms;
-  }
-  #calendar_content div:hover{
+}
+
+#calendar_content div:hover {
     background-color: rgb(218, 218, 218);
-  }
-  #calendar_content div.old-date{
+}
+
+#calendar_content div.old-date {
     background-color: #E8E8E8 !important;
     cursor: not-allowed !important;
-  }
-  #calendar_content div.blank:hover{
+}
+
+#calendar_content div.blank:hover {
     background-color: white;
-  }
-  #calendar_header, #calendar_content div.today{
+}
+
+#calendar_header, #calendar_content div.today {
     zoom: 1;
     filter: alpha(opacity=90);
     opacity: 0.9;
-  }
-  #calendar_content div.today{
+}
+
+#calendar_content div.today {
     color: white;
     background-color: black;
-    transition:400ms;
+    transition: 400ms;
     cursor: pointer;
-  }
-  #calendar_content div.day-selected{
+}
+
+#calendar_content div.day-selected {
     color: white;
     background-color: #008759;
-    transition:400ms;
-  }
-  #calendar_content div.day-selected:hover{
+    transition: 400ms;
+}
+
+#calendar_content div.day-selected:hover {
     filter: alpha(opacity=80);
     opacity: 0.8;
-  }
-  #calendar_content div.today:hover{
+}
+
+#calendar_content div.today:hover {
     background-color: darkgray;
-  }
-  #calendar_content div.enabled-date{
+}
+
+#calendar_content div.enabled-date {
     cursor: pointer;
-  }
-  #calendar_header{
+}
+
+#calendar_header {
     width: 100%;
     height: 37px;
     text-align: center;
     background-color: #f7f7f7;
     -webkit-border-radius: 0.75rem 0.75rem 0rem 0rem;
-    -moz-border-radius: 0.75rem 0.75rem 0rem 0rem; 
+    -moz-border-radius: 0.75rem 0.75rem 0rem 0rem;
     border-radius: 0.75rem 0.75rem 0rem 0rem;
-  }
-  #calendar_header h1{
+}
+
+#calendar_header h1 {
     font-size: 1.5em;
     color: black;;
-    float:left;
-    width:70%;
-  }
-  i[class^=icon-chevron]{
+    float: left;
+    width: 70%;
+}
+
+i[class^=icon-chevron] {
     color: black;;
     float: left;
-    width:15%;
+    width: 15%;
     border-radius: 50%;
     cursor: pointer;
-  }
-  .card{
+}
+
+.card {
     -webkit-border-radius: .75rem .75rem .75rem .75rem;
-    -moz-border-radius: .75rem .75rem .75rem .75rem; 
+    -moz-border-radius: .75rem .75rem .75rem .75rem;
     border-radius: .75rem .75rem .75rem .75rem;
-  }
-  .calendar-col{
+}
+
+.calendar-col {
     margin-right: auto;
     margin-left: auto;
-  }
-  .blur {
+}
+
+.blur {
     transition: all .5s ease;
     -webkit-filter: blur(0px); /* Chrome, Safari, Opera */
     filter: blur(0px);
-  }
-  .blur.active{
+}
+
+.blur.active {
     transition: all 1s ease;
     -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
     filter: blur(5px);
-  }
-  .no-click{
+}
+
+.no-click {
     /* Disable mouse click */
     pointer-events: none;
     /* Make text unselectable */
@@ -121,10 +144,12 @@ body{
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
 
-  }
-  label.error{
+}
+
+label.error {
     margin-top: .5rem;
-  }
-  #prezzo-servizio, #currency{
+}
+
+#prezzo-servizio, #currency {
     font-weight: bold;
-  }
+}

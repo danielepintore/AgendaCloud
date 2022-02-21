@@ -3,7 +3,7 @@ function loadServices() {
     $("#tipoServizio").val(-1)
     $("#tipoPagamento").val($("#tipoPagamento option:eq(1)").val());
     var serviceId;
-    $('#tipoServizio').on('change', function(){
+    $('#tipoServizio').on('change', function () {
         serviceId = $(this).val()
         // disabilita lista dipendenti
         $('#lista_dipendenti').prop('disabled', true);
@@ -16,7 +16,7 @@ function loadServices() {
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
         // selezionato il primo elemento che non ha valori
-        if (serviceId == -1){
+        if (serviceId == -1) {
             addBlur("#scelta_dipendente")
             addBlur("#calendar")
             addBlur("#orari")
@@ -27,11 +27,11 @@ function loadServices() {
             return
         }
         $.get("api/get_employees.php", {serviceId: serviceId})
-            .done(function(data){
+            .done(function (data) {
                 $('#lista_dipendenti').empty()
-                if (!data.error && data.length > 0){
+                if (!data.error && data.length > 0) {
                     data.forEach(element => {
-                        $('#lista_dipendenti').append('<option value="'+element.id+'">'+element.Nominativo+'</option>')
+                        $('#lista_dipendenti').append('<option value="' + element.id + '">' + element.Nominativo + '</option>')
                     });
                     getSelectedServiceInfo(serviceId)
                     $('#lista_dipendenti').prop('disabled', false);
@@ -49,12 +49,12 @@ function loadServices() {
                     addBlur("#scelta_metodo_pagamento")
                 }
             })
-            .fail(function (){
+            .fail(function () {
                 $("#info-servizio").addClass("d-none")
                 $('#lista_dipendenti').empty()
             });
     });
-    $('#scelta_dipendente').on('change', function(){
+    $('#scelta_dipendente').on('change', function () {
         // rimuovi giorno calendario se gia selezionato
         $('.day-selected').removeClass('day-selected');
         // rimuovo gli orari selezionati
@@ -73,7 +73,7 @@ function loadServices() {
           });
     });   ,
      */
-    $("#prenota_btn").on("click", function() {
+    $("#prenota_btn").on("click", function () {
         $("#form_dati_personali").validate({
             rules: {
                 nomeInput: {required: true, minlength: 3},
@@ -89,7 +89,7 @@ function loadServices() {
 
             }
         })
-        if($("#form_dati_personali").valid()){
+        if ($("#form_dati_personali").valid()) {
             //set hidden form value
             $("#dayPOST").val($(".day-selected").attr("value"))
             $("#idServicePOST").val($("#tipoServizio").val())
@@ -107,19 +107,19 @@ function loadServices() {
     })
 }
 
-function getSelectedServiceInfo(serviceId){
+function getSelectedServiceInfo(serviceId) {
     $.get("api/get_services.php", {serviceId: serviceId})
-        .done(function(data){
-            if (!data.error){
+        .done(function (data) {
+            if (!data.error) {
                 // set durata
                 // we need to convert it if it's bigger than an hour
                 var durata = data.Durata
                 var minutiStr;
-                if (durata >= 60){
-                    if (durata % 60 !== 0){
+                if (durata >= 60) {
+                    if (durata % 60 !== 0) {
                         var ore = parseInt(durata / 60)
                         var minuti = durata - (ore * 60)
-                        if (minuti > 1){
+                        if (minuti > 1) {
                             minutiStr = " minuti,"
                         } else {
                             minutiStr = " minuto,"
@@ -133,7 +133,7 @@ function getSelectedServiceInfo(serviceId){
                         $("#time-lenght").text(durata / 60 + " ora,")
                     }
                 } else {
-                    if (durata > 1){
+                    if (durata > 1) {
                         $("#time-lenght").text(durata + " minuti,")
                     } else {
                         $("#time-lenght").text(durata + " minuto,")
@@ -142,7 +142,7 @@ function getSelectedServiceInfo(serviceId){
                 // set cost
                 $("#prezzo-servizio").text(data.Costo + "€")
                 // set div visible if it isn't
-                if ($("#info-servizio").hasClass("d-none")){
+                if ($("#info-servizio").hasClass("d-none")) {
                     $("#info-servizio").removeClass("d-none")
                 }
             } else {
@@ -150,23 +150,23 @@ function getSelectedServiceInfo(serviceId){
                 $("#info-servizio").addClass("d-none")
             }
         })
-        .fail(function (){
+        .fail(function () {
             $("#info-servizio").addClass("d-none")
         });
 }
 
-function removeBlur(element){
+function removeBlur(element) {
     // remove blur once the day is selected
-    if($(element).hasClass("active")){
+    if ($(element).hasClass("active")) {
         $(element).removeClass("active")
         $(element).removeClass("no-click")
     }
 }
 
-function addBlur(element){
+function addBlur(element) {
     // remove blur once the day is selected
-    if($(element).hasClass("blur") && $(element).hasClass("active")){
-    } else if($(element).hasClass("blur")) {
+    if ($(element).hasClass("blur") && $(element).hasClass("active")) {
+    } else if ($(element).hasClass("blur")) {
         $(element).addClass("active")
         $(element).addClass("no-click")
     }
@@ -176,11 +176,11 @@ function addBlur(element){
 function getTimeSlots(date, serviceId, employeeId) {
     $('#lista-orari').prop('disabled', true);
     $.get("api/get_slots.php", {date: date, serviceId: serviceId, employeeId: employeeId})
-        .done(function(data){
+        .done(function (data) {
             $('#lista-orari').empty()
-            if (!data.error && data.length > 0){
+            if (!data.error && data.length > 0) {
                 data.forEach(element => {
-                    $('#lista-orari').append('<option value="'+element.start_time+'-'+element.end_time + '">'+ element.start_time + '-' + element.end_time + '</option>')
+                    $('#lista-orari').append('<option value="' + element.start_time + '-' + element.end_time + '">' + element.start_time + '-' + element.end_time + '</option>')
                 });
                 $('#lista-orari').prop('disabled', false);
             } else {
@@ -191,12 +191,13 @@ function getTimeSlots(date, serviceId, employeeId) {
 
             }
         })
-        .fail(function (){
+        .fail(function () {
             $('#lista-orari').empty()
         });
 }
+
 // function to launch when the DOM is loaded
-$(function(){
+$(function () {
     startCalendar()
     loadServices()
 })

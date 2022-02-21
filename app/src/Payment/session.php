@@ -1,4 +1,7 @@
 <?php
+
+use Stripe\StripeClient;
+
 class Session {
     private $secretApiKey;
 
@@ -9,7 +12,7 @@ class Session {
         $this->secretApiKey = $secretApiKey;
     }
 
-    public function invalidateSession($sessionId){
+    public function invalidateSession($sessionId) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         $stripe = new \Stripe\StripeClient(
             $this->secretApiKey
@@ -23,23 +26,23 @@ class Session {
         }
     }
 
-    public function invalidateSessions($sessionIds){
+    public function invalidateSessions($sessionIds) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         $stripe = new \Stripe\StripeClient(
             $this->secretApiKey
         );// todo add a try catch block here
-            foreach ($sessionIds as $sessionId){
-                try {
-                    $stripe->checkout->sessions->expire(
-                        $sessionId["SessionId"]
-                    );
-                } catch (Exception $e){
-                    //TODO log stuff here
-                }
+        foreach ($sessionIds as $sessionId) {
+            try {
+                $stripe->checkout->sessions->expire(
+                    $sessionId["SessionId"]
+                );
+            } catch (Exception $e) {
+                //TODO log stuff here
             }
+        }
     }
 
-    public function getCustomerData($sessionId){
+    public function getCustomerData($sessionId) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         $stripe = new \Stripe\StripeClient(
             $this->secretApiKey

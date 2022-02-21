@@ -1,5 +1,5 @@
 function setDayListener() {
-    $(".enabled-date").on('click', function(){
+    $(".enabled-date").on('click', function () {
         removeBlur("#orari")
         removeBlur("#prenota_btn")
         removeBlur("#dati_personali")
@@ -56,8 +56,8 @@ function printCalendar() {
     week_days.find("div").css("color", textColor);
     //calendar_content.find(".today").css("background-color", textColor);
     setCalendarStyle()
-        // set click listener for each day
-    $("#calendar_content > div").on("click", function() {
+    // set click listener for each day
+    $("#calendar_content > div").on("click", function () {
         var cell = $(this);
         if (!cell.hasClass("blank") && cell.hasClass("enabled-date")) {
             $('.day-selected').removeClass('day-selected');
@@ -136,7 +136,6 @@ function isOldDate(date) {
 
 function fetchOrari(date_str) {
     var milliseconds = Date.parse(date_str);
-
 }
 
 function getCurrentDate() {
@@ -165,13 +164,13 @@ function startCalendar() {
     calendar_content = calendar.find("#calendar_content");
     getCurrentDate();
     printCalendar();
-    header.find('i[class^="icon-chevron"]').on("click", function() {
+    header.find('i[class^="icon-chevron"]').on("click", function () {
         // rimuovo gli orari selezionati
         $('#lista-orari').empty()
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
         var e = $(this);
-        var r = function(e) {
+        var r = function (e) {
             month = e == "next" ? month + 1 : month - 1;
             if (month < 1) {
                 month = 12;

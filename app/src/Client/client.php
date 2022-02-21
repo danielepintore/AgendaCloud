@@ -1,4 +1,5 @@
 <?php
+
 class Client {
     private $name;
     private $surname;
@@ -17,7 +18,6 @@ class Client {
         $this->email = $email;
         $this->phone = $phone;
     }
-
 
     /**
      * @return mixed
@@ -46,5 +46,4 @@ class Client {
     public function getPhone() {
         return $this->phone;
     }
-
 }

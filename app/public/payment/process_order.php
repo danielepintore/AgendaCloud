@@ -15,11 +15,11 @@ $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
 $event = null;
 try {
     $event = \Stripe\Webhook::constructEvent($payload, $sig_header, $endpoint_secret);
-} catch(\UnexpectedValueException $e) {
+} catch (\UnexpectedValueException $e) {
     // Invalid payload
     http_response_code(400);
     exit();
-} catch(\Stripe\Exception\SignatureVerificationException $e) {
+} catch (\Stripe\Exception\SignatureVerificationException $e) {
     // Invalid signature
     http_response_code(400);
     exit();

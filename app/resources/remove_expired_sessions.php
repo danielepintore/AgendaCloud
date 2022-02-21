@@ -8,12 +8,12 @@ require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 
 // connect to database
 $db = new mysqli($config['db']['host'], $config['db']['expire_user'], $config['db']['expire_pwd'], $config['db']['dbname']);
-if ($db->connect_errno){
+if ($db->connect_errno) {
     throw new ErrorException("Errore con la connessione al database, contatta l'assistenza.");
 }
 
-// get all the sessions id, needed to call the expire method on them
-$sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending payment")';
+// get all the sessions id, needed to call the expire() method on them
+$sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato = "Pending payment")';
 $stmt = $db->prepare($sql);
 if ($stmt->execute()) {
     //Success
@@ -25,7 +25,7 @@ if ($stmt->execute()) {
 }
 
 // delete all the sessions that are in pending status and make this slots available again
-$sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >'. $config['stripe']['session_timeout'] .'* 60 AND Stato = "Pending payment")';
+$sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato = "Pending payment")';
 $stmt = $db->prepare($sql);
 if ($stmt->execute()) {
     //Success

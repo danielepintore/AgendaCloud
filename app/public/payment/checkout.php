@@ -5,11 +5,11 @@ require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
 if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
     isset($_POST['clientNome']) && isset($_POST['clientCognome']) && isset($_POST['clientEmail']) &&
-    isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod'])){
+    isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod'])) {
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
     $service = new Service($_POST['serviceId']);
     // we need to check if the selected payment method is cash or credit cart
-    if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])){
+    if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
         // now we need to make the appointment as booked
         $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "Contanti", "Waiting merchant approval");
@@ -27,10 +27,10 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             //TODO: redirect to error page
             exit();
         }
-    } elseif (Payment::isAValidMethod($_POST['paymentMethod'])){
+    } elseif (Payment::isAValidMethod($_POST['paymentMethod'])) {
         // valid payment method, credit card selected
         // check price
-        if($service->getCost() * 100 < 50) {
+        if ($service->getCost() * 100 < 50) {
             $price = 50;
         } else {
             $price = $service->getCost() * 100;

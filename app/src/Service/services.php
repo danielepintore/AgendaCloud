@@ -1,6 +1,7 @@
 <?php
+
 class Services {
-    public static function getAllServices() : array{
+    public static function getAllServices(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
             $db = Database::getDB();
@@ -10,10 +11,10 @@ class Services {
                 //Success
                 $result = $stmt->get_result();
                 $response = array();
-                foreach ($result as $r){
+                foreach ($result as $r) {
                     $response[] = $r;
                 }
-                return(array("error" => false, "response" => $response));
+                return (array("error" => false, "response" => $response));
             } else {
                 return array("error" => true, "info" => "Contattare l'assistenza");
             }
