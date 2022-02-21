@@ -32,6 +32,9 @@ $config = array(
         "endpoint_secret" => $_ENV['STRIPE_ENDPOINT_SECRET'],
         "session_timeout" => 5,
     ),
+    "calendar" => array(
+        "max_future_day" => $_ENV['MAX_FUTURE_DAY_CALENDAR'],
+    ),
 );
 /*
     Creating constants for heavily used paths makes things a lot easier.
