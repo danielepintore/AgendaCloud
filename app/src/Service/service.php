@@ -11,6 +11,7 @@ class Service {
     private $description;
     private $imageUrl;
     private $success;
+    private $bookableUntil;
 
     /**
      * @param $serviceId
@@ -104,7 +105,7 @@ class Service {
                 } else {
                     return array("error" => true, "info" => "Contattare l'assistenza");
                 }
-            } catch (ErrorException $e) {
+            } catch (Exception $e) {
                 return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
             }
         } else {
@@ -131,6 +132,7 @@ class Service {
                 $this->waitTime = $response['TempoPausa'];
                 $this->description = $response['Descrizione'];
                 $this->imageUrl = $response['ImmagineUrl'];
+                $this->bookableUntil = $response['BookableUntil'];
             } else {
                 $this->name = null;
                 $this->duration = null;
@@ -140,9 +142,10 @@ class Service {
                 $this->waitTime = null;
                 $this->description = null;
                 $this->imageUrl = null;
+                $this->bookableUntil = null;
                 $this->success = false;
             }
-        } catch (ErrorException $e) {
+        } catch (Exception $e) {
             $this->name = null;
             $this->duration = null;
             $this->startTime = null;
@@ -151,6 +154,7 @@ class Service {
             $this->waitTime = null;
             $this->description = null;
             $this->imageUrl = null;
+            $this->bookableUntil = null;
             $this->success = false;
         }
     }
@@ -160,7 +164,7 @@ class Service {
             return array("error" => false, "response" => array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
                 "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost,
                 "TempoPausa" => $this->waitTime, "Descrizione" => $this->description,
-                "ImmagineUrl" => $this->imageUrl));
+                "ImmagineUrl" => $this->imageUrl, "BookableUntil" => $this->bookableUntil));
         } else {
             return array("true" => false, "info" => "Contatta l'assistenza"); // TODO edit this error message
         }
