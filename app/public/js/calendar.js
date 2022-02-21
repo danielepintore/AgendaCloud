@@ -1,3 +1,9 @@
+Date.prototype.addDays = function (days) {
+    let date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
 function setDayListener() {
     $(".enabled-date").on('click', function () {
         removeBlur("#orari")
@@ -41,11 +47,15 @@ function printCalendar() {
             var day = daysOfMonth[day_number].day;
             // se è la data di oggi cambia colore di sfondo grazie alla classe today
             var date_div = '<div class="old-date">';
+            // check if the date is today
             if (isSameDate(new Date(year, month - 1, day))) {
                 date_div = '<div class="today enabled-date" value="' + getFormattedDate(new Date(year, month - 1, day)) + '">';
-            } else if (!isOldDate(new Date(year, month - 1, day))) {
+            } else if (isTooFar(new Date(year, month - 1, day))) { // check if the date is too far in the future
+                date_div = '<div class="disabled-date">';
+            } else if (!isOldDate(new Date(year, month - 1, day))) { // check if the date isn't old
                 date_div = '<div class="enabled-date" value="' + getFormattedDate(new Date(year, month - 1, day)) + '">';
             }
+            // otherwise the date is an old date
             calendar_content.append(date_div + "" + day + "</div>")
         }
     }
@@ -132,6 +142,10 @@ function getFormattedDate(date) {
 
 function isOldDate(date) {
     return new Date > date
+}
+
+function isTooFar(date) {
+    return date > new Date().addDays(window.maxFutureDays);
 }
 
 function fetchOrari(date_str) {

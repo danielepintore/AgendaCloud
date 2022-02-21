@@ -1,4 +1,5 @@
 <?php
+require_once realpath(dirname(__FILE__, 2)) . '/config/config.php';
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 ?>
 <html lang="it">
@@ -12,6 +13,9 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/additional-methods.min.js"></script>
+    <script>
+        window.maxFutureDays = <?php print($config["calendar"]["max_future_day"])?>;
+    </script>
     <script type="text/javascript" src="js/calendar.js"></script>
     <script type="text/javascript" src="js/appointments.js"></script>
 </head>
