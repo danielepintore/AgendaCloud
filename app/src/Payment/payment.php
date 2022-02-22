@@ -1,25 +1,28 @@
 <?php
 
 class Payment {
+    /**
+     * @return array
+     * @throws DatabaseException
+     */
     public static function getPaymentMethods() {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        try {
-            $db = Database::getDB();
-            $sql = "SELECT * FROM MetodoPagamento WHERE IsActive = TRUE";
-            $stmt = $db->prepare($sql);
-            if ($stmt->execute()) {
-                //Success
-                $result = $stmt->get_result();
-                $response = array();
-                foreach ($result as $r) {
-                    $response[] = array("id" => $r["id"], "name" => $r["Nome"]);
-                }
-                return (array("error" => false, "response" => $response));
-            } else {
-                return array("error" => true, "info" => "Contattare l'assistenza");
+        $db = Database::getDB();
+        $sql = "SELECT * FROM MetodoPagamento WHERE IsActive = TRUE";
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw DatabaseException::queryPrepareFailed();
+        }
+        if ($stmt->execute()) {
+            //Success
+            $result = $stmt->get_result();
+            $response = array();
+            foreach ($result as $r) {
+                $response[] = array("id" => $r["id"], "name" => $r["Nome"]);
             }
-        } catch (Exception $e) {
-            return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
+            return $response;
+        } else {
+            throw DatabaseException::queryExecutionFailed();
         }
     }
 

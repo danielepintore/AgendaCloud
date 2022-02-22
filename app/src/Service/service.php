@@ -15,6 +15,7 @@ class Service {
 
     /**
      * @param $serviceId
+     * @throws DatabaseException
      */
     public function __construct($serviceId) {
         $this->serviceId = $serviceId;
@@ -89,63 +90,67 @@ class Service {
     function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($this->success) {
-            try {
-                $db = Database::getDB();
-                $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
-                $stmt = $db->prepare($sql);
-                $stmt->bind_param('i', $this->serviceId);
-                if ($stmt->execute()) {
-                    //Success
-                    $result = $stmt->get_result();
-                    $response = array();
-                    foreach ($result as $r) {
-                        $response[] = $r;
-                    }
-                    return (array("error" => false, "response" => $response));
-                } else {
-                    return array("error" => true, "info" => "Contattare l'assistenza");
+            $db = Database::getDB();
+            $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw DatabaseException::queryPrepareFailed();
+            }
+            if (!$stmt->bind_param('i', $this->serviceId)) {
+                throw DatabaseException::bindingParamsFailed();
+            }
+            if ($stmt->execute()) {
+                //Success
+                $result = $stmt->get_result();
+                $response = array();
+                foreach ($result as $r) {
+                    $response[] = $r;
                 }
-            } catch (Exception $e) {
-                return array("error" => true, "info" => $e->getMessage()); // TODO change this (remove getMessage)
+                return $response;
+            } else {
+                throw DatabaseException::queryExecutionFailed();
             }
         } else {
-            return array("error" => true, "info" => "Contattare l'assistenza");
+            throw ServiceException::failedToGetServiceData();
         }
     }
 
+    /**
+     * @return void
+     * @throws DatabaseException
+     */
     private function setServiceInfo(): void {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
             $db = Database::getDB();
-            $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
-            $stmt = $db->prepare($sql);
-            $stmt->bind_param('i', $this->serviceId);
-            if ($stmt->execute()) {
-                //Success
-                $result = $stmt->get_result();
-                $response = $result->fetch_assoc();
-                $this->name = $response['Nome'];
-                $this->duration = $response['Durata'];
-                $this->startTime = $response['OraInizio'];
-                $this->endTime = $response['OraFine'];
-                $this->cost = $response['Costo'];
-                $this->waitTime = $response['TempoPausa'];
-                $this->description = $response['Descrizione'];
-                $this->imageUrl = $response['ImmagineUrl'];
-                $this->bookableUntil = $response['BookableUntil'];
-            } else {
-                $this->name = null;
-                $this->duration = null;
-                $this->startTime = null;
-                $this->endTime = null;
-                $this->cost = null;
-                $this->waitTime = null;
-                $this->description = null;
-                $this->imageUrl = null;
-                $this->bookableUntil = null;
-                $this->success = false;
-            }
-        } catch (Exception $e) {
+        } catch (DatabaseException $e) {
+            $this->success = false;
+            throw DatabaseException::connectionFailed();
+        }
+        $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            $this->success = false;
+            throw DatabaseException::queryPrepareFailed();
+        }
+        if (!$stmt->bind_param('i', $this->serviceId)) {
+            $this->success = false;
+            throw DatabaseException::bindingParamsFailed();
+        }
+        if ($stmt->execute()) {
+            //Success
+            $result = $stmt->get_result();
+            $response = $result->fetch_assoc();
+            $this->name = $response['Nome'];
+            $this->duration = $response['Durata'];
+            $this->startTime = $response['OraInizio'];
+            $this->endTime = $response['OraFine'];
+            $this->cost = $response['Costo'];
+            $this->waitTime = $response['TempoPausa'];
+            $this->description = $response['Descrizione'];
+            $this->imageUrl = $response['ImmagineUrl'];
+            $this->bookableUntil = $response['BookableUntil'];
+        } else {
             $this->name = null;
             $this->duration = null;
             $this->startTime = null;
@@ -156,15 +161,20 @@ class Service {
             $this->imageUrl = null;
             $this->bookableUntil = null;
             $this->success = false;
+            throw DatabaseException::queryExecutionFailed();
         }
     }
 
+    /**
+     * @return array
+     * @throws ServiceException
+     */
     public function getServiceInfo(): array {
         if ($this->success) {
-            return array("error" => false, "response" => array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
-                "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost));
+            return array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
+                "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost);
         } else {
-            return array("true" => false, "info" => "Contatta l'assistenza"); // TODO edit this error message
+            throw ServiceException::failedToGetServiceData();
         }
 
     }

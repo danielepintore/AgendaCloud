@@ -1,7 +1,5 @@
 <?php
 
-use Stripe\StripeClient;
-
 class Session {
     private $secretApiKey;
 
@@ -12,48 +10,59 @@ class Session {
         $this->secretApiKey = $secretApiKey;
     }
 
-    public function invalidateSession($sessionId) {
-        require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-        $stripe = new \Stripe\StripeClient(
-            $this->secretApiKey
-        ); // todo add a try catch block here
-        try {
-            $stripe->checkout->sessions->expire(
-                $sessionId
-            );
-        } catch (Exception $e) {
-            //TODO log stuff here
-        }
-    }
-
+    /**
+     * @param $sessionIds
+     * @return void
+     * @throws PaymentException
+     */
     public function invalidateSessions($sessionIds) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-        $stripe = new \Stripe\StripeClient(
-            $this->secretApiKey
-        );// todo add a try catch block here
+        try {
+            $stripe = new \Stripe\StripeClient(
+                $this->secretApiKey
+            );
+        } catch (Exception $e) {
+            throw PaymentException::failedToCreateStripeClient();
+        }
         foreach ($sessionIds as $sessionId) {
             try {
                 $stripe->checkout->sessions->expire(
                     $sessionId["SessionId"]
                 );
             } catch (Exception $e) {
-                //TODO log stuff here
+                throw PaymentException::failedToInvalidateSession();
             }
         }
     }
 
+    /**
+     * @param $sessionId
+     * @return mixed
+     * @throws PaymentException
+     */
     public function getCustomerData($sessionId) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-        $stripe = new \Stripe\StripeClient(
-            $this->secretApiKey
-        );// todo add a try catch block here
-
-        $session = $stripe->checkout->sessions->retrieve(
-            $sessionId
-        );
-        $customer = $stripe->customers->retrieve(
-            $session->customer
-        );
-        return $customer;
+        try {
+            $stripe = new \Stripe\StripeClient(
+                $this->secretApiKey
+            );
+        } catch (Exception $e) {
+            throw PaymentException::failedToCreateStripeClient();
+        }
+        try {
+            $session = $stripe->checkout->sessions->retrieve(
+                $sessionId
+            );
+        } catch (Exception $e){
+            throw PaymentException::failedToRetrieveSession();
+        }
+        try {
+            $customer = $stripe->customers->retrieve(
+                $session->customer
+            );
+            return $customer;
+        } catch (Exception $e){
+            throw PaymentException::failedToRetrieveCustomerData();
+        }
     }
 }

@@ -18,11 +18,11 @@ try {
 } catch (\UnexpectedValueException $e) {
     // Invalid payload
     http_response_code(400);
-    exit();
+    die(0);
 } catch (\Stripe\Exception\SignatureVerificationException $e) {
     // Invalid signature
     http_response_code(400);
-    exit();
+    die(0);
 }
 
 // Handle the checkout.session.completed event
@@ -30,9 +30,12 @@ if ($event->type == 'checkout.session.completed') {
     $session = $event->data->object;
     // Fulfill the purchase...
     // Change DB order status
-    Order::markAsPaid($session->id);
-    //TODO send confermation email
-
+    try {
+        Order::markAsPaid($session->id);
+        //TODO send confermation email
+    } catch (DatabaseException | Exception $e) {
+        //TODO send email to me to fix the problem
+    }
 }
 http_response_code(200);
 exit();

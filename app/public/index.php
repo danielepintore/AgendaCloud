@@ -37,12 +37,15 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
                                 <option value="-1" selected disabled hidden
                                 ">Seleziona un servizio</option>
                                 <?php
-                                $services = Services::getAllServices();
-                                if (!$services["error"]) {
+                                try {
+                                    $services = Services::getAllServices();
                                     // se non è presente un errore
-                                    foreach ($services["response"] as $s) {
+                                    foreach ($services as $s) {
                                         print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');
                                     }
+                                } catch (DatabaseException | Exception $e){
+                                    header("HTTP/1.1 303 See Other");
+                                    header("Location: /error.php");
                                 }
                                 ?>
                             </select>
@@ -54,12 +57,15 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
                                 <option value="-1" selected disabled hidden
                                 ">Seleziona un metodo di pagamento</option>
                                 <?php
-                                $paymentMethods = Payment::getPaymentMethods();
-                                if (!$paymentMethods["error"]) {
+                                try {
+                                    $paymentMethods = Payment::getPaymentMethods();
                                     // se non è presente un errore
-                                    foreach ($paymentMethods["response"] as $paymentMethod) {
+                                    foreach ($paymentMethods as $paymentMethod) {
                                         print('<option value="' . $paymentMethod["id"] . '">' . $paymentMethod["name"] . '</option>');
                                     }
+                                } catch (DatabaseException | Exception $e) {
+                                    header("HTTP/1.1 303 See Other");
+                                    header("Location: /error.php");
                                 }
                                 ?>
                             </select>

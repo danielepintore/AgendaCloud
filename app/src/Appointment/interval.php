@@ -10,10 +10,15 @@ class Interval {
      * @param string $startTime
      * @param DateInterval $serviceDuration
      * @param DateInterval $waitInterval
+     * @throws DataException
      */
     public function __construct(string $startTime, DateInterval $serviceDuration, DateInterval $waitInterval) {
-        $this->startTime = new DateTime($startTime);
-        $this->endTime = new DateTime($startTime);
+        try {
+            $this->startTime = new DateTime($startTime);
+            $this->endTime = new DateTime($startTime);
+        } catch (Exception $e){
+            throw DataException::wrongStartOrEndTime();
+        }
         $this->endTime->add($serviceDuration)->add($waitInterval);
         $this->serviceDuration = $serviceDuration;
         $this->waitInterval = $waitInterval;
@@ -49,9 +54,14 @@ class Interval {
 
     /**
      * @return array
+     * @throws DataException
      */
     public function getArray() {
-        $endTime = new DateTime($this->endTime->format('H:i'));
+        try {
+            $endTime = new DateTime($this->endTime->format('H:i'));
+        } catch (Exception $e) {
+            throw DataException::wrongStartOrEndTime();
+        }
         // we remove the wait time because the client shouldn't see it
         return array("start_time" => $this->startTime->format('H:i'), "end_time" => $endTime->sub($this->waitInterval)->format('H:i'));
     }

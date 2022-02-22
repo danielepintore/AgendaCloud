@@ -7,16 +7,14 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
         $session = new Session($config['stripe']['secret_api_key']);
         $customer = $session->getCustomerData($_GET["sessionId"]);
         $method = 1;
-    } catch (Exception $e) {
-        header("HTTP/1.1 303 See Other");
-        header("Location: " . $config['urls']['baseUrl'] . '/payment/fail.php');
-        exit(0);
+    } catch (PaymentException | Exception $e) {
+        $method = 2;
     }
 } elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == 2) {
     $method = 2;
 } else {
     header("HTTP/1.1 303 See Other");
-    header("Location: " . $config['urls']['baseUrl'] . '/payment/fail.php');
+    header("Location: " . '/error.php');
     exit(0);
 }
 ?>

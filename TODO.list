@@ -11,20 +11,23 @@ add a success and failure page with cool graphics DONE
 view if in index.php we can bypass the form with hidden elements DONE
 Control the mechanism that create the slots for slots that have wait time after (the user shouldn't see but the merchant yes) DONE
 add the list of payment methods with the option to accept cash DONE
-
+Add a check for the date in php DONE
+remove sensitive data from service api DONE
+fix indentation DONE
 -----------------------------------------------------------------
 
 TO DO:
 
+Check service Integration in all classes and
 manage the errors in a better way and fix some of the error messages
-make the code better, fix indentation
-Obfuscate the code
+Code review
 
 add an admin panel with login
 Allow merchant to accept order with cash as payment method
 Allow merchant to create services
 Allow merchant to enable/disable services
 Setup mail
+Obfuscate the js code
 
 implement docker (last thing to do)
 
@@ -39,3 +42,6 @@ use this to add new classes to autoload
 composer dump-autoload
 
 obfuscate code at https://www.obfuscator.io/
+
+Remember to set the correct timezone (Europe/Rome) in php.ini file, we can se the location with php --ini
+date.timezone = "Europe/Rome"
