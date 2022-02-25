@@ -1,0 +1,32 @@
+body {
+    background-color: #f5f1e9;
+}
+
+.card {
+    -webkit-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    -moz-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    width: fit-content;
+}
+
+#user-img, #pwd-img {
+    color: #4d4d4d;
+}
+
+#login-btn {
+    width: 100%;
+}
+
+.card-text {
+    font-size: larger;
+}
+
+.input-group-text{
+    background: white;
+    border-right: 0 !important;
+}
+
+.form-control{
+    border-left: 0;
+    padding-left: 0;
+}
