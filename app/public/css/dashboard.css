@@ -1,0 +1,63 @@
+body {
+    background-color: #f5f1e9;
+}
+
+.card {
+    -webkit-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    -moz-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    width: fit-content;
+}
+
+.navbar {
+    border-radius: 0 0 0.75rem 0.75rem;
+}
+
+.navbar-nav .nav-item .nav-link {
+    border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    transition: 400ms;
+}
+
+.navbar-nav .nav-item .nav-link.active {
+    background: #e5e5e5;
+    transition: 400ms;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    background: #e5e5e5;
+    transition: 400ms;
+}
+
+.mobile-nav {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-nav .nav-item .nav-link {
+    border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    background: white;
+    transition: 400ms;
+    color: rgba(0,0,0,.7);
+    text-align: center;
+}
+
+.mobile-nav .nav-item .nav-link:hover {
+    background: #e5e5e5;
+    transition: 400ms;
+}
+
+.mobile-nav .nav-item .nav-link.active {
+    background: #e5e5e5;
+    transition: 400ms;
+    color: black;
+}
+
+.custom-toggler {
+    border: 0!important;
+}
+
+.custom-toggler:focus {
+    box-shadow: none;
+}
