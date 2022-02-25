@@ -20,4 +20,12 @@ class DatabaseException extends Exception {
     public static function updateOrderStatus() {
         return new static("The status of the order can't be updated");
     }
+
+    public static function storeResult() {
+        return new static("The result of the query can't be stored");
+    }
+
+    public static function fetchData() {
+        return new static("The data can't be fetched by the fetch method or the bind method isn't configured appropriately");
+    }
 }
