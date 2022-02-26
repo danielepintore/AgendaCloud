@@ -18,7 +18,7 @@ function loadServices() {
         // selezionato il primo elemento che non ha valori
         if (serviceId == -1) {
             addBlur("#scelta_dipendente")
-            addBlur("#calendar")
+            addBlur("#bookings-calendar")
             addBlur("#orari")
             addBlur("#prenota_btn")
             addBlur("#dati_personali")
@@ -36,12 +36,12 @@ function loadServices() {
                     getSelectedServiceInfo(serviceId)
                     $('#lista_dipendenti').prop('disabled', false);
                     removeBlur("#scelta_dipendente")
-                    removeBlur("#calendar")
+                    removeBlur("#bookings-calendar")
                     removeBlur("#info-servizio")
                     removeBlur("#scelta_metodo_pagamento")
                 } else {
                     addBlur("#scelta_dipendente")
-                    addBlur("#calendar")
+                    addBlur("#bookings-calendar")
                     addBlur("#orari")
                     addBlur("#prenota_btn")
                     addBlur("#dati_personali")
@@ -196,8 +196,32 @@ function getTimeSlots(date, serviceId, employeeId) {
         });
 }
 
+function onCalendarChange(){
+    // rimuovo gli orari selezionati
+    $('#lista-orari').empty()
+    $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
+    $('#lista-orari').prop('disabled', true);
+    // disabilita il pulsante
+    $('#prenota_btn').prop('disabled', true);
+    // aggiungo il gestore per dei click sulle giornate
+    $(".enabled-date").on('click', function () {
+        removeBlur("#orari")
+        removeBlur("#prenota_btn")
+        removeBlur("#dati_personali")
+        $('#prenota_btn').prop('disabled', false);
+        getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+    })
+}
+
 // function to launch when the DOM is loaded
 $(function () {
-    startCalendar()
+    let calendar = new Calendar(336, "#bookings-calendar", onCalendarChange, true)
+    calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function (){
+        if ($(this).attr("class").indexOf("left") != -1) {
+            calendar.changeMonth('previous');
+        } else {
+            calendar.changeMonth('next');
+        }
+    })
     loadServices()
 })

@@ -87,14 +87,14 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
         </div>
         <!--Calendar-->
         <div class="col-auto calendar-col mt-4">
-            <div id="calendar" class="blur active no-click">
-                <div id="calendar_header">
+            <div id="bookings-calendar" class="calendar blur active no-click">
+                <div class="calendar-header">
                     <i class="icon-chevron fa-solid fa-chevron-left"></i>
                     <h1></h1>
                     <i class="icon-chevron fa-solid fa-chevron-right"></i>
                 </div>
-                <div id="calendar_weekdays"></div>
-                <div id="calendar_content"></div>
+                <div class="calendar-weekdays"></div>
+                <div class="calendar-content"></div>
             </div>
         </div>
         <!--Orari-->
