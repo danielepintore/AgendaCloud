@@ -2,19 +2,12 @@ body {
     background-color: #F5F1E9;
 }
 
-#calendar-test {
-    margin-left: auto;
-    margin-right: auto;
-    width: 320px;
-    font-family: 'Lato', sans-serif;
-}
-
-#calendar_weekdays div {
+.calendar-weekdays div {
     display: inline-block;
     vertical-align: top;
 }
 
-#calendar_content, #calendar_weekdays, #calendar_header {
+.calendar-content, .calendar-weekdays, .calendar-header {
     position: relative;
     width: 320px;
     overflow: hidden;
@@ -22,7 +15,7 @@ body {
     z-index: 10;
 }
 
-#calendar_weekdays div, #calendar_content div {
+.calendar-weekdays div, .calendar-content div {
     width: 40px;
     height: 40px;
     overflow: hidden;
@@ -31,70 +24,70 @@ body {
     color: #787878;
 }
 
-#calendar_content {
+.calendar-content {
     -webkit-border-radius: 0rem 0rem .75rem .75rem;
     -moz-border-radius: 0rem 0rem .75rem .75rem;
     border-radius: 0rem 0rem .75rem .75rem;
 }
 
-#calendar_content div {
+.calendar-content div {
     float: left;
     transition: 400ms;
 }
 
-#calendar_content div:hover {
+.calendar-content div:hover {
     background-color: rgb(218, 218, 218);
 }
 
-#calendar_content div.old-date {
+.calendar-content div.old-date {
     background-color: #E8E8E8 !important;
     cursor: not-allowed !important;
 }
 
-#calendar_content div.disabled-date {
+.calendar-content div.disabled-date {
     background-color: #E8E8E8 !important;
     cursor: not-allowed !important;
 }
 
-#calendar_content div.blank:hover {
+.calendar-content div.blank:hover {
     background-color: white;
 }
 
-#calendar_header, #calendar_content div.today {
+.calendar-header, .calendar-content div.today {
     zoom: 1;
     filter: alpha(opacity=90);
     opacity: 0.9;
 }
 
-#calendar_content div.today {
+.calendar-content div.today {
     color: white;
     background-color: black;
     transition: 400ms;
     cursor: pointer;
 }
 
-#calendar_content div.day-selected {
+.calendar-content div.day-selected {
     color: white;
     background-color: #008759;
     transition: 400ms;
 }
 
-#calendar_content div.day-selected:hover {
+.calendar-content div.day-selected:hover {
+    background-color: #008759 !important;
     filter: alpha(opacity=80);
     opacity: 0.8;
 }
 
-#calendar_content div.today:hover {
+.calendar-content div.today:hover {
     background-color: darkgray;
 }
 
-#calendar_content div.enabled-date {
+.calendar-content div.enabled-date {
     cursor: pointer;
 }
 
-#calendar_header {
+.calendar-header {
     width: 100%;
-    height: 37px;
     text-align: center;
     background-color: #f7f7f7;
     -webkit-border-radius: 0.75rem 0.75rem 0rem 0rem;
@@ -102,7 +95,7 @@ body {
     border-radius: 0.75rem 0.75rem 0rem 0rem;
 }
 
-#calendar_header h1 {
+.calendar-header h1 {
     font-size: 1.5em;
     color: black;;
     float: left;
