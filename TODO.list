@@ -18,6 +18,8 @@ fix indentation DONE
 
 TO DO:
 
+Prenotazione servizi non attivi
+prenotazioni date passate o future ma disattivate
 Check service Integration in all classes and
 manage the errors in a better way and fix some of the error messages
 Code review
