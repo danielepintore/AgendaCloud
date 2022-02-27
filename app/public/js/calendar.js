@@ -157,22 +157,6 @@ class Calendar {
         }).find('h1').css("line-height", this.#calendar_width / 7 + "px")
     }
 
-    #setCalendarStyleBackup() {
-        let calendar = $(this.#calendar).css("width", this.#calendar_width + "px");
-        calendar.find(".calendar-weekdays, .calendar-content").css("width", this.#calendar_width + "px").find("div").css({
-            width: this.#calendar_width / 7 + "px",
-            height: this.#calendar_width / 7 + "px",
-            "line-height": this.#calendar_width / 7 + "px"
-        });
-        this.#header.css({
-            height: this.#calendar_width / 7 + "px"
-        }).find('i[class^="icon-chevron"]').css("line-height", this.#calendar_width / 7 + "px");
-
-        this.#header.css({
-            height: this.#calendar_width / 7 + "px"
-        }).find('h1').css("line-height", this.#calendar_width / 7 + "px")
-    }
-
     #getLastMonthDay(year, month) {
         return (new Date(year, month, 0)).getDate()
     }
