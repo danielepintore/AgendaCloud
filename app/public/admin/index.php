@@ -29,6 +29,7 @@ if (isset($_POST['username']) && isset($_POST['pwd'])) {
                             $_SESSION['logged'] = true;
                             $_SESSION['username'] = $username;
                             $_SESSION['password'] = $password;
+                            $_SESSION['isAdmin'] = true;
                             // redirect to dashboard
                             header("HTTP/1.1 303 See Other");
                             header("Location: /admin/dashboard.php");
@@ -73,6 +74,7 @@ switch ($credentialError) {
 }
 
 ?>
+<!DOCTYPE html>
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
@@ -83,7 +85,7 @@ switch ($credentialError) {
     <script src="../js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div class="container-fluid d-flex align-items-center justify-content-center h-100">
+<div class="container-fluid d-flex align-items-center justify-content-center main-container">
     <div class="card">
         <div class="card-body">
             <div class="row mb-4">
