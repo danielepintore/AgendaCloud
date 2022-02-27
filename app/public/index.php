@@ -2,6 +2,7 @@
 require_once realpath(dirname(__FILE__, 2)) . '/config/config.php';
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 ?>
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
