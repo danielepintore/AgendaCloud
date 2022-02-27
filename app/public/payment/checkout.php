@@ -26,7 +26,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "Contanti", "Waiting merchant approval");
+        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "Contanti", $_POST['paymentMethod'], "Waiting merchant approval");
         try {
             // make the reservation
             $bookResponse = $appointment->book();
@@ -89,7 +89,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         }
 
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, "Pending payment");
+        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, $_POST['paymentMethod'], "Pending payment");
         try {
             $bookResponse = $appointment->book();
             // the slot is reserved

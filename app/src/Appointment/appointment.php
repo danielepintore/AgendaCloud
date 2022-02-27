@@ -9,6 +9,7 @@ class Appointment {
     private $client;
     private $sessionId;
     private $paymentStatus;
+    private $paymentType;
 
     /**
      * @param $serviceId
@@ -18,8 +19,9 @@ class Appointment {
      * @param $client
      * @param $sessionId
      * @param $paymentStatus
+     * @param $paymentType
      */
-    public function __construct($serviceId, $employeeId, $date, $my_slot, Client $client, $sessionId, $paymentStatus) {
+    public function __construct($serviceId, $employeeId, $date, $my_slot, Client $client, $sessionId, $paymentType, $paymentStatus) {
         $this->serviceId = $serviceId;
         $this->employeeId = $employeeId;
         $this->date = $date;
@@ -27,6 +29,7 @@ class Appointment {
         $this->client = $client;
         $this->sessionId = $sessionId;
         $this->paymentStatus = $paymentStatus;
+        $this->paymentType = $paymentType;
     }
 
     /**
@@ -79,6 +82,13 @@ class Appointment {
     }
 
     /**
+     * @return mixed
+     */
+    public function getPaymentType() {
+        return $this->paymentType;
+    }
+
+    /**
      * @return bool
      * @throws DatabaseException
      * @throws SlotException
@@ -121,12 +131,12 @@ class Appointment {
             }
             if ($isAvailable) {
                 // slot presente tra quelli generati dall'api procedere con la prenotazione
-                $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId, AddedAt) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP());";
+                $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId, AddedAt, MetodoPagamento_id) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), ?);";
                 $stmt = $db->prepare($sql);
                 if (!$stmt) {
                     throw DatabaseException::queryPrepareFailed();
                 }
-                if (!$stmt->bind_param('iiisssss', $client_id, $this->serviceId, $this->employeeId, $this->date, $selected_slot[0], $selected_slot[1], $this->paymentStatus, $this->sessionId)) {
+                if (!$stmt->bind_param('iiisssssi', $client_id, $this->serviceId, $this->employeeId, $this->date, $selected_slot[0], $selected_slot[1], $this->paymentStatus, $this->sessionId, $this->paymentType)) {
                     throw DatabaseException::bindingParamsFailed();
                 }
                 if ($stmt->execute()) {
