@@ -31,4 +31,20 @@ class DateCheck {
             throw DataException::invalidData();
         }
     }
+
+    public static function isToday($date) {
+        try {
+            $date = new DateTime($date);
+        } catch (Exception $e) {
+            throw DataException::invalidData();
+        }
+        $now = new DateTime();
+        $date->setTime(0, 0, 0);
+        $now->setTime(0, 0, 0);
+        if ($now == $date) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

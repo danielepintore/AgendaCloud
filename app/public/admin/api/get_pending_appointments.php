@@ -1,6 +1,6 @@
 <?php
 use Admin\User;
-require_once(realpath(dirname(__FILE__, 3)) . '/src/Api/loader.php');
+require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
@@ -15,7 +15,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 if (isset($_GET['date'])) {
     // create a service object
     try {
-        $appointments = \Admin\Appointment::getAppointments($_SESSION['isAdmin'], $_GET['date']);
+        $appointments = \Admin\Appointment::getAppointmentRequest($_SESSION['isAdmin'], $_GET['date']);
         // se non ci sono stati errori fornisci la risposta
         if (count($appointments) == 0) {
             print(json_encode(array()));

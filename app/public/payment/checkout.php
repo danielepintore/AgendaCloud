@@ -10,23 +10,31 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     try {
         DateCheck::isValidDate($_POST['date']);
     } catch (DataException | Exception $e) {
-        header("HTTP/1.1 303 See Other");
-        header("Location: /error.php");
+        if (DEBUG){
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+        } else {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /error.php");
+        }
         die(0);
     }
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
     try {
         $service = new Service($_POST['serviceId']);
     } catch (DatabaseException | Exception $e) {
-        header("HTTP/1.1 303 See Other");
-        header("Location: /error.php");
+        if (DEBUG){
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+        } else {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /error.php");
+        }
         die(0);
     }
     // we need to check if the selected payment method is cash or credit cart
     if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "Contanti", $_POST['paymentMethod'], "Waiting merchant approval");
+        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", $_POST['paymentMethod'], PAYMENT_PENDING);
         try {
             // make the reservation
             $bookResponse = $appointment->book();
@@ -37,8 +45,12 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             header("Location: " . $config['urls']['baseUrl'] . "/payment/success.php?paymentMethod=" . $_POST['paymentMethod']);
             die(0);
         } catch (DatabaseException | SlotException | Exception $e) {
-            header("HTTP/1.1 303 See Other");
-            header("Location: /error.php");
+            if (DEBUG){
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            } else {
+                header("HTTP/1.1 303 See Other");
+                header("Location: /error.php");
+            }
             die(0);
         }
     } elseif (Payment::isAValidMethod($_POST['paymentMethod'])) {
@@ -89,7 +101,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         }
 
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, $_POST['paymentMethod'], "Pending payment");
+        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, $_POST['paymentMethod'], PAYMENT_PENDING);
         try {
             $bookResponse = $appointment->book();
             // the slot is reserved
@@ -98,18 +110,30 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             header("Location: " . $checkout_session->url);
             die(0);
         } catch (DatabaseException | SlotException | Exception $e) {
-            header("HTTP/1.1 303 See Other");
-            header("Location: /error.php");
+            if (DEBUG){
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            } else {
+                header("HTTP/1.1 303 See Other");
+                header("Location: /error.php");
+            }
             die(0);
         }
     } else {
         // invalid payment method, quit
-        header("HTTP/1.1 303 See Other");
-        header("Location: /error.php");
+        if (DEBUG){
+            print('invalid payment method, quit');
+        } else {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /error.php");
+        }
         die(0);
     }
 } else {
-    header("HTTP/1.1 303 See Other");
-    header("Location: /error.php");
+    if (DEBUG){
+        print("something isn't set");
+    } else {
+        header("HTTP/1.1 303 See Other");
+        header("Location: /error.php");
+    }
     die(0);
 }

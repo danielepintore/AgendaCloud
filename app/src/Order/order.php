@@ -9,7 +9,7 @@ class Order {
     public static function markAsPaid($session_id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $db = Database::getDB();
-        $sql = "UPDATE Appuntamento SET Stato = 'Payment success' WHERE SessionId = ?";
+        $sql = "UPDATE Appuntamento SET Stato = " . PAYMENT_ELABORATED . " WHERE SessionId = ?";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();

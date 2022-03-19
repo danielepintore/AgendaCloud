@@ -13,7 +13,7 @@ try {
         throw DatabaseException::connectionFailed();
     }
     // get all the sessions id, needed to call the expire() method on them
-    $sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato = "Pending payment")';
+    $sql = 'SELECT SessionId FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato =' . PAYMENT_PENDING . ')';
     $stmt = $db->prepare($sql);
     if (!$stmt) {
         throw DatabaseException::queryPrepareFailed();
@@ -27,7 +27,7 @@ try {
         throw DatabaseException::queryExecutionFailed();
     }
     // delete all the sessions that are in pending status and make this slots available again
-    $sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato = "Pending payment")';
+    $sql = 'DELETE FROM Appuntamento WHERE (UNIX_TIMESTAMP() - AddedAt >' . $config['stripe']['session_timeout'] . '* 60 AND Stato = ' . PAYMENT_PENDING . ')';
     $stmt = $db->prepare($sql);
     if (!$stmt) {
         throw DatabaseException::queryPrepareFailed();

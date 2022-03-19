@@ -21,14 +21,12 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='../css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-    <link href='../css/calendar.css' rel='stylesheet' type='text/css'>
     <link href='../css/dashboard.css' rel='stylesheet' type='text/css'>
-    <link href='../css/adminCalendar.css' rel='stylesheet' type='text/css'>
+    <link href='../css/calendar.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/calendar.js"></script>
-    <script src="../js/dashboard.js"></script>
 </head>
 <body>
 <div class="container">
@@ -43,16 +41,16 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-0">
                     <li class="nav-item me-2">
-                        <a class="nav-link active" aria-current="page" href="#">Calendario</a>
+                        <a class="nav-link" aria-current="page" href="dashboard.php">Calendario</a>
                     </li>
                     <li class="nav-item me-2">
-                        <a class="nav-link" href="appuntamenti.php">Appuntamenti</a>
+                        <a class="nav-link active" href="#">Appuntamenti</a>
                     </li>
                     <li class="nav-item me-2">
                         <a class="nav-link" href="servizi.php">Servizi</a>
                     </li>
                     <li class="nav-item me-2">
-                        <a class="nav-link" href="dipendenti.php"">Dipendenti</a>
+                        <a class="nav-link" href="dipendenti.php">Dipendenti</a>
                     </li>
                 </ul>
             </div>
@@ -61,10 +59,10 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     <div class="collapse navbar-collapse" id="rightMenu">
         <ul class="mobile-nav me-auto mb-0 mb-lg-0">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Calendario</a>
+                <a class="nav-link" aria-current="page" href="dashboard.php">Calendario</a>
             </li>
             <li class="nav-item mt-2">
-                <a class="nav-link" href="appuntamenti.php">Appuntamenti</a>
+                <a class="nav-link active" href="#">Appuntamenti</a>
             </li>
             <li class="nav-item mt-2">
                 <a class="nav-link" href="servizi.php">Servizi</a>
@@ -75,42 +73,17 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
         </ul>
     </div>
     <div class="row">
-        <!--Calendar-->
-        <div class="col-sm-12 col-md-7 col-lg-6 col-xl-5 col-xxl-5 mt-2 mb-2">
-            <div id="bookings-calendar" class="calendar-col">
-                <div class="calendar-header">
-                    <i class="icon-chevron fa-solid fa-chevron-left"></i>
-                    <h1></h1>
-                    <i class="icon-chevron fa-solid fa-chevron-right"></i>
-                </div>
-                <div class="calendar-weekdays"></div>
-                <div class="calendar-content"></div>
-            </div>
-        </div>
         <!-- Clients list -->
-        <div class="col-sm-12 col-md-5 col-lg-6 col-xl-7 col-xxl-7 mt-2 mb-2">
+        <div class="col-sm-12 col-md-5 col-lg-6 col-xl-7 col-xxl-7 mt-2 w-100">
             <div class="card appuntamentiCard">
                 <div class="card-header">
-                    Prossimi appuntamenti:
+                    Appuntamenti da confermare:
                 </div>
-                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="appointmentList">
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 col-xxl-12 mt-2 mb-2">
-            <div class="card confermaCard w-100">
-                <div class="card-header">
-                    Appuntamenti da accettare
-                </div>
-                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="pendingAppointmentsList">
-
+                <div class="list-group me-1 ms-1 mt-1 mb-1" id="appointmentList">
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 </body>
 </html>

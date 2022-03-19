@@ -93,7 +93,7 @@ class Calendar {
                     date_div = '<div class="today enabled-date" value="' + this.#getFormattedDate(new Date(this.#year, this.#month - 1, day)) + '">';
                 } else if (this.#isTooFar(new Date(this.#year, this.#month - 1, day)) && this.#isLimited) { // check if the date is too far in the future
                     date_div = '<div class="disabled-date">';
-                } else if (!this.#isOldDate(new Date(this.#year, this.#month - 1, day))) { // check if the date isn't old
+                } else if (!this.#isOldDate(new Date(this.#year, this.#month - 1, day)) || !this.#isLimited) { // check if the date isn't old
                     date_div = '<div class="enabled-date" value="' + this.#getFormattedDate(new Date(this.#year, this.#month - 1, day)) + '">';
                 }
                 // otherwise, the date is an old date

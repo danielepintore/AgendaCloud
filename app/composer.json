@@ -4,6 +4,7 @@
         "vlucas/phpdotenv": "^5.4"
     },
     "autoload": {
-        "classmap": ["src"]
+        "classmap": ["src"],
+        "files": ["config/constants.php"]
     }
 }
