@@ -10,7 +10,7 @@
 }
 .confermaCard{
     width: 100%;
-    max-height: 180px;
+    max-height: 360px;
     height: auto;
 }
 .mini-buttons{
@@ -27,8 +27,4 @@
 .mini-buttons.negative:hover{
     color: #dc3545;
     transition: 400ms;
-}
-.list-group-item-action:focus, .list-group-item-action:hover{
-    color: black;
-    background-color: white;
 }

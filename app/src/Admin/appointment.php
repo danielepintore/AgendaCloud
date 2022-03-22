@@ -4,6 +4,7 @@ namespace Admin;
 
 use Database;
 use DatabaseException;
+use DateTime;
 
 class Appointment {
     /**
@@ -14,15 +15,16 @@ class Appointment {
         $db = Database::getDB();
         if ($isAdmin) {
             if (\DateCheck::isToday($date)){
-                $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Appuntamento.Data = ? AND CURRENT_TIME() <= Appuntamento.OraFine AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id) ORDER BY Appuntamento.OraInizio';
+                $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, Appuntamento.Data AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Appuntamento.Data = ? AND CURRENT_TIME() <= Appuntamento.OraFine AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.Stato = ?) ORDER BY Appuntamento.OraInizio';
             } else {
-                $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Appuntamento.Data = ? AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id) ORDER BY Appuntamento.OraInizio';
+                $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, Appuntamento.Data AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Appuntamento.Data = ? AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.Stato = ?) ORDER BY Appuntamento.OraInizio';
             }
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
-            if (!$stmt->bind_param('s', $date)) {
+            $appointmentStatus = APPOINTMENT_CONFIRMED;
+            if (!$stmt->bind_param('si', $date, $appointmentStatus)) {
                 throw DatabaseException::bindingParamsFailed();
             }
             if ($stmt->execute()) {
@@ -30,10 +32,12 @@ class Appointment {
                 $result = $stmt->get_result();
                 $response = array();
                 foreach ($result as $r) {
+                    $date = DateTime::createFromFormat("Y-m-d", $r['Data']);
                     $response[] = array('appointmentId' => $r['id'], 'NominativoCliente' => $r['NominativoC'],
                         'NominativoDipendente' => $r['NominativoD'], 'NomeServizio' => $r['NomeServizio'],
                         'NomePagamento' => $r['NomePagamento'], 'Cellulare' => $r['Cellulare'],
-                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Stato' => $r['Stato'], 'TipoPagamento' => $r['TipoPagamento']);
+                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Stato' => $r['Stato'], 'TipoPagamento' => $r['TipoPagamento'],
+                        'Data' => $date->format('j/n/Y'));
                 }
                 return $response;
             } else {
@@ -64,17 +68,17 @@ class Appointment {
             }
         }*/
     }
-    public static function getAppointmentRequest($isAdmin, $date){
+    public static function getAppointmentRequest($isAdmin){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $db = Database::getDB();
         if ($isAdmin) {
-            $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.MetodoPagamento_id = ? AND Appuntamento.Stato = ?) ORDER BY Appuntamento.OraInizio';
+            $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, Appuntamento.Data AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.MetodoPagamento_id = ? AND Appuntamento.Stato = ?) ORDER BY Appuntamento.OraInizio';
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
             $paymentMethod = CASH;
-            $paymentStatus = PAYMENT_PENDING;
+            $paymentStatus = WAITING_APPROVAL;
             if (!$stmt->bind_param('ii', $paymentMethod, $paymentStatus)) {
                 throw DatabaseException::bindingParamsFailed();
             }
@@ -83,10 +87,11 @@ class Appointment {
                 $result = $stmt->get_result();
                 $response = array();
                 foreach ($result as $r) {
+                    $date = DateTime::createFromFormat("Y-m-d", $r['Data']);
                     $response[] = array('appointmentId' => $r['id'], 'NominativoCliente' => $r['NominativoC'],
                         'NominativoDipendente' => $r['NominativoD'], 'NomeServizio' => $r['NomeServizio'],
                         'NomePagamento' => $r['NomePagamento'], 'Cellulare' => $r['Cellulare'],
-                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine']);
+                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Data' => $date->format('j/n/Y'));
                 }
                 return $response;
             } else {
@@ -98,12 +103,14 @@ class Appointment {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $db = Database::getDB();
         if ($isAdmin) {
-            $sql = 'UPDATE Appuntamento SET Stato = "'. APPOINTMENT_CONFIRMED. '" WHERE Appuntamento.id = ? AND Appuntamento.Stato = 2 AND Appuntamento.MetodoPagamento_id = 2';
+            $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
-            if (!$stmt->bind_param('i', $appointmentId)) {
+            $appointmentStatus = APPOINTMENT_CONFIRMED;
+            $waitingApprovalStauts = WAITING_APPROVAL;
+            if (!$stmt->bind_param('iii', $appointmentStatus,$appointmentId, $waitingApprovalStauts)) {
                 throw DatabaseException::bindingParamsFailed();
             }
             if ($stmt->execute()) {
@@ -120,12 +127,14 @@ class Appointment {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $db = Database::getDB();
         if ($isAdmin) {
-            $sql = 'UPDATE Appuntamento SET Stato = "'. REJECTED_BY_ADMIN. '" WHERE Appuntamento.id = ? AND Appuntamento.Stato = 2 AND Appuntamento.MetodoPagamento_id = 2';
+            $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
-            if (!$stmt->bind_param('i', $appointmentId)) {
+            $appointmentStatus = REJECTED_BY_USER;
+            $waitingApprovalStauts = WAITING_APPROVAL;
+            if (!$stmt->bind_param('iii', $appointmentStatus,$appointmentId, $waitingApprovalStauts)) {
                 throw DatabaseException::bindingParamsFailed();
             }
             if ($stmt->execute()) {

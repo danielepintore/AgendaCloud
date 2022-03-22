@@ -67,7 +67,7 @@ function getPendingAppointments(date) {
                         '<div class="row"><div class="col">' +
                         '<div class="d-flex w-100 justify-content-between"> ' +
                         '<h5 class="mb-1">' + element.NomeServizio + ': ' + element.NominativoCliente + '</h5> ' +
-                        '<small>' + element.OraInizio + '-' + element.OraFine + '</small> ' +
+                        '<small>' + element.Data + ' ' + element.OraInizio + '-' + element.OraFine + '</small> ' +
                         '</div> <div class="d-flex w-100 justify-content-between">  ' +
                         '<small>' + element.NominativoDipendente + '</small>' +
                         '<small>Metodo di pagamento: ' + element.NomePagamento + '</small>' +

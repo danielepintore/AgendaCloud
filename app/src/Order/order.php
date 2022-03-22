@@ -9,12 +9,13 @@ class Order {
     public static function markAsPaid($session_id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $db = Database::getDB();
-        $sql = "UPDATE Appuntamento SET Stato = " . PAYMENT_ELABORATED . " WHERE SessionId = ?";
+        $sql = "UPDATE Appuntamento SET Stato = ? WHERE SessionId = ?";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();
         }
-        if (!$stmt->bind_param('s', $session_id)) {
+        $appointmentConfirmed = APPOINTMENT_CONFIRMED;
+        if (!$stmt->bind_param('is', $appointmentConfirmed, $session_id)) {
             throw DatabaseException::bindingParamsFailed();
         }
         if ($stmt->execute()) {

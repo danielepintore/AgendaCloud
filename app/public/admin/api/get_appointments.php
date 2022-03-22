@@ -23,10 +23,20 @@ if (isset($_GET['date'])) {
             print(json_encode($appointments));
         }
     } catch (DatabaseException|Exception $e) {
+        if (DEBUG) {
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            die(0);
+        } else {
+            print(json_encode(array("error" => true)));
+            die(0);
+        }
+    }
+} else {
+    if (DEBUG) {
+        print("The date isn't setted");;
+        die(0);
+    } else {
         print(json_encode(array("error" => true)));
         die(0);
     }
-} else {
-    print(json_encode(array("error" => true)));
-    die(0);
 }
