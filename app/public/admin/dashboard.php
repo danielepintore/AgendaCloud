@@ -91,7 +91,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
         <div class="col-sm-12 col-md-5 col-lg-6 col-xl-7 col-xxl-7 mt-2 mb-2">
             <div class="card appuntamentiCard">
                 <div class="card-header">
-                    Prossimi appuntamenti:
+                    Lista appuntamenti:
                 </div>
                 <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="appointmentList">
                 </div>

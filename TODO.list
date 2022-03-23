@@ -18,6 +18,8 @@ fix indentation DONE
 
 TO DO:
 RECHECK FIX PAYMENTS STATUS CODE
+Print the navbar in the admin page dynamically
+HANDLE Multi user login and appointment view
 Deselect current date when an appointment is selected or do not reload all the data but just delete the item selected and reload ll appointments
 Prenotazione servizi non attivi (Con passaggio di parametri arbitrari)
 prenotazioni date passate o future ma disattivate (Con passaggio di parametri arbitrari)

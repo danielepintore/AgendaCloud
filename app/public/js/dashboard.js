@@ -9,7 +9,7 @@ function getAppointments(date) {
             if (!data.error && data.length > 0) {
                 data.forEach(element => {
                     if (isFirst) {
-                        $('#appointmentList').append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start active"> ' +
+                        $('#appointmentList').append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start appointment-active"> ' +
                             '<div class="d-flex w-100 justify-content-between"> ' +
                             '<h5 class="mb-1">' + element.NomeServizio + ': ' + element.NominativoCliente + '</h5> ' +
                             '<small>' + element.OraInizio + '-' + element.OraFine + '</small> ' +

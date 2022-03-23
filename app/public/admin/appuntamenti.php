@@ -79,7 +79,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                 <div class="card-header">
                     Appuntamenti da confermare:
                 </div>
-                <div class="list-group me-1 ms-1 mt-1 mb-1" id="appointmentList">
+                <div class="list-group me-1 ms-1 mt-1   mb-1" id="appointmentList">
                 </div>
             </div>
         </div>
