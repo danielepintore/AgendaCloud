@@ -15,5 +15,10 @@ or define("CREDIT_CARD", 1);
 defined("CASH")
 or define("CASH", 2);
 
+defined("ADMIN_USER")
+or define("ADMIN_USER", 1);
+defined("WORKER_USER")
+or define("WORKER_USER", 2);
+
 defined("DEBUG")
 or define("DEBUG", true);

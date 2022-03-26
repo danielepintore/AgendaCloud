@@ -105,6 +105,7 @@ function setPendingButtons(){
                     // C'è stato un errore non cancellare nulla
                 } else {
                     // non c'è stato nessun errore cancella
+                    clearTimeout(timeout);
                     today = new Date;
                     getAppointments(today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate());
                 }
@@ -121,6 +122,7 @@ function setPendingButtons(){
                     // C'è stato un errore non cancellare nulla
                 } else {
                     // non c'è stato nessun errore cancella
+                    clearTimeout(timeout);
                     today = new Date;
                     getAppointments(today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate());
                 }

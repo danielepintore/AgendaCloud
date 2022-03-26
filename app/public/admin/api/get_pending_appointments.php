@@ -5,7 +5,7 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
-    $user = new User($_SESSION['logged'], $_SESSION['username'], $_SESSION['password'], $_SESSION['isAdmin']);
+    $user = new User();
 } else {
     // user isn't logged
     // redirect to login page
@@ -15,7 +15,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 if (isset($_GET['date'])) {
     // create a service object
     try {
-        $appointments = \Admin\Appointment::getAppointmentRequest($_SESSION['isAdmin'], $_GET['date']);
+        $appointments = \Admin\Appointment::getAppointmentRequest($user->IsAdmin(), $user->getId());
         // se non ci sono stati errori fornisci la risposta
         if (count($appointments) == 0) {
             print(json_encode(array()));

@@ -1,9 +1,9 @@
 <?php
 namespace Admin;
 class User {
+    private $id;
     private $isLogged;
     private $username;
-    private $email;
     private $isAdmin;
 
     /**
@@ -11,39 +11,43 @@ class User {
      * @param $username
      * @param $email
      */
-    public function __construct($isLogged, $username, $email, $isAdmin) {
-        $this->isLogged = $isLogged;
-        $this->username = $username;
-        $this->email = $email;
-        $this->isAdmin = $isAdmin;
+    public function __construct() {
+        $this->id = $_SESSION["userId"];
+        $this->isLogged = $_SESSION["logged"];
+        $this->username = $_SESSION["username"];
+        if ($_SESSION["isAdmin"] == 0){
+            $this->isAdmin = false;
+        } else {
+            $this->isAdmin = true;
+        }
     }
 
     /**
-     * @return bool
+     * @return mixed
      */
-    public function isLogged() {
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function IsLogged() {
         return $this->isLogged;
     }
 
     /**
-     * @return bool
-     */
-    public function isAdmin() {
-        return $this->isAdmin;
-    }
-
-    /**
-     * @return string
+     * @return mixed
      */
     public function getUsername() {
         return $this->username;
     }
 
     /**
-     * @return string
+     * @return mixed
      */
-    public function getEmail() {
-        return $this->email;
+    public function IsAdmin() {
+        return $this->isAdmin;
     }
 
 }

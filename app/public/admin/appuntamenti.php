@@ -7,7 +7,7 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
-    $user = new User($_SESSION['logged'], $_SESSION['username'], $_SESSION['password'], $_SESSION['isAdmin']);
+    $user = new User();
 } else {
     // user isn't logged
     // redirect to login page
@@ -46,11 +46,18 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                     <li class="nav-item me-2">
                         <a class="nav-link active" href="#">Appuntamenti</a>
                     </li>
+                    <?php if ($user->isLogged() && $user->isAdmin()){ ?>
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="servizi.php">Servizi</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="dipendenti.php"">Dipendenti</a>
+                        </li>
+                    <?php } ?>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-0">
                     <li class="nav-item me-2">
-                        <a class="nav-link" href="servizi.php">Servizi</a>
-                    </li>
-                    <li class="nav-item me-2">
-                        <a class="nav-link" href="dipendenti.php">Dipendenti</a>
+                        <a class="nav-link" aria-current="page" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
                     </li>
                 </ul>
             </div>
@@ -64,11 +71,16 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
             <li class="nav-item mt-2">
                 <a class="nav-link active" href="#">Appuntamenti</a>
             </li>
+            <?php if ($user->isLogged() && $user->isAdmin()){ ?>
+                <li class="nav-item mt-2">
+                    <a class="nav-link" href="servizi.php">Servizi</a>
+                </li>
+                <li class="nav-item mt-2">
+                    <a class="nav-link" href="dipendenti.php">Dipendenti</a>
+                </li>
+            <?php } ?>
             <li class="nav-item mt-2">
-                <a class="nav-link" href="servizi.php">Servizi</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="dipendenti.php">Dipendenti</a>
+                <a class="nav-link" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
             </li>
         </ul>
     </div>

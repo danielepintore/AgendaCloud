@@ -5,7 +5,7 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
-    $user = new User($_SESSION['logged'], $_SESSION['username'], $_SESSION['password'], $_SESSION['isAdmin']);
+    $user = new User();
 } else {
     // user isn't logged
     // redirect to login page
@@ -16,10 +16,10 @@ if (isset($_GET['appointmentId']) && isset($_GET['action'])) {
     // create a service object
     try {
         if ($_GET['action'] == "confirm"){
-            $appointments = \Admin\Appointment::acceptAppointment($_SESSION['isAdmin'], $_GET['appointmentId']);
+            $appointments = \Admin\Appointment::acceptAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
             //TODO: send email
         } else {
-            $appointments = \Admin\Appointment::rejectAppointment($_SESSION['isAdmin'], $_GET['appointmentId']);
+            $appointments = \Admin\Appointment::rejectAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
             //TODO: send email
         }
         // se non ci sono stati errori fornisci la risposta

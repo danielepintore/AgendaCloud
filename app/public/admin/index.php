@@ -8,7 +8,7 @@ if (isset($_POST['username']) && isset($_POST['pwd'])) {
         // get db connection
         $db = Database::getDB();
         // make the query to check if the user exists
-        $sql = "SELECT username, password FROM Admin WHERE username = ?;";
+        $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE username = ?;";
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();
@@ -21,15 +21,19 @@ if (isset($_POST['username']) && isset($_POST['pwd'])) {
                 // check the number of results
                 if ($stmt->num_rows > 0) {
                     // user exists
-                    if ($stmt->bind_result($username, $password) &&
+                    if ($stmt->bind_result($userId, $username, $password, $userType) &&
                         $stmt->fetch()) {
                         if (password_verify($_POST['pwd'], $password)) {
                             // correct credentials
                             session_start();
-                            $_SESSION['logged'] = true;
+                            $_SESSION['logged'] = 1;
+                            $_SESSION['userId'] = $userId;
                             $_SESSION['username'] = $username;
-                            $_SESSION['password'] = $password;
-                            $_SESSION['isAdmin'] = true;
+                            if ($userType == ADMIN_USER) {
+                                $_SESSION['isAdmin'] = 1;
+                            } else {
+                                $_SESSION['isAdmin'] = 0;
+                            }
                             // redirect to dashboard
                             header("HTTP/1.1 303 See Other");
                             header("Location: /admin/dashboard.php");
