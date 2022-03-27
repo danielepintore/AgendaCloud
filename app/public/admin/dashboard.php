@@ -28,7 +28,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/calendar.js"></script>
-    <script src="../js/dashboard.js"></script>
+    <script src="../js/admin/dashboard.js"></script>
 </head>
 <body>
 <div class="container">
@@ -45,9 +45,15 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                     <li class="nav-item me-2">
                         <a class="nav-link active" aria-current="page" href="#">Calendario</a>
                     </li>
-                    <li class="nav-item me-2">
-                        <a class="nav-link" href="appuntamenti.php">Appuntamenti</a>
-                    </li>
+                    <div class="dropdown">
+                        <div class="nav-item nav-link me-2 dropdown-toggle" role="button" id="dropdownMenuAppuntamenti" data-bs-toggle="dropdown" aria-expanded="false">
+                            Appuntamenti
+                        </div>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuAppuntamenti">
+                            <li><a class="dropdown-item" href="appuntamenti.php">Nuovo appuntamento</a></li>
+                            <li><a class="dropdown-item" href="#">Gestisci appuntamenti</a></li>
+                        </ul>
+                    </div>
                     <?php if ($user->isLogged() && $user->isAdmin()){ ?>
                         <li class="nav-item me-2">
                             <a class="nav-link" href="servizi.php">Servizi</a>
@@ -71,7 +77,10 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                 <a class="nav-link active" aria-current="page" href="#">Calendario</a>
             </li>
             <li class="nav-item mt-2">
-                <a class="nav-link" href="appuntamenti.php">Appuntamenti</a>
+                <a class="nav-link" href="appuntamenti.php">Nuovo appuntamento</a>
+            </li>
+            <li class="nav-item mt-2">
+                <a class="nav-link" href="appuntamenti.php">Gestisci appuntamenti</a>
             </li>
             <?php if ($user->isLogged() && $user->isAdmin()){ ?>
             <li class="nav-item mt-2">

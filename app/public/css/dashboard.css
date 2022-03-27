@@ -18,12 +18,31 @@ body {
     transition: 400ms;
 }
 
+.dropdown .nav-item.nav-link {
+    border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
+    transition: 400ms;
+}
+.dropdown-item.active{
+    color: #1e2125;
+    background-color: #e9ecef;
+}
+
 .navbar-nav .nav-item .nav-link.active {
     background: #e5e5e5;
     transition: 400ms;
 }
 
+.dropdown .nav-item.nav-link.active {
+    background: #e5e5e5;
+    transition: 400ms;
+}
+
 .navbar-nav .nav-item .nav-link:hover {
+    background: #e5e5e5;
+    transition: 400ms;
+}
+
+.dropdown .nav-item.nav-link:hover {
     background: #e5e5e5;
     transition: 400ms;
 }
