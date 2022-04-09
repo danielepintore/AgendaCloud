@@ -11,6 +11,7 @@ function loadServices() {
         $('.day-selected').removeClass('day-selected');
         // rimuovo gli orari selezionati
         $('#lista-orari').empty()
+        $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
         // disabilito la box per la scelta degli orari
         $('#lista-orari').prop('disabled', true);
         // disabilita il pulsante
@@ -57,10 +58,11 @@ function loadServices() {
     $('#scelta_dipendente').on('change', function () {
         // rimuovi giorno calendario se gia selezionato
         $('.day-selected').removeClass('day-selected');
-        // rimuovo gli orari selezionati
-        $('#lista-orari').empty()
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
+        // rimuovo gli orari selezionati
+        $('#lista-orari').empty()
+        $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
         // disabilito la lista degli orari
         $('#lista-orari').prop('disabled', true);
     })
@@ -78,8 +80,8 @@ function loadServices() {
             rules: {
                 nomeInput: {required: true, minlength: 3},
                 cognomeInput: {required: true, minlength: 3},
-                emailInput: {required: true, email: true, minlength: 3},
-                phoneInput: {required: true, phoneUS: true}
+                emailInput: {required: false, email: true, minlength: 3},
+                phoneInput: {required: false, phoneUS: true}
             },
             messages: {
                 nomeInput: "Per favore inserisci il tuo nome",
@@ -96,6 +98,8 @@ function loadServices() {
                 clientCognome: $("#cognomeInput").val(), clientEmail: $("#emailInput").val(), clientPhone: $("#phoneInput").val()})
                 .done(function (data){
                     if (!data.error){
+                        // show confirmation modal
+                        $("#successModal").modal("show");
                         // clean all the fields
                         addBlur("#orari")
                         addBlur("#prenota_btn")
@@ -110,14 +114,42 @@ function loadServices() {
                         $("#cognomeInput").val("");
                         $("#emailInput").val("");
                         $("#phoneInput").val("");
-                        // todo show confirm alert
-
+                    } else {
+                        // show confirmation modal
+                        $("#errorModal").modal("show");
+                        // clean all the fields
+                        addBlur("#orari")
+                        addBlur("#prenota_btn")
+                        addBlur("#dati_personali")
+                        $('#lista-orari').empty()
+                        $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
+                        $('#lista-orari').prop('disabled', true);
+                        // disabilita il pulsante
+                        $('#prenota_btn').prop('disabled', true);
+                        $('.day-selected').removeClass('day-selected');
+                        $("#nomeInput").val("");
+                        $("#cognomeInput").val("");
+                        $("#emailInput").val("");
+                        $("#phoneInput").val("");
                     }
                 }).fail(function () {
-                    alert("fail");
-                    //todo show alert
+                    // show confimation modal
+                    $("#errorModal").modal("show");
+                    // clean all the fields
+                    addBlur("#orari")
+                    addBlur("#prenota_btn")
+                    addBlur("#dati_personali")
+                    $('#lista-orari').empty()
+                    $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
+                    $('#lista-orari').prop('disabled', true);
+                    // disabilita il pulsante
+                    $('#prenota_btn').prop('disabled', true);
+                    $('.day-selected').removeClass('day-selected');
+                    $("#nomeInput").val("");
+                    $("#cognomeInput").val("");
+                    $("#emailInput").val("");
+                    $("#phoneInput").val("");
             });
-            return
         }
     })
 }

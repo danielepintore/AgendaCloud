@@ -34,66 +34,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 </head>
 <body>
 <div class="container">
-    <nav class="navbar navbar-expand-md navbar-light bg-white mb-2">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">AgendaCloud</a>
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#rightMenu" aria-controls="rightMenu" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-0">
-                    <li class="nav-item me-2">
-                        <a class="nav-link" aria-current="page" href="dashboard.php">Calendario</a>
-                    </li>
-                    <div class="dropdown">
-                        <div class="nav-item nav-link active me-2 dropdown-toggle" role="button" id="dropdownMenuAppuntamenti" data-bs-toggle="dropdown" aria-expanded="false">
-                            Appuntamenti
-                        </div>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuAppuntamenti">
-                            <li><a class="dropdown-item active no-click" href="appuntamenti.php">Nuovo appuntamento</a></li>
-                            <li><a class="dropdown-item" href="#">Gestisci appuntamenti</a></li>
-                        </ul>
-                    </div>
-                    <?php if ($user->isLogged() && $user->isAdmin()){ ?>
-                        <li class="nav-item me-2">
-                            <a class="nav-link" href="servizi.php">Servizi</a>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a class="nav-link" href="dipendenti.php"">Dipendenti</a>
-                        </li>
-                    <?php } ?>
-                </ul>
-                <ul class="navbar-nav ms-auto mb-0">
-                    <li class="nav-item me-2">
-                        <a class="nav-link" aria-current="page" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="collapse navbar-collapse" id="rightMenu">
-        <ul class="mobile-nav me-auto mb-0 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="dashboard.php">Calendario</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link active" href="#">Appuntamenti</a>
-            </li>
-            <?php if ($user->isLogged() && $user->isAdmin()){ ?>
-                <li class="nav-item mt-2">
-                    <a class="nav-link" href="servizi.php">Servizi</a>
-                </li>
-                <li class="nav-item mt-2">
-                    <a class="nav-link" href="dipendenti.php">Dipendenti</a>
-                </li>
-            <?php } ?>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-            </li>
-        </ul>
-    </div>
+    <?php Navbar::printNavBar($user, APPOINTMENT, true, 0);?>
     <div class="container">
         <div class="row">
             <!--Servizi-->
@@ -196,7 +137,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                         </form>
                     </div>
                 </div>
-                <form action="api/book.php" method="post" id="paymentForm">
+                <form id="paymentForm">
                     <input type="hidden" id="dayPOST" name="date">
                     <input type="hidden" id="idServicePOST" name="serviceId">
                     <input type="hidden" id="employeeIdPOST" name="employeeId">
@@ -208,6 +149,39 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                     <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click"
                            value="Prenota" disabled>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Vertically centered modal -->
+<div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Prenotazione aggiunta!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <p>La prenotazione da te richiesta è stata aggiunta</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="errorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Errore</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <p>C'è stato un errore con la prenotazione, riprova</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>
             </div>
         </div>
     </div>

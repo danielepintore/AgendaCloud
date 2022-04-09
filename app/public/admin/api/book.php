@@ -1,13 +1,13 @@
 <?php
 require_once realpath(dirname(__FILE__, 4)) . '/vendor/autoload.php';
 require_once realpath(dirname(__FILE__, 4)) . '/config/config.php';
+require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
 $user = new Admin\User();
 
 if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
-    isset($_POST['clientNome']) && isset($_POST['clientCognome']) && isset($_POST['clientEmail']) &&
-    isset($_POST['clientPhone'])) {
+    isset($_POST['clientNome']) && isset($_POST['clientCognome'])) {
     //admins bookings
     // the first thing to do is to check if the date is valid
     try {
@@ -20,7 +20,12 @@ if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['service
         }
         die(0);
     }
-    $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
+    if (isset($_POST['clientEmail']) &&
+        isset($_POST['clientPhone'])){
+        $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
+    } else {
+        $client = new Client($_POST['clientNome'], $_POST['clientCognome'], "", "");
+    }
     try {
         $service = new Service($_POST['serviceId']);
     } catch (DatabaseException|Exception $e) {
@@ -48,8 +53,7 @@ if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['service
         die(0);
     }
 } else if (!$user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date'])
-    && isset($_POST['slot']) && isset($_POST['clientNome']) && isset($_POST['clientCognome'])
-    && isset($_POST['clientEmail']) && isset($_POST['clientPhone'])) {
+    && isset($_POST['slot']) && isset($_POST['clientNome']) && isset($_POST['clientCognome'])) {
     // no admin bookings
     // the first thing to do is to check if the date is valid
     try {
@@ -62,7 +66,11 @@ if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['service
         }
         die(0);
     }
-    $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
+    if (isset($_POST['clientEmail']) && isset($_POST['clientPhone'])){
+        $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
+    } else {
+        $client = new Client($_POST['clientNome'], $_POST['clientCognome'], "", "");
+    }
     try {
         $service = new Service($_POST['serviceId']);
     } catch (DatabaseException|Exception $e) {

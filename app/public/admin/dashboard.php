@@ -32,69 +32,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 </head>
 <body>
 <div class="container">
-    <nav class="navbar navbar-expand-md navbar-light bg-white mb-2">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">AgendaCloud</a>
-            <button class="navbar-toggler custom-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#rightMenu" aria-controls="rightMenu" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-0">
-                    <li class="nav-item me-2">
-                        <a class="nav-link active" aria-current="page" href="#">Calendario</a>
-                    </li>
-                    <div class="dropdown">
-                        <div class="nav-item nav-link me-2 dropdown-toggle" role="button" id="dropdownMenuAppuntamenti" data-bs-toggle="dropdown" aria-expanded="false">
-                            Appuntamenti
-                        </div>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuAppuntamenti">
-                            <li><a class="dropdown-item" href="appuntamenti.php">Nuovo appuntamento</a></li>
-                            <li><a class="dropdown-item" href="#">Gestisci appuntamenti</a></li>
-                        </ul>
-                    </div>
-                    <?php if ($user->isLogged() && $user->isAdmin()){ ?>
-                        <li class="nav-item me-2">
-                            <a class="nav-link" href="servizi.php">Servizi</a>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a class="nav-link" href="dipendenti.php"">Dipendenti</a>
-                        </li>
-                    <?php } ?>
-                </ul>
-                <ul class="navbar-nav ms-auto mb-0">
-                    <li class="nav-item me-2">
-                        <a class="nav-link" aria-current="page" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="collapse navbar-collapse" id="rightMenu">
-        <ul class="mobile-nav me-auto mb-0 mb-lg-0">
-            <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Calendario</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="appuntamenti.php">Nuovo appuntamento</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="appuntamenti.php">Gestisci appuntamenti</a>
-            </li>
-            <?php if ($user->isLogged() && $user->isAdmin()){ ?>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="servizi.php">Servizi</a>
-            </li>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="dipendenti.php">Dipendenti</a>
-            </li>
-            <?php } ?>
-            <li class="nav-item mt-2">
-                <a class="nav-link" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
-            </li>
-        </ul>
-    </div>
+    <?php Navbar::printNavBar($user, DASHBOARD);?>
     <div class="row">
         <!--Calendar-->
         <div class="col-sm-12 col-md-7 col-lg-6 col-xl-5 col-xxl-5 mt-2 mb-2">
@@ -125,13 +63,27 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                 <div class="card-header">
                     Appuntamenti da accettare
                 </div>
-                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="pendingAppointmentsList">
-
-                </div>
+                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="pendingAppointmentsList"></div>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sei sicuro?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <p>Vuoi cancellare la prenotazione?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="deleteAppointmentBtn" data-bs-dismiss="modal">Si</button>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

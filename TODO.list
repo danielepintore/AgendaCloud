@@ -17,6 +17,7 @@ fix indentation DONE
 -----------------------------------------------------------------
 
 TO DO:
+ADD autoupdate to booking page
 RECHECK FIX PAYMENTS STATUS CODE
 Print the navbar in the admin page dynamically
 HANDLE Multi user login and appointment view

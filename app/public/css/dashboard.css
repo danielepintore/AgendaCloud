@@ -80,3 +80,12 @@ body {
 .custom-toggler:focus {
     box-shadow: none;
 }
+.list-group-item{
+    cursor: default;
+}
+.delete-appointment{
+    cursor: pointer;
+}
+small{
+ text-align: end;
+}

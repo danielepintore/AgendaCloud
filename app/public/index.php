@@ -157,5 +157,21 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
         </div>
     </div>
 </div>
+<div class="modal" id="errorModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Errore</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+            </div>
+            <div class="modal-body">
+                <p>Lo slot che hai selezionato non è più disponibile</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -1,0 +1,31 @@
+.mini-buttons{
+    font-size: 1.5rem;
+    color: black;
+    transition: 400ms;
+    cursor: pointer;
+}
+.mini-buttons.positive:hover{
+    color: #198754;
+    transition: 400ms;
+}
+
+.mini-buttons.negative:hover{
+    color: #dc3545;
+    transition: 400ms;
+}
+
+.mini-buttons.neutral:hover{
+    color: #4d4d4d;
+    transition: 400ms;
+}
+.appointment-active{
+    background-color: #008759 !important;
+    color: white !important;
+    border-radius: .25rem !important;
+}
+.list-group-item{
+    cursor: default;
+}
+.edit-service, .view-employees, .delete-service{
+    cursor: pointer;
+}

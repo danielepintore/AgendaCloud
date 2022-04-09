@@ -1,6 +1,6 @@
 <?php
 use Admin\User;
-require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
+require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
@@ -17,9 +17,11 @@ if (isset($_GET['appointmentId']) && isset($_GET['action'])) {
     try {
         if ($_GET['action'] == "confirm"){
             $appointments = \Admin\Appointment::acceptAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
+            //TODO: add a check if somebody have already accepted the appointment
             //TODO: send email
         } else {
             $appointments = \Admin\Appointment::rejectAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
+            //TODO: add a check if somebody have already reject the appointment
             //TODO: send email
         }
         // se non ci sono stati errori fornisci la risposta

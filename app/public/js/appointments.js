@@ -11,6 +11,7 @@ function loadServices() {
         $('.day-selected').removeClass('day-selected');
         // rimuovo gli orari selezionati
         $('#lista-orari').empty()
+        $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
         // disabilito la box per la scelta degli orari
         $('#lista-orari').prop('disabled', true);
         // disabilita il pulsante
@@ -57,10 +58,11 @@ function loadServices() {
     $('#scelta_dipendente').on('change', function () {
         // rimuovi giorno calendario se gia selezionato
         $('.day-selected').removeClass('day-selected');
-        // rimuovo gli orari selezionati
-        $('#lista-orari').empty()
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
+        // rimuovo gli orari selezionati
+        $('#lista-orari').empty()
+        $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
         // disabilito la lista degli orari
         $('#lista-orari').prop('disabled', true);
     })
@@ -188,7 +190,6 @@ function getTimeSlots(date, serviceId, employeeId) {
                 $('#lista-orari').append('<option selected disabled hidden>Nessuno slot libero</option>')
                 // disattivo il pulsante per prenotarsi
                 $('#prenota_btn').prop('disabled', true);
-
             }
         })
         .fail(function () {
@@ -209,7 +210,7 @@ function onCalendarChange(){
         removeBlur("#prenota_btn")
         removeBlur("#dati_personali")
         $('#prenota_btn').prop('disabled', false);
-        getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+        getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val());
     })
 }
 
