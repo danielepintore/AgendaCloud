@@ -1,5 +1,7 @@
 <?php
+
 use Admin\User;
+
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['isAdmin']) {
@@ -12,7 +14,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
     // create a service object
     try {
         $employee = \Admin\Employee::deleteEmployee($_GET['id']);

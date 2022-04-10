@@ -12,7 +12,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
     // create a service object
     try {
         $appointment = \Admin\Appointment::deleteAppointment($user->IsAdmin(), $_GET['id'], $user->getId());

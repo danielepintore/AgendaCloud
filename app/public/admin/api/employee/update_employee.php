@@ -14,8 +14,10 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_POST['id']) && is_numeric($_POST['id']) && isset($_POST['name']) && isset($_POST['surname']) && isset($_POST['role']) &&
-    isset($_POST['username']) && isset($_POST['password']) && isset($_POST['admin'])) {
+if (isset($_POST['id']) && is_numeric($_POST['id']) && !empty($_POST['id']) && isset($_POST['name']) && !empty($_POST['name']) &&
+    isset($_POST['surname']) && !empty($_POST['surname']) && isset($_POST['role']) && !empty($_POST['role']) &&
+    isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['password']) && !empty($_POST['password']) &&
+    isset($_POST['admin'])) {
     // create a service object
     try {
         $service = \Admin\Employee::updateEmployee($_POST['id'], $_POST['name'], $_POST['surname'], $_POST['role'],

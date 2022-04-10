@@ -1,5 +1,7 @@
 <?php
+
 use Admin\User;
+
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
@@ -12,10 +14,11 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_GET['appointmentId']) && isset($_GET['action'])) {
+if (isset($_GET['appointmentId']) && is_numeric($_GET['appointmentId']) && !empty($_GET['appointmentId']) &&
+    isset($_GET['action']) && !empty($_GET['action'])) {
     // create a service object
     try {
-        if ($_GET['action'] == "confirm"){
+        if ($_GET['action'] == "confirm") {
             $appointments = \Admin\Appointment::acceptAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
             //TODO: add a check if somebody have already accepted the appointment
             //TODO: send email

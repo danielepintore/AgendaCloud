@@ -16,7 +16,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     header("Location: /admin/index.php");
 }
 try {
-    if (isset($_GET['id']) && is_numeric($_GET['id'])){
+    if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
         $employees = Employee::getEmployees($_GET['id']);
     } else {
         $employees = Employee::getEmployees();

@@ -1,5 +1,7 @@
 <?php
+
 use Admin\User;
+
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
@@ -12,7 +14,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_GET['date'])) {
+if (isset($_GET['date']) && !empty($_GET['date'])) {
     // create a service object
     try {
         $appointments = \Admin\Appointment::getAppointmentRequest($user->IsAdmin(), $user->getId());
