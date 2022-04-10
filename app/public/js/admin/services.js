@@ -1,3 +1,94 @@
+$.fn.extend({
+    donetyping: function(callback,timeout){
+        timeout = timeout || 1e3; // 1 second default timeout
+        var timeoutReference,
+            doneTyping = function(el){
+                if (!timeoutReference) return;
+                timeoutReference = null;
+                callback.call(el);
+            };
+        return this.each(function(i,el){
+            var $el = $(el);
+            // Chrome Fix (Use keyup over keypress to detect backspace)
+            $el.is(':input') && $el.on('keyup keypress paste',function(e){
+                // This catches the backspace button in chrome, but also prevents
+                // the event from triggering too preemptively. Without this line,
+                // using tab/shift+tab will make the focused element fire the callback.
+                if (e.type=='keyup' && e.keyCode!=8) return;
+
+                // Check if timeout has been set. If it has, "reset" the clock and
+                // start over again.
+                if (timeoutReference) clearTimeout(timeoutReference);
+                timeoutReference = setTimeout(function(){
+                    // if we made it here, our timeout has elapsed. Fire the
+                    // callback
+                    doneTyping(el);
+                }, timeout);
+            }).on('blur',function(){
+                // If we can, fire the event since we're leaving the field
+                doneTyping(el);
+            });
+        });
+    }
+});
+
+function getEmployeesToAdd(serviceId, name){
+    $.get("/admin/api/service/get_employees_to_add.php", {id: serviceId, name: name})
+        .done(function (data) {
+            if (!data.error && data.length > 0) {
+                $("#employeesToAddTableContent").empty();
+                $("#employeesToAddTable").removeClass("d-none");
+                // generate the table
+                data.forEach(element => {
+                    if (element.available_action == "delete"){
+                        $("#employeesToAddTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnRemove btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td></tr>');
+                    } else {
+                        $("#employeesToAddTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnAdd btn btn-outline-success btn-sm"><i class="fa-solid fa-plus"></i></button></td></tr>');
+                    }
+                });
+                // add listeners
+                $(".employeeBtnRemove").on('click', function (){
+                    $.get('/admin/api/service/remove_employee_to_service.php', {serviceId: $('#confirmAddEmployeeBtn').val(), employeeId: $(this).val()})
+                        .done(function (data) {
+                            if (!data.error) {
+                                getEmployeesToAdd($('#confirmAddEmployeeBtn').val(), $('#employeeNameSearch').val());
+                                getServicesList();
+                            } else {
+                                // todo add some alert
+                                // if there is an error do nothing
+                            }
+                        })
+                        .fail(function (data) {
+                            // todo add some alert
+                        })
+                });
+
+                $(".employeeBtnAdd").on('click', function (){
+                    $.get('/admin/api/service/add_employee_to_service.php', {serviceId: $('#confirmAddEmployeeBtn').val(), employeeId: $(this).val()})
+                        .done(function (data) {
+                            if (!data.error) {
+                                getEmployeesToAdd($('#confirmAddEmployeeBtn').val(), $('#employeeNameSearch').val());
+                                getServicesList();
+                            } else {
+                                // todo add some alert
+                                // if there is an error do nothing
+                            }
+                        })
+                        .fail(function (data) {
+                            // todo add some alert
+                        })
+                });
+            } else if (data.length == 0){
+                $("#employeesToAddTable").addClass("d-none");
+                $("#employeesToAddInfo").html("Non ci sono dipendenti con questo nome");
+            }
+        })
+        .fail(function (data) {
+            $("#employeesToAddTable").addClass("d-none");
+            $("#employeesToAddInfo").html("Si è verificato un errore");
+        });
+}
+
 function getEmployeesList(serviceId){
     $.get("/admin/api/service/get_employees.php", {id: serviceId})
         .done(function (data){
@@ -64,6 +155,7 @@ function getServicesList() {
                 $(".view-employees").on("click", function () {
                     serviceId = $(this).attr("value");
                     getEmployeesList(serviceId);
+                    $("#addEmployeesBtn").attr('value', serviceId);
                     // open modal to confirm
                     $("#showEmployeesModal").modal("show");
                 });
@@ -165,4 +257,14 @@ $(function () {
             .fail(function (){
             })
     });
+
+    $("#addEmployeesBtn").on('click', function (){
+        $("#addEmployeesModal").modal('show');
+        $("#confirmAddEmployeeBtn").attr('value', $(this).attr("value"));
+        getEmployeesToAdd($("#confirmAddEmployeeBtn").val(), $("#employeeNameSearch").val());
+    });
+
+    $("#employeeNameSearch").donetyping(function (){
+        getEmployeesToAdd($("#confirmAddEmployeeBtn").val(), $("#employeeNameSearch").val());
+    })
 })

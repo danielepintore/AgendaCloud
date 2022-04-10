@@ -29,3 +29,6 @@
 .edit-service, .view-employees, .delete-service{
     cursor: pointer;
 }
+.employeeBtnRemove, .employeeBtnAdd{
+    min-width: 30px;
+}

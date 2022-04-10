@@ -25,7 +25,7 @@ if (isset($_POST['serviceName']) && strlen($_POST['serviceName']) >= 3 && !empty
         if (isset($_POST['serviceDescription'])) {
             $service = \Admin\Services::addServices($_POST['serviceName'], $_POST['serviceDuration'], $_POST['serviceStartTime'],
                 $_POST['serviceEndTime'], $_POST['serviceCost'], $_POST['serviceWaitTime'], $_POST['bookableUntil'],
-                $_POST['serviceActive'], $_POST['serviceDescription']);
+                filter_var($_POST['serviceActive'], FILTER_VALIDATE_BOOLEAN), $_POST['serviceDescription']);
         } else {
             $service = \Admin\Services::addServices($_POST['serviceName'], $_POST['serviceDuration'], $_POST['serviceStartTime'],
                 $_POST['serviceEndTime'], $_POST['serviceCost'], $_POST['serviceWaitTime'], $_POST['bookableUntil'], $_POST['serviceActive']);

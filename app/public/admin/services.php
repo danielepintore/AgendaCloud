@@ -183,11 +183,42 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="confirmAddServiceBtn" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="addEmployeesBtn" data-bs-dismiss="modal">Modifica i dipendenti</button>
+                    <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="addEmployeesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi dei dipendenti:</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="employeesToAddInfo"></p>
+                    <div class="input-group mb-2">
+                        <input type="text" placeholder="Nome" class="form-control" id="employeeNameSearch">
+                    </div>
+                    <table class="table d-none text-center" id="employeesToAddTable">
+                        <thead>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Cognome</th>
+                        <th scope="col">Azione</th>
+                        </thead>
+                        <tbody id="employeesToAddTableContent">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="deleteServiceModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
