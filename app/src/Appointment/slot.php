@@ -27,12 +27,15 @@ class Slot {
             $result = $stmt->get_result();
             $service_info = $result->fetch_assoc();
             // ottengo gli orari gia occupati
-            $sql = "SELECT Appuntamento.OraInizio AS OraInizio, Appuntamento.OraFine AS OraFine FROM Appuntamento WHERE Appuntamento.Data = ? AND Appuntamento.Dipendente_id = ?;";
+            $sql = "SELECT Appuntamento.OraInizio AS OraInizio, Appuntamento.OraFine AS OraFine FROM Appuntamento WHERE Appuntamento.Data = ? AND Appuntamento.Dipendente_id = ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ?";
             $stmt = $db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
-            if (!$stmt->bind_param('si', $dateStr, $employeeId)) {
+            $paymentExpired = PAYMENT_EXPIRED;
+            $rejectedByUser = REJECTED_BY_USER;
+            $canceled = CANCELED;
+            if (!$stmt->bind_param('siiii', $dateStr, $employeeId, $paymentExpired, $rejectedByUser, $canceled)) {
                 throw DatabaseException::bindingParamsFailed();
             }
             if ($stmt->execute()) {
