@@ -162,7 +162,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>La prenotazione da te richiesta è stata aggiunta</p>
+                <p>La prenotazione è stata aggiunta</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" data-bs-dismiss="modal">Chiudi</button>
