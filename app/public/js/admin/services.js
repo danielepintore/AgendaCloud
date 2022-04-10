@@ -114,6 +114,7 @@ $(function () {
                 if (!data.error) {
                     // show confirmation modal
                     $("#successModal").modal("show");
+                    getServicesList();
                     // clean all the fields
                 } else {
                     // show confirmation modal

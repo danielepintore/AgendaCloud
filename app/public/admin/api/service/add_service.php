@@ -12,9 +12,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
 }
-if (isset($_POST['serviceName']) && isset($_POST['serviceDuration']) && isset($_POST['serviceStartTime']) &&
-    isset($_POST['serviceEndTime']) && isset($_POST['serviceCost']) && isset($_POST['serviceWaitTime']) &&
-    isset($_POST['bookableUntil']) && isset($_POST['serviceActive'])) {
+if (isset($_POST['serviceName']) && strlen($_POST['serviceName']) >= 3 && isset($_POST['serviceDuration']) && is_numeric($_POST['serviceDuration']) && isset($_POST['serviceStartTime']) &&
+    isset($_POST['serviceEndTime']) && isset($_POST['serviceCost']) && is_numeric($_POST['serviceCost']) && isset($_POST['serviceWaitTime']) && is_numeric($_POST['serviceWaitTime']) &&
+    isset($_POST['bookableUntil']) && is_numeric($_POST['bookableUntil']) && isset($_POST['serviceActive'])) {
     // create a service object
     try {
         if (isset($_POST['serviceDescription'])){

@@ -23,3 +23,9 @@
     color: white !important;
     border-radius: .25rem !important;
 }
+.list-group-item{
+    cursor: default;
+}
+.delete-user, .edit-user{
+    cursor: pointer;
+}

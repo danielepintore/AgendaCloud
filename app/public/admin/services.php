@@ -32,7 +32,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
 <div class="container">
     <?php Navbar::printNavBar($user, SERVICES); ?>
     <div class="container">
-        <button type="submit" id="addServiceBtn" class="btn btn-success d-block me-0 ms-auto"><i class="fa-solid fa-plus"></i> Aggiungi un servizio</button>
+        <button type="submit" id="addServiceBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i class="fa-solid fa-plus"></i> Aggiungi un servizio</button>
         <div class="col-12 mt-2 mb-2">
             <div class="card w-auto">
                 <div class="card-header">

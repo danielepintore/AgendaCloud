@@ -32,23 +32,111 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
 <div class="container">
     <?php Navbar::printNavBar($user, EMPLOYEES); ?>
     <div class="container">
+        <button type="submit" id="addEmployeeBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i class="fa-solid fa-plus"></i> Aggiungi un dipendente</button>
         <div class="col-12 mt-2 mb-2">
             <div class="card w-auto">
                 <div class="card-header">
                     Lista dipendenti:
                 </div>
-                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="employeesList">
-                    <div class="list-group-item list-group-item-action flex-column align-items-start">
-                            <div class="row">
-                                <div class="col-8 mb-auto mt-auto">
-                                    <h5 class="mb-1">Francesco Diego Malica</h5>
-                                </div>
-                                <div class="col-4 mb-auto mt-auto">
-                                    <a class="mini-buttons neutral" value="' + element.appointmentId + '"><i
-                                                class="fa-solid fa-trash"></i></a>
-                                </div>
-                            </div>
-                    </div>
+                <div class="list-group list-group-flush me-1 ms-1 mt-1 mb-1" id="employeeList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addEmployeeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi un nuovo dipendente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Nome" class="form-control" id="name">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Cognome" class="form-control" id="surname">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Ruolo" class="form-control" id="role">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Username" class="form-control" id="username">
+                        </div>
+                        <div class="mb-2">
+                            <input type="password" placeholder="Password" class="form-control" id="password">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="admin">
+                            <label class="form-check-label" for="service-active">
+                                Amministratore
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn" data-bs-dismiss="modal">Aggiungi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editEmployeeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica un dipendente</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Nome" class="form-control" id="name-edit">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Cognome" class="form-control" id="surname-edit">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Ruolo" class="form-control" id="role-edit">
+                        </div>
+                        <div class="mb-2">
+                            <input type="text" placeholder="Username" class="form-control" id="username-edit">
+                        </div>
+                        <div class="mb-2">
+                            <input type="password" placeholder="Password" class="form-control" id="password-edit">
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="admin-edit">
+                            <label class="form-check-label" for="service-active">
+                                Amministratore
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn" data-bs-dismiss="modal">Modifica</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteEmployeeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Vuoi eliminare questo dipendente?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    Il dipendente selezionato sarà eliminato in modo irreversibile.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteEmployeeBtn" data-bs-dismiss="modal">Elimina</button>
                 </div>
             </div>
         </div>
