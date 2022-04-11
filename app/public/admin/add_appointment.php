@@ -34,7 +34,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 </head>
 <body>
 <div class="container">
-    <?php Navbar::printNavBar($user, APPOINTMENT, true, 0);?>
+    <?php Navbar::printNavBar($user, APPOINTMENT);?>
     <div class="container">
         <div class="row">
             <!--Servizi-->
