@@ -10,12 +10,11 @@ $.fn.extend({
         return this.each(function(i,el){
             var $el = $(el);
             // Chrome Fix (Use keyup over keypress to detect backspace)
-            $el.is(':input') && $el.on('keyup keypress paste',function(e){
+            $el.is(':input') && $el.on('keyup keydown paste',function(e){
                 // This catches the backspace button in chrome, but also prevents
                 // the event from triggering too preemptively. Without this line,
-                // using tab/shift+tab will make the focused element fire the callback.
-                if (e.type=='keyup' && e.keyCode!=8) return;
-
+                // using tab/shift+tab will make the focused element fire the callback
+                if (e.type=='keyup' && e.keyCode!=8 || (e.metaKey && e.keyCode != 8) || (e.ctrlKey && e.keyCode != 8)) return;
                 // Check if timeout has been set. If it has, "reset" the clock and
                 // start over again.
                 if (timeoutReference) clearTimeout(timeoutReference);
@@ -36,14 +35,14 @@ function getEmployeesToAdd(serviceId, name){
     $.get("/admin/api/service/get_employees_to_add.php", {id: serviceId, name: name})
         .done(function (data) {
             if (!data.error && data.length > 0) {
-                $("#employeesToAddTableContent").empty();
-                $("#employeesToAddTable").removeClass("d-none");
+                $("#editEmployeesTableContent").empty();
+                $("#editEmployeesTable").removeClass("d-none");
                 // generate the table
                 data.forEach(element => {
                     if (element.available_action == "delete"){
-                        $("#employeesToAddTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnRemove btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td></tr>');
+                        $("#editEmployeesTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnRemove btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td></tr>');
                     } else {
-                        $("#employeesToAddTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnAdd btn btn-outline-success btn-sm"><i class="fa-solid fa-plus"></i></button></td></tr>');
+                        $("#editEmployeesTableContent").append('<tr value="' + element.id + '"><td>' + element.name + '</td><td>' + element.surname + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnAdd btn btn-outline-success btn-sm"><i class="fa-solid fa-plus"></i></button></td></tr>');
                     }
                 });
                 // add listeners
@@ -79,12 +78,12 @@ function getEmployeesToAdd(serviceId, name){
                         })
                 });
             } else if (data.length == 0){
-                $("#employeesToAddTable").addClass("d-none");
+                $("#editEmployeesTable").addClass("d-none");
                 $("#employeesToAddInfo").html("Non ci sono dipendenti con questo nome");
             }
         })
         .fail(function (data) {
-            $("#employeesToAddTable").addClass("d-none");
+            $("#editEmployeesTable").addClass("d-none");
             $("#employeesToAddInfo").html("Si è verificato un errore");
         });
 }
@@ -259,7 +258,7 @@ $(function () {
     });
 
     $("#addEmployeesBtn").on('click', function (){
-        $("#addEmployeesModal").modal('show');
+        $("#editEmployeesModal").modal('show');
         $("#confirmAddEmployeeBtn").attr('value', $(this).attr("value"));
         getEmployeesToAdd($("#confirmAddEmployeeBtn").val(), $("#employeeNameSearch").val());
     });
