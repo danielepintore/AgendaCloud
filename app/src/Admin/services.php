@@ -198,7 +198,7 @@ class Services {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $employeesActive = \Admin\Services::getEmployeeList($serviceId);
         $db = Database::getDB();
-        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ?) GROUP BY Dipendente.id';
+        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ?) GROUP BY Dipendente.id ORDER BY Dipendente.Nome';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();

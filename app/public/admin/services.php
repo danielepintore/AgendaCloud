@@ -183,14 +183,14 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="addEmployeesBtn" data-bs-dismiss="modal">Modifica i dipendenti</button>
+                    <button type="button" class="btn btn-success" id="addEmployeesBtn" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica i dipendenti</button>
                     <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="addEmployeesModal" tabindex="-1">
+    <div class="modal fade" id="editEmployeesModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -202,13 +202,13 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     <div class="input-group mb-2">
                         <input type="text" placeholder="Nome" class="form-control" id="employeeNameSearch">
                     </div>
-                    <table class="table d-none text-center" id="employeesToAddTable">
+                    <table class="table d-none text-center" id="editEmployeesTable">
                         <thead>
                         <th scope="col">Nome</th>
                         <th scope="col">Cognome</th>
                         <th scope="col">Azione</th>
                         </thead>
-                        <tbody id="employeesToAddTableContent">
+                        <tbody id="editEmployeesTableContent">
                         </tbody>
                     </table>
                 </div>
