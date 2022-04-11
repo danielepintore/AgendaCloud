@@ -143,7 +143,7 @@ function setPendingButtons(){
 $(function () {
     let width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
     if (width < 380) {
-        let calendar = new Calendar(width - width * 0.1, "#bookings-calendar", updateList, false)
+        let calendar = new Calendar(width - width * 0.1, "#bookings-calendar", updateList, false, true)
         calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function () {
             if ($(this).attr("class").indexOf("left") != -1) {
                 calendar.changeMonth('previous');
@@ -152,7 +152,7 @@ $(function () {
             }
         })
     } else {
-        let calendar = new Calendar(380, "#bookings-calendar", updateList, false)
+        let calendar = new Calendar(380, "#bookings-calendar", updateList, false, true)
         calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function () {
             if ($(this).attr("class").indexOf("left") != -1) {
                 calendar.changeMonth('previous');

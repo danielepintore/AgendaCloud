@@ -216,7 +216,7 @@ function onCalendarChange(){
 
 // function to launch when the DOM is loaded
 $(function () {
-    let calendar = new Calendar(336, "#bookings-calendar", onCalendarChange, true)
+    let calendar = new Calendar(336, "#bookings-calendar", onCalendarChange, true, false)
     calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function (){
         if ($(this).attr("class").indexOf("left") != -1) {
             calendar.changeMonth('previous');

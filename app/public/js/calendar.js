@@ -19,8 +19,9 @@ class Calendar {
     #calendar_content;
     #daysListener;
     #isLimited;
+    #isTodayActive;
 
-    constructor(calendar_width, calendar, dayListener, isLimited) {
+    constructor(calendar_width, calendar, dayListener, isLimited, isTodayActive) {
         this.#calendar_width = calendar_width;
         this.#calendar = $(calendar);
         this.#header = this.#calendar.find(calendar + ", .calendar-header");
@@ -28,6 +29,7 @@ class Calendar {
         this.#calendar_content = this.#calendar.find(calendar + ", .calendar-content");
         this.#daysListener = dayListener;
         this.#isLimited = isLimited;
+        this.#isTodayActive = isTodayActive;
         this.#getCurrentDate();
         this.#printCalendar();
         this.#daysListener();
@@ -89,7 +91,9 @@ class Calendar {
                 // se è la data di oggi cambia colore di sfondo grazie alla classe today
                 let date_div = '<div class="old-date">';
                 // check if the date is today
-                if (this.#isSameDate(new Date(this.#year, this.#month - 1, day))) {
+                if (this.#isSameDate(new Date(this.#year, this.#month - 1, day)) && this.#isTodayActive) {
+                    date_div = '<div class="today day-selected enabled-date" value="' + this.#getFormattedDate(new Date(this.#year, this.#month - 1, day)) + '">';
+                } else if (this.#isSameDate(new Date(this.#year, this.#month - 1, day))) {
                     date_div = '<div class="today enabled-date" value="' + this.#getFormattedDate(new Date(this.#year, this.#month - 1, day)) + '">';
                 } else if (this.#isTooFar(new Date(this.#year, this.#month - 1, day)) && this.#isLimited) { // check if the date is too far in the future
                     date_div = '<div class="disabled-date">';
