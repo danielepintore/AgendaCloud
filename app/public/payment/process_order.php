@@ -1,13 +1,13 @@
 <?php
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
 
 // Set your secret key. Remember to switch to your live secret key in production.
 // See your keys here: https://dashboard.stripe.com/apikeys
-\Stripe\Stripe::setApiKey($config['stripe']['secret_api_key']);
+$config = Config::getConfig();
+\Stripe\Stripe::setApiKey($config->stripe->secret_api_key);
 
 // You can find your endpoint's secret in your webhook settings
-$endpoint_secret = $config['stripe']['endpoint_secret'];
+$endpoint_secret = $config->stripe->endpoint_secret;
 
 $payload = @file_get_contents('php://input');
 $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];

@@ -1,6 +1,5 @@
 <?php
 require_once realpath(dirname(__FILE__, 4)) . '/vendor/autoload.php';
-require_once realpath(dirname(__FILE__, 4)) . '/config/config.php';
 require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
 $user = new Admin\User();

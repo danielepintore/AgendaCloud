@@ -1,6 +1,14 @@
+<?php
+$config = Config::getConfig();
+?>
 <!DOCTYPE html>
 <html>
 <head>
+    <title><?php print("Errore - ".$config->company->name." - AgendaCloud");?></title>
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="img/favicon/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>

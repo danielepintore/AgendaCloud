@@ -1,10 +1,15 @@
 <?php
-require_once realpath(dirname(__FILE__, 2)) . '/config/config.php';
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
+$config = Config::getConfig();
 ?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <title><?php print($config->company->name." - AgendaCloud");?></title>
+    <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="img/favicon/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
@@ -15,7 +20,7 @@ require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/additional-methods.min.js"></script>
     <script>
-        window.maxFutureDays = <?php print($config["calendar"]["max_future_day"])?>;
+        window.maxFutureDays = <?php print($config->calendar->max_future_day)?>;
     </script>
     <script type="text/javascript" src="js/calendar.js"></script>
     <script type="text/javascript" src="js/appointments.js"></script>

@@ -151,15 +151,11 @@ class Services {
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();
         }
-        print($isActive);
         if ($isActive) {
-            print("true");
             $isActive = 1;
         } else {
-            print("false");
             $isActive = 0;
         }
-        print($isActive);
         if (!$stmt->bind_param('sissiisiii', $name, $duration, $startTime, $endTime, $cost, $waitTime, $description, $isActive, $bookableUntil, $serviceId)) {
             throw DatabaseException::bindingParamsFailed();
         }

@@ -21,8 +21,6 @@ if (isset($_POST['id']) && is_numeric($_POST['id']) && !empty($_POST['id']) && i
     isset($_POST['serviceCost']) && is_numeric($_POST['serviceCost']) && isset($_POST['serviceWaitTime']) &&
     is_numeric($_POST['serviceWaitTime']) && isset($_POST['bookableUntil']) && is_numeric($_POST['bookableUntil']) &&
     isset($_POST['serviceActive']) && isset($_POST['serviceDescription'])) {
-    print($_POST['serviceActive']);
-    var_dump($_POST['serviceActive']);
     // create a service object
     try {
         $service = \Admin\Services::updateService($_POST['id'], $_POST['serviceName'], $_POST['serviceDuration'], $_POST['serviceStartTime'],

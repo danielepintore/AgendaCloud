@@ -1,6 +1,7 @@
 <?php
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
+
+$config = Config::getConfig();
 
 if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
@@ -42,7 +43,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             // TODO send email to the merchant
             // redirect
             header("HTTP/1.1 303 See Other");
-            header("Location: " . $config['urls']['baseUrl'] . "/payment/success.php?paymentMethod=" . $_POST['paymentMethod']);
+            header("Location: " . $config->urls->baseUrl . "/payment/success.php?paymentMethod=" . $_POST['paymentMethod']);
             die(0);
         } catch (DatabaseException | SlotException | Exception $e) {
             if (DEBUG){
@@ -64,9 +65,9 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         // This is a public sample test API key.
         // Don’t submit any personally identifiable information in requests made with this key.
         // Sign in to see your own test API key embedded in code samples.
-        \Stripe\Stripe::setApiKey($config['stripe']['secret_api_key']);
+        \Stripe\Stripe::setApiKey($config->stripe->secret_api_key);
 
-        $domain = $config['urls']['baseUrl'];
+        $domain = $config->urls->baseUrl;
 
         // check if the service have an image to display
         if ($service->getImageUrl() != null) {

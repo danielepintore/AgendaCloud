@@ -22,6 +22,10 @@ Print the navbar in the admin page dynamically
 -----------------------------------------------------------------
 
 TO DO:
+Add send mail
+Add error modals to admin setup
+Disable the deletion of current admin user
+Ask the password in order to changr data
 RECHECK FIX PAYMENTS STATUS CODE
 Deselect current date when an appointment is selected or do not reload all the data but just delete the item selected and reload ll appointments
 Prenotazione servizi non attivi (Con passaggio di parametri arbitrari)
@@ -30,7 +34,7 @@ Check service Integration in all classes and
 manage the errors in a better way and fix some of the error messages
 Code review
 
-Setup mail
+Setup mail (https://github.com/PHPMailer/PHPMailer)
 Obfuscate the js code
 
 implement docker (last thing to do)

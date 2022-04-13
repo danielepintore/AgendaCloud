@@ -7,7 +7,7 @@ class DateCheck {
      * @throws DataException
      */
     public static function isValidDate($date) {
-        require(realpath(dirname(__FILE__, 3)) . '/config/config.php');
+        $config = Config::getConfig();
         try {
             $date = new DateTime($date);
         } catch (Exception $e) {
@@ -20,7 +20,7 @@ class DateCheck {
         $maxDate->setTime(0, 0, 0);
         $now->setTime(0, 0, 0);
         try {
-            $maxDateInterval = new DateInterval("P" . $config["calendar"]["max_future_day"] . "D");
+            $maxDateInterval = new DateInterval("P" . $config->calendar->max_future_day . "D");
         } catch (Exception $e) {
             throw DataException::wrongIntervalString();
         }

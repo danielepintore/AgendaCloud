@@ -1,17 +1,17 @@
 <?php
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
-require_once realpath(dirname(__FILE__, 3)) . '/config/config.php';
-$method = 0;
-if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == 1) {
+$config = Config::getConfig();
+
+if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == CREDIT_CARD) {
     try {
-        $session = new Session($config['stripe']['secret_api_key']);
+        $session = new Session($config->stripe->secret_api_key);
         $customer = $session->getCustomerData($_GET["sessionId"]);
-        $method = 1;
+        $method = CREDIT_CARD;
     } catch (PaymentException | Exception $e) {
         $method = 2;
     }
-} elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == 2) {
-    $method = 2;
+} elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == CASH) {
+    $method = CASH;
 } else {
     header("HTTP/1.1 303 See Other");
     header("Location: " . '/error.php');
@@ -20,6 +20,11 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
 ?>
 <html>
 <head>
+    <title><?php print("Conferma dell'appuntamento - ".$config->company->name." - AgendaCloud");?></title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
+    <link rel="manifest" href="../img/favicon/site.webmanifest">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='../css/bootstrap.min.css' rel='stylesheet' type='text/css'>
@@ -38,10 +43,10 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
             </div>
             <div class="row mb-4">
                 <div class="col-12 d-flex align-items-center justify-content-center">
-                    <?php if ($method == 1) { ?>
+                    <?php if ($method == CREDIT_CARD) { ?>
                         <p class="card-text">Grazie <?php print($customer->name) ?>! a breve riceverai una mail di
                             conferma all'indirizzo: <em><?php print($customer->email) ?></em></p>
-                    <?php } else { ?>
+                    <?php } else if ($method == CASH) { ?>
                         <p class="card-text">Grazie! riceverai una mail di conferma quando la tua prenotazione sarà
                             confermata dal commerciante</p>
                     <?php } ?>
