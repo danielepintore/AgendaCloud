@@ -148,7 +148,11 @@ class Appointment {
             }
             if ($stmt->execute()) {
                 //Success
-                return true;
+                if ($stmt->affected_rows == 1){
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 throw DatabaseException::queryExecutionFailed();
             }
@@ -253,6 +257,26 @@ class Appointment {
                 throw DatabaseException::queryExecutionFailed();
             }
             return false;
+        }
+    }
+    public static function fetchAppointmentInfo($appointmentId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $db = Database::getDB();
+        $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id);';
+        $stmt = $db->prepare($sql);
+        if (!$stmt) {
+            throw DatabaseException::queryPrepareFailed();
+        }
+        if (!$stmt->bind_param('i', $appointmentId)) {
+            throw DatabaseException::bindingParamsFailed();
+        }
+        if ($stmt->execute()) {
+            //Success
+            $result = $stmt->get_result();
+            $result = $result->fetch_row();
+            return (object) array("name" => $result[0], "email" => $result[1], "date" => $result[2], "startTime" => $result[3], "endTime" => $result[4]);
+        } else {
+            throw DatabaseException::queryExecutionFailed();
         }
     }
 }

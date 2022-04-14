@@ -1,10 +1,27 @@
 <?php
+
+use Admin\User;
+
 require_once realpath(dirname(__FILE__, 4)) . '/vendor/autoload.php';
 require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
-$user = new Admin\User();
+if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
+    // user is logged
+    // create user object
+    $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        print(json_encode(array("error" => true)));
+        die(0);
+    }
+} else {
+    // user isn't logged
+    // redirect to login page
+    print(json_encode(array("error" => true)));
+    die(0);
+}
 
-if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
+if ($user->IsAdmin() && $user->exist() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
     isset($_POST['clientNome']) && isset($_POST['clientCognome'])) {
     //admins bookings
@@ -51,7 +68,7 @@ if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['service
         }
         die(0);
     }
-} else if (!$user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date'])
+} else if (!$user->IsAdmin() && $user->exist() && isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date'])
     && isset($_POST['slot']) && isset($_POST['clientNome']) && isset($_POST['clientCognome'])) {
     // no admin bookings
     // the first thing to do is to check if the date is valid
@@ -99,10 +116,13 @@ if ($user->IsAdmin() && isset($_POST['serviceId']) && is_numeric($_POST['service
     }
 } else {
     if (DEBUG) {
-        print("something isn't set");
+        if ($user->exist()){
+            print("something isn't set");
+        } else {
+            print("The user no longer exist");
+        }
     } else {
-        header("HTTP/1.1 303 See Other");
-        header("Location: /error.php");
+        print(json_encode(array("error" => true)));
     }
     die(0);
 }

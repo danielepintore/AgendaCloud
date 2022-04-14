@@ -9,6 +9,11 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     // user is logged
     // create user object
     $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        header("HTTP/1.1 303 See Other");
+        header("Location: /admin/logout.php");
+    }
 } else {
     // user isn't logged
     // redirect to login page
@@ -112,7 +117,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                             <input type="text" placeholder="Username" class="form-control" id="username-edit">
                         </div>
                         <div class="mb-2">
-                            <input type="password" placeholder="Password" class="form-control" id="password-edit">
+                            <input type="password" placeholder="Nuova password" class="form-control" id="password-edit">
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="admin-edit">

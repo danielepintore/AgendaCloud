@@ -28,6 +28,9 @@
     color: #dc3545;
     transition: 400ms;
 }
+.mini-buttons-loading{
+    font-size: 2rem;
+}
 .appointment-active{
     background-color: #008759 !important;
     color: white !important;

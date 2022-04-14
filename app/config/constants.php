@@ -36,4 +36,4 @@ defined("EMPLOYEES")
 or define("EMPLOYEES", 4);
 
 defined("DEBUG")
-or define("DEBUG", true);
+or define("DEBUG", true); // todo change in production

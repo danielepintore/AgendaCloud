@@ -6,11 +6,24 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
     $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        if (DEBUG){
+            print("The user no longer exist");
+        } else {
+            print(json_encode(array("error" => true)));
+        }
+        die(0);
+    }
 } else {
     // user isn't logged
-    // redirect to login page
-    header("HTTP/1.1 303 See Other");
-    header("Location: /admin/index.php");
+    // display error
+    if (DEBUG){
+        print("There is no current logged user");
+    } else {
+        print(json_encode(array("error" => true)));
+    }
+    die(0);
 }
 if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
     // create a service object

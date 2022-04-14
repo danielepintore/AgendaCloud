@@ -1,4 +1,7 @@
 <?php
+
+use Admin\User;
+
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
@@ -62,6 +65,12 @@ if (isset($_POST['username']) && isset($_POST['pwd'])) {
         header("Location: /error.php");
     }
 } elseif (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
+    $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        header("HTTP/1.1 303 See Other");
+        header("Location: /admin/logout.php");
+    }
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/dashboard.php");
 }

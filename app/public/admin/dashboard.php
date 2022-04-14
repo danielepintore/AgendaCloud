@@ -9,6 +9,11 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
     $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        header("HTTP/1.1 303 See Other");
+        header("Location: /admin/logout.php");
+    }
 } else {
     // user isn't logged
     // redirect to login page
@@ -31,6 +36,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     <link href='../css/dashboard.css' rel='stylesheet' type='text/css'>
     <link href='../css/adminCalendar.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" href="../css/loading.min.css"/>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/calendar.js"></script>

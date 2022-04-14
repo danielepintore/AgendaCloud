@@ -13,6 +13,8 @@ class Config {
                 "host" => $_ENV['DB_HOST'],
                 "expire_user" => $_ENV['DB_EXPIRE_USER'],
                 "expire_pwd" => $_ENV['DB_EXPIRE_PWD'],
+                "email_user" => $_ENV['DB_EMAIL_USER'],
+                "email_pwd" => $_ENV['DB_EMAIL_PWD'],
             ),
             /*
              * The environment array can be like this:

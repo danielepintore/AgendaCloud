@@ -25,7 +25,7 @@ TO DO:
 Add send mail
 Add error modals to admin setup
 Disable the deletion of current admin user
-Ask the password in order to changr data
+Ask the password in order to change data
 RECHECK FIX PAYMENTS STATUS CODE
 Deselect current date when an appointment is selected or do not reload all the data but just delete the item selected and reload ll appointments
 Prenotazione servizi non attivi (Con passaggio di parametri arbitrari)

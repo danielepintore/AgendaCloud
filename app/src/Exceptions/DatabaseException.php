@@ -28,4 +28,8 @@ class DatabaseException extends Exception {
     public static function fetchData() {
         return new static("The data can't be fetched by the fetch method or the bind method isn't configured appropriately");
     }
+
+    public static function cantDeleteCurrentUser() {
+        return new static("Can't delete the current user because it's the same user that is logged");
+    }
 }

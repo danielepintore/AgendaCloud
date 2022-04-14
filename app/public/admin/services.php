@@ -9,6 +9,11 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     // user is logged
     // create user object
     $user = new User();
+    // check if user still exist in the database
+    if (!$user->exist()){
+        header("HTTP/1.1 303 See Other");
+        header("Location: /admin/logout.php");
+    }
 } else {
     // user isn't logged
     // redirect to login page
