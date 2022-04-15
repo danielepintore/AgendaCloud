@@ -6,7 +6,15 @@ $config = Config::getConfig();
 if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POST['date']) &&
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
     isset($_POST['clientNome']) && isset($_POST['clientCognome']) && isset($_POST['clientEmail']) &&
-    isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod'])) {
+    isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod']) &&
+    isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+
+    //check if recaptcha is valid
+    if (!ReCaptcha::isSuccess($_POST['g-recaptcha-response'])){
+        header("HTTP/1.1 303 See Other");
+        header("Location: /index.php");
+        die(0);
+    }
     // the first thing to do is to check if the date is valid
     try {
         DateCheck::isValidDate($_POST['date']);

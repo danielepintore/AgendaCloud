@@ -14,16 +14,18 @@ $config = Config::getConfig();
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='css/calendar.css' rel='stylesheet' type='text/css'>
+    <link href='css/index.css' rel='stylesheet' type='text/css'>
     <link href='css/fontawesome.css' rel='stylesheet' type='text/css'>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/additional-methods.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         window.maxFutureDays = <?php print($config->calendar->max_future_day)?>;
     </script>
     <script type="text/javascript" src="js/calendar.js"></script>
-    <script type="text/javascript" src="js/appointments.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
 </head>
 <body>
 <div class="container">
@@ -156,10 +158,20 @@ $config = Config::getConfig();
                 <input type="hidden" id="clientEmailPOST" name="clientEmail">
                 <input type="hidden" id="clientPhonePOST" name="clientPhone">
                 <input type="hidden" id="paymentMethodPOST" name="paymentMethod">
-                <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click"
+                <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-2 w-100 blur active no-click"
                        value="Prenota" disabled>
+                <div class="g-recaptcha"
+                     data-sitekey="<?php print($config->recaptcha->pub_key)?>"
+                     data-callback="submitForm"
+                     data-size="invisible">
+                </div>
             </form>
         </div>
+        <p class="recaptcha-terms blur active">
+            Questo sito è protetto da reCAPTCHA, viene applicata la
+            <a href="https://policies.google.com/privacy">Privacy Policy</a> e i
+            <a href="https://policies.google.com/terms">Termini di servizio</a> di Google
+        </p>
     </div>
 </div>
 <div class="modal" id="errorModal" tabindex="-1">

@@ -10,11 +10,19 @@ if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && isset($_GET['
         } else {
             print(json_encode($slots));
         }
-    } catch (DatabaseException|SlotException|Exception $e) {
+    } catch (DatabaseException|SlotException|ServiceException|Exception $e) {
+        if (DEBUG){
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+        } else {
+            print(json_encode(array("error" => true)));
+            die(0);
+        }
+    }
+} else {
+    if (DEBUG){
+        print("Something isn't set");
+    } else {
         print(json_encode(array("error" => true)));
         die(0);
     }
-} else {
-    print(json_encode(array("error" => true)));
-    die(0);
 }

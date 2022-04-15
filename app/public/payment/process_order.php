@@ -31,10 +31,19 @@ if ($event->type == 'checkout.session.completed') {
     // Fulfill the purchase...
     // Change DB order status
     try {
+        // mark order as paid
         Order::markAsPaid($session->id);
-        //TODO send confermation email
+        // get appointment info
+        $appointment = \Admin\Appointment::fetchAppointmentInfoBySessionID($session->id);
+        // send email to the customer
+        $body = MailClient::getConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+        $altBody = MailClient::getAltConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+        MailClient::addMailToQueue("La tua prenotazione", $body, $altBody, $session->customer_details->email, $appointment->name);
     } catch (DatabaseException | Exception $e) {
-        //TODO send email to me to fix the problem
+        // send email to supervisor if there are any problems
+        $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode() . "\n" . $session;
+        $phpMailer = new MailClient();
+        $phpMailer->sendEmail("There are problems sending emails to customers", $body, $body, $config->mail->supervisor);
     }
 }
 http_response_code(200);

@@ -33,6 +33,10 @@ class Config {
                 "supervisor" => $_ENV["SUPERVISOR_MAIL"],
                 "company" => $_ENV["COMPANY_MAIL"],
             ),
+            "recaptcha" => (object)array(
+                "priv_key" => $_ENV["RECAPTCHA_PRIV_KEY"],
+                "pub_key" => $_ENV["RECAPTCHA_PUB_KEY"],
+            ),
             "environment" => (object)array(
                 "name" => "debug", // TODO: change to production and disable debug
                 "debug" => true,

@@ -1,0 +1,53 @@
+body {
+    background-color: #F5F1E9;
+}
+
+.blur {
+    transition: all .5s ease;
+    -webkit-filter: blur(0px); /* Chrome, Safari, Opera */
+    filter: blur(0px);
+}
+
+.blur.active {
+    transition: all 1s ease;
+    -webkit-filter: blur(5px); /* Chrome, Safari, Opera */
+    filter: blur(5px);
+}
+
+.no-click {
+    /* Disable mouse click */
+    pointer-events: none;
+    /* Make text unselectable */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+
+}
+
+label.error {
+    margin-top: .5rem;
+}
+
+#prezzo-servizio, #currency {
+    font-weight: bold;
+}
+
+.card {
+    -webkit-border-radius: .75rem .75rem .75rem .75rem;
+    -moz-border-radius: .75rem .75rem .75rem .75rem;
+    border-radius: .75rem .75rem .75rem .75rem;
+}
+
+.grecaptcha-badge {
+    visibility: hidden;
+}
+.recaptcha-terms { text-align: end;}
+a {
+    color: #008759;
+    text-decoration: none;
+}
+
+a:hover{
+    color: #115938;
+}

@@ -33,11 +33,8 @@ if (isset($_GET['appointmentId']) && is_numeric($_GET['appointmentId']) && !empt
     try {
         if ($_GET['action'] == "confirm") {
             $appointments = \Admin\Appointment::acceptAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
-            //TODO: add a check if somebody have already accepted the appointment
         } else {
             $appointments = \Admin\Appointment::rejectAppointment($user->IsAdmin(), $_GET['appointmentId'], $user->getId());
-            //TODO: add a check if somebody have already reject the appointment
-            //TODO: send email
         }
         // se non ci sono stati errori fornisci la risposta
         if ($appointments == true) {

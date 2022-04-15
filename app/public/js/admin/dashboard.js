@@ -127,7 +127,9 @@ function setPendingButtons() {
                         miniButtonQueque--;
                         parentDiv.children(".mini-buttons-loading").addClass("d-none")
                         parentDiv.children(".mini-buttons").removeClass("d-none")
-                        // C'è stato un errore non cancellare nulla
+                        // reload all bookings
+                        clearTimeout(timeout);
+                        getAppointments($(".day-selected").attr("value"));
                     } else {
                         miniButtonQueque--;
                         parentDiv.children(".mini-buttons-loading").addClass("d-none")
@@ -143,7 +145,9 @@ function setPendingButtons() {
                     // riattiva i minibuttons
                     parentDiv.children(".mini-buttons-loading").addClass("d-none")
                     parentDiv.children(".mini-buttons").removeClass("d-none")
-                    // non fare nulla in modo tale da permettere all'utente di riprovare
+                    // reload all bookings
+                    clearTimeout(timeout);
+                    getAppointments($(".day-selected").attr("value"));
                 }
             }(miniButtonDiv));
     })
@@ -164,7 +168,9 @@ function setPendingButtons() {
                         // riattiva i minibuttons
                         parentDiv.children(".mini-buttons-loading").addClass("d-none")
                         parentDiv.children(".mini-buttons").removeClass("d-none")
-                        // C'è stato un errore non cancellare nulla
+                        // reload all bookings
+                        clearTimeout(timeout);
+                        getAppointments($(".day-selected").attr("value"));
                     } else {
                         miniButtonQueque--;
                         parentDiv.children(".mini-buttons-loading").addClass("d-none")
@@ -180,7 +186,9 @@ function setPendingButtons() {
                     // riattiva i minibuttons
                     parentDiv.children(".mini-buttons-loading").addClass("d-none")
                     parentDiv.children(".mini-buttons").removeClass("d-none")
-                    // non fare nulla in modo tale da permettere all'utente di riprovare
+                    // reload all bookings
+                    clearTimeout(timeout);
+                    getAppointments($(".day-selected").attr("value"));
                 }
             }(miniButtonDiv));
     })

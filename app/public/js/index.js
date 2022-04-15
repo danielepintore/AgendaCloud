@@ -25,6 +25,7 @@ function loadServices() {
             addBlur("#dati_personali")
             addBlur("#info-servizio")
             addBlur("#scelta_metodo_pagamento")
+            addBlur(".recaptcha-terms")
             return
         }
         $.get("api/get_employees.php", {serviceId: serviceId})
@@ -48,6 +49,7 @@ function loadServices() {
                     addBlur("#dati_personali")
                     addBlur("#info-servizio")
                     addBlur("#scelta_metodo_pagamento")
+                    addBlur(".recaptcha-terms")
                 }
             })
             .fail(function () {
@@ -92,6 +94,8 @@ function loadServices() {
             }
         })
         if ($("#form_dati_personali").valid()) {
+            // start grecaptcha
+            grecaptcha.execute();
             //set hidden form value
             $("#dayPOST").val($(".day-selected").attr("value"))
             $("#idServicePOST").val($("#tipoServizio").val())
@@ -102,11 +106,13 @@ function loadServices() {
             $("#clientEmailPOST").val($("#emailInput").val())
             $("#clientPhonePOST").val($("#phoneInput").val())
             $("#paymentMethodPOST").val($("#tipoPagamento").val())
-            //start form
-            $("#paymentForm").trigger('submit');
-            return
         }
     })
+}
+
+function submitForm(){
+    //start form
+    $("#paymentForm").trigger('submit');
 }
 
 function getSelectedServiceInfo(serviceId) {
@@ -209,6 +215,7 @@ function onCalendarChange(){
         removeBlur("#orari")
         removeBlur("#prenota_btn")
         removeBlur("#dati_personali")
+        removeBlur(".recaptcha-terms")
         $('#prenota_btn').prop('disabled', false);
         getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val());
     })

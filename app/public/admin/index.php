@@ -7,58 +7,64 @@ $config = Config::getConfig();
 session_start();
 $credentialError = "noerr";
 // check if data is set up
-if (isset($_POST['username']) && isset($_POST['pwd'])) {
+if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd']) && !empty($_POST['pwd']) &&
+    isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
     try {
-        // get db connection
-        $db = Database::getDB();
-        // make the query to check if the user exists
-        $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE username = ?;";
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw DatabaseException::queryPrepareFailed();
-        }
-        if (!$stmt->bind_param('s', $_POST['username'])) {
-            throw DatabaseException::bindingParamsFailed();
-        }
-        if ($stmt->execute()) {
-            if ($stmt->store_result()) {
-                // check the number of results
-                if ($stmt->num_rows > 0) {
-                    // user exists
-                    if ($stmt->bind_result($userId, $username, $password, $userType) &&
-                        $stmt->fetch()) {
-                        if (password_verify($_POST['pwd'], $password)) {
-                            // correct credentials
-                            session_start();
-                            $_SESSION['logged'] = 1;
-                            $_SESSION['userId'] = $userId;
-                            $_SESSION['username'] = $username;
-                            if ($userType == ADMIN_USER) {
-                                $_SESSION['isAdmin'] = 1;
+        //check if recaptcha is valid
+        if (!ReCaptcha::isSuccess($_POST['g-recaptcha-response'])){
+            $credentialError = "wrongCaptcha";
+        } else {
+            // get db connection
+            $db = Database::getDB();
+            // make the query to check if the user exists
+            $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE username = ?;";
+            $stmt = $db->prepare($sql);
+            if (!$stmt) {
+                throw DatabaseException::queryPrepareFailed();
+            }
+            if (!$stmt->bind_param('s', $_POST['username'])) {
+                throw DatabaseException::bindingParamsFailed();
+            }
+            if ($stmt->execute()) {
+                if ($stmt->store_result()) {
+                    // check the number of results
+                    if ($stmt->num_rows > 0) {
+                        // user exists
+                        if ($stmt->bind_result($userId, $username, $password, $userType) &&
+                            $stmt->fetch()) {
+                            if (password_verify($_POST['pwd'], $password)) {
+                                // correct credentials
+                                session_start();
+                                $_SESSION['logged'] = 1;
+                                $_SESSION['userId'] = $userId;
+                                $_SESSION['username'] = $username;
+                                if ($userType == ADMIN_USER) {
+                                    $_SESSION['isAdmin'] = 1;
+                                } else {
+                                    $_SESSION['isAdmin'] = 0;
+                                }
+                                // redirect to dashboard
+                                header("HTTP/1.1 303 See Other");
+                                header("Location: /admin/dashboard.php");
                             } else {
-                                $_SESSION['isAdmin'] = 0;
+                                // wrong credentials
+                                $credentialError = "wrongPwdOrUser";
                             }
-                            // redirect to dashboard
-                            header("HTTP/1.1 303 See Other");
-                            header("Location: /admin/dashboard.php");
                         } else {
-                            // wrong credentials
-                            $credentialError = "wrongPwdOrUser";
+                            throw DatabaseException::fetchData();
                         }
                     } else {
-                        throw DatabaseException::fetchData();
+                        // no user is found
+                        $credentialError = "userNotFound";
                     }
                 } else {
-                    // no user is found
-                    $credentialError = "userNotFound";
+                    throw DatabaseException::storeResult();
                 }
+                // close connection
+                $stmt->close();
             } else {
-                throw DatabaseException::storeResult();
+                throw DatabaseException::queryExecutionFailed();
             }
-            // close connection
-            $stmt->close();
-        } else {
-            throw DatabaseException::queryExecutionFailed();
         }
     } catch (DatabaseException $e) {
         header("HTTP/1.1 303 See Other");
@@ -83,6 +89,10 @@ switch ($credentialError) {
         $displayError = true;
         $errorMessage = "Non esiste alcun utente con le credenziali inserite";
         break;
+    case 'wrongCaptcha':
+        $displayError = true;
+        $errorMessage = "Il captcha non è valido";
+        break;
     default:
         break;
 }
@@ -101,7 +111,12 @@ switch ($credentialError) {
     <link href='../css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <link href='../css/login.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
+    <script src="../js/jquery.min.js"></script>
+    <script src="../js/admin/index.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/jquery.validate.min.js"></script>
+    <script src="../js/additional-methods.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 <div class="container-fluid d-flex align-items-center justify-content-center main-container">
@@ -124,23 +139,30 @@ switch ($credentialError) {
                             <span class="input-group-text"><i class="fa-solid fa-user"
                                                               id="user-img"></i></span>
                             <input type="text" class="form-control" id="usernameLogin" name="username"
-                                   placeholder="Inserisci il tuo username">
+                                   placeholder="Inserisci il tuo username" data-error="#errorUsername">
                         </div>
                     </div>
+                    <span id="errorUsername" class="mb-2"></span>
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mb-2">
                         <div class="input-group flex-nowrap">
                             <span class="input-group-text"><i class="fa-solid fa-key" id="pwd-img"></i></span>
                             <input type="password" class="form-control" id="passwordLogin" name="pwd"
-                                   placeholder="Inserisci la tua password">
+                                   placeholder="Inserisci la tua password" data-error="#errorPwd">
                         </div>
                     </div>
+                    <span id="errorPwd" class="mb-2"></span>
                 </div>
                 <div class="row">
                     <div class="col-12">
-                        <button type="submit" id="login-btn" class="btn btn-outline-success">Login</button>
+                        <input type="button" id="login-btn" class="btn btn-outline-success" value="Login"/>
                     </div>
+                </div>
+                <div class="g-recaptcha"
+                     data-sitekey="<?php print($config->recaptcha->pub_key)?>"
+                     data-callback="submitForm"
+                     data-size="invisible">
                 </div>
             </form>
         </div>
