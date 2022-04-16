@@ -25,6 +25,7 @@ Setup mail (https://github.com/PHPMailer/PHPMailer)
 Prenotazione servizi non attivi (Con passaggio di parametri arbitrari)
 prenotazioni date passate o future ma disattivate (Con passaggio di parametri arbitrari)
 Add recaptcha
+Obfuscate the js code
 -----------------------------------------------------------------
 
 TO DO:
@@ -37,7 +38,6 @@ Check service Integration in all classes and
 manage the errors in a better way and fix some of the error messages
 Code review
 
-Obfuscate the js code
 
 implement docker (last thing to do)
 

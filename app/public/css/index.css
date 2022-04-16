@@ -39,7 +39,7 @@ label.error {
     border-radius: .75rem .75rem .75rem .75rem;
 }
 
-.captcha-terms { text-align: end;}
+.captcha-terms { text-align: justify;}
 a {
     color: #008759;
     text-decoration: none;

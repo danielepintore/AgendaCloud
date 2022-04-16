@@ -42,8 +42,7 @@ $config = Config::getConfig();
                         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <h5 class="card-title">Scegli un servizio:</h5>
                             <select id="tipoServizio" class="form-select mb-2" aria-label="Default select example">
-                                <option value="-1" selected disabled hidden
-                                ">Seleziona un servizio</option>
+                                <option value="-1" selected disabled hidden>Seleziona un servizio</option>
                                 <?php
                                 try {
                                     $services = Services::getAllServices();
@@ -62,8 +61,7 @@ $config = Config::getConfig();
                              class="blur active no-click col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <h5 class="card-title">Scegli un metodo di pagamento:</h5>
                             <select id="tipoPagamento" class="form-select" aria-label="Default select example">
-                                <option value="-1" selected disabled hidden
-                                ">Seleziona un metodo di pagamento</option>
+                                <option value="-1" selected disabled hidden>Seleziona un metodo di pagamento</option>
                                 <?php
                                 try {
                                     $paymentMethods = Payment::getPaymentMethods();
@@ -168,7 +166,7 @@ $config = Config::getConfig();
             </form>
         </div>
         <p class="captcha-terms blur active">
-            Questo sito è protetto da hCaptcha, viene applicata la sua
+            Questo sito è protetto da hCaptcha e si applicano la sua
             <a href="https://hcaptcha.com/privacy">Privacy Policy</a> e i suoi
             <a href="https://hcaptcha.com/terms">Termini di servizio</a>
         </p>

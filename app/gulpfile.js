@@ -1,11 +1,11 @@
 import gulp from 'gulp';
-import noop from 'gulp-noop';
 import newer from 'gulp-newer';
 import size from 'gulp-size';
 import imagemin from 'gulp-imagemin';
 import cssnano from 'cssnano';
 import rename from 'gulp-rename';
 import postCss from 'gulp-postcss';
+import htmlmin from 'gulp-htmlmin';
 import jsobfuscator from 'gulp-javascript-obfuscator';
 import autoprefixer from 'autoprefixer';
 import browsersync from 'browser-sync';
@@ -137,9 +137,17 @@ export function minifyScripts() {
 
 function copyPhpSources(done) {
      var srcDir = gulp.src(paths.php.src)
-        .pipe(gulp.dest(paths.php.dest));
+         .pipe(htmlmin({
+             collapseWhitespace: true,
+             ignoreCustomFragments: [/<\?[\s\S]*?(?:\?>|$)/]
+            }))
+         .pipe(gulp.dest(paths.php.dest));
 
      var publicDir = gulp.src('public/**/*.php')
+         .pipe(htmlmin({
+             collapseWhitespace: true,
+             ignoreCustomFragments: [/<\?[\s\S]*?(?:\?>|$)/]
+         }))
          .pipe(gulp.dest('build/public/'));
 
      var resourcesDir = gulp.src('resources/**/*.php')

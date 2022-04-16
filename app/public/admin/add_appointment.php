@@ -10,7 +10,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // create user object
     $user = new User();
     // check if user still exist in the database
-    if (!$user->exist()){
+    if (!$user->exist()) {
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
     }
@@ -24,7 +24,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php print("Aggiungi un appuntamento - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Aggiungi un appuntamento - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
@@ -45,7 +45,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
 </head>
 <body>
 <div class="container">
-    <?php Navbar::printNavBar($user, APPOINTMENT);?>
+    <?php Navbar::printNavBar($user, APPOINTMENT); ?>
     <div class="container">
         <div class="row">
             <!--Servizi-->
@@ -60,8 +60,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                                 <h5 class="card-title">Scegli un servizio:</h5>
                                 <select id="tipoServizio" class="form-select mb-2" aria-label="Default select example">
-                                    <option value="-1" selected disabled hidden
-                                    ">Seleziona un servizio</option>
+                                    <option value="-1" selected disabled hidden>Seleziona un servizio</option>
                                     <?php
                                     try {
                                         $services = \Admin\Services::getEmployeeService($user->IsAdmin(), $user->getId());
@@ -69,7 +68,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                                         foreach ($services as $s) {
                                             print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');
                                         }
-                                    } catch (DatabaseException | Exception $e){
+                                    } catch (DatabaseException|Exception $e) {
                                         header("HTTP/1.1 303 See Other");
                                         header("Location: /error.php");
                                     }
@@ -77,7 +76,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                                 </select>
                             </div>
                         </div>
-                        <?php if ($user->IsAdmin()){ ?>
+                        <?php if ($user->IsAdmin()) { ?>
                             <div id="scelta_dipendente" class="blur active no-click">
                                 <h5 class="card-title mt-2">Scegli un dipendente:</h5>
                                 <select id="lista_dipendenti" class="form-select" disabled="true">

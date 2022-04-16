@@ -6,7 +6,6 @@ body {
     -webkit-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
     -moz-border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
     border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
-    width: fit-content;
 }
 
 #user-img, #pwd-img {
@@ -32,4 +31,13 @@ body {
 }
 .main-container {
     min-height: 100vh;
+}
+.captcha-terms { text-align: justify;}
+a {
+    color: #008759;
+    text-decoration: none;
+}
+
+a:hover{
+    color: #115938;
 }

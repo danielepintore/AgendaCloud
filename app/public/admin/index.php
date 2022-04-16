@@ -120,7 +120,7 @@ switch ($credentialError) {
 </head>
 <body>
 <div class="container-fluid d-flex align-items-center justify-content-center main-container">
-    <div class="card">
+    <div class="card col col-sm-10 col-md-8 col-lg-6 col-xl-6 col-xxl-6">
         <div class="card-body">
             <div class="row mb-4">
                 <div class="col-12 d-flex align-items-center justify-content-center">
@@ -165,6 +165,11 @@ switch ($credentialError) {
                      data-size="invisible">
                 </div>
             </form>
+            <p class="captcha-terms mt-2 mb-0">
+                Questo sito è protetto da hCaptcha e si applicano la sua
+                <a href="https://hcaptcha.com/privacy">Privacy Policy</a> e i suoi
+                <a href="https://hcaptcha.com/terms">Termini di servizio</a>
+            </p>
         </div>
     </div>
 </div>
