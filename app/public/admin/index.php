@@ -8,10 +8,10 @@ session_start();
 $credentialError = "noerr";
 // check if data is set up
 if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd']) && !empty($_POST['pwd']) &&
-    isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+    isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response'])) {
     try {
         //check if recaptcha is valid
-        if (!ReCaptcha::isSuccess($_POST['g-recaptcha-response'])){
+        if (!Captcha::isSuccess($_POST['h-captcha-response'])){
             $credentialError = "wrongCaptcha";
         } else {
             // get db connection
@@ -116,7 +116,7 @@ switch ($credentialError) {
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery.validate.min.js"></script>
     <script src="../js/additional-methods.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </head>
 <body>
 <div class="container-fluid d-flex align-items-center justify-content-center main-container">
@@ -159,8 +159,8 @@ switch ($credentialError) {
                         <input type="button" id="login-btn" class="btn btn-outline-success" value="Login"/>
                     </div>
                 </div>
-                <div class="g-recaptcha"
-                     data-sitekey="<?php print($config->recaptcha->pub_key)?>"
+                <div class="h-captcha"
+                     data-sitekey="<?php print($config->captcha->pub_key)?>"
                      data-callback="submitForm"
                      data-size="invisible">
                 </div>

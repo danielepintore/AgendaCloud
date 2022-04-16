@@ -172,6 +172,7 @@ function watch(done) {
     // CSS changes
     gulp.watch([paths.styles.src], generateStyles).on('change', browsersync.reload);
 
+
     // PHP changes
     gulp.watch([paths.php.src, 'public/**/*.php', 'resources/**/*.php', 'config/**/*.php'], copyPhpSources).on('change', browsersync.reload);
 

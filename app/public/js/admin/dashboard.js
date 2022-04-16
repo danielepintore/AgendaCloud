@@ -19,7 +19,7 @@ function getAppointments(date) {
                             '</div><div class="d-flex w-100 justify-content-between"><h7 class="mb-1">' + element.NomeServizio + '</h7></div>' +
                             '<div class="d-flex w-100 justify-content-between">  ' +
                             '<small>' + element.NominativoDipendente + '</small>' +
-                            '<small>Metodo di pagamento: ' + element.NomePagamento + '</small>' +
+                            '<small>' + element.NomePagamento + '</small>' +
                             '</div></a>');
                         isFirst = false;
                     } else {
@@ -30,7 +30,7 @@ function getAppointments(date) {
                             '</div><div class="d-flex w-100 justify-content-between"><h7 class="mb-1">' + element.NomeServizio + '</h7></div>' +
                             '<div class="d-flex w-100 justify-content-between">  ' +
                             '<small>' + element.NominativoDipendente + '</small>' +
-                            '<small>Metodo di pagamento: ' + element.NomePagamento + '</small>' +
+                            '<small>' + element.NomePagamento + '</small>' +
                             '</div></a>');
                     }
                 });

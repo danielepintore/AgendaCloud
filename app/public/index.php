@@ -20,7 +20,7 @@ $config = Config::getConfig();
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
     <script src="js/additional-methods.min.js"></script>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <script>
         window.maxFutureDays = <?php print($config->calendar->max_future_day)?>;
     </script>
@@ -160,17 +160,17 @@ $config = Config::getConfig();
                 <input type="hidden" id="paymentMethodPOST" name="paymentMethod">
                 <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-2 w-100 blur active no-click"
                        value="Prenota" disabled>
-                <div class="g-recaptcha"
-                     data-sitekey="<?php print($config->recaptcha->pub_key)?>"
+                <div class="h-captcha"
+                     data-sitekey="<?php print($config->captcha->pub_key)?>"
                      data-callback="submitForm"
                      data-size="invisible">
                 </div>
             </form>
         </div>
-        <p class="recaptcha-terms blur active">
-            Questo sito è protetto da reCAPTCHA, viene applicata la
-            <a href="https://policies.google.com/privacy">Privacy Policy</a> e i
-            <a href="https://policies.google.com/terms">Termini di servizio</a> di Google
+        <p class="captcha-terms blur active">
+            Questo sito è protetto da hCaptcha, viene applicata la sua
+            <a href="https://hcaptcha.com/privacy">Privacy Policy</a> e i suoi
+            <a href="https://hcaptcha.com/terms">Termini di servizio</a>
         </p>
     </div>
 </div>

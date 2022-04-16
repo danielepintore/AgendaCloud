@@ -23,8 +23,8 @@ $(function () {
 
         })
         if ($("#form_login").valid()) {
-            // start grecaptcha
-            grecaptcha.execute();
+            // start captcha
+            hcaptcha.execute();
         }
     })
 })

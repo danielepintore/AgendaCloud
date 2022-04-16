@@ -25,7 +25,7 @@ function loadServices() {
             addBlur("#dati_personali")
             addBlur("#info-servizio")
             addBlur("#scelta_metodo_pagamento")
-            addBlur(".recaptcha-terms")
+            addBlur(".captcha-terms")
             return
         }
         $.get("api/get_employees.php", {serviceId: serviceId})
@@ -49,7 +49,7 @@ function loadServices() {
                     addBlur("#dati_personali")
                     addBlur("#info-servizio")
                     addBlur("#scelta_metodo_pagamento")
-                    addBlur(".recaptcha-terms")
+                    addBlur(".captcha-terms")
                 }
             })
             .fail(function () {
@@ -94,8 +94,8 @@ function loadServices() {
             }
         })
         if ($("#form_dati_personali").valid()) {
-            // start grecaptcha
-            grecaptcha.execute();
+            // start captcha
+            hcaptcha.execute();
             //set hidden form value
             $("#dayPOST").val($(".day-selected").attr("value"))
             $("#idServicePOST").val($("#tipoServizio").val())
@@ -215,7 +215,7 @@ function onCalendarChange(){
         removeBlur("#orari")
         removeBlur("#prenota_btn")
         removeBlur("#dati_personali")
-        removeBlur(".recaptcha-terms")
+        removeBlur(".captcha-terms")
         $('#prenota_btn').prop('disabled', false);
         getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val());
     })

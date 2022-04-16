@@ -7,10 +7,10 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     isset($_POST['employeeId']) && is_numeric($_POST['employeeId']) && isset($_POST['slot']) &&
     isset($_POST['clientNome']) && isset($_POST['clientCognome']) && isset($_POST['clientEmail']) &&
     isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod']) &&
-    isset($_POST['g-recaptcha-response']) && !empty($_POST['g-recaptcha-response'])) {
+    isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response'])) {
 
     //check if recaptcha is valid
-    if (!ReCaptcha::isSuccess($_POST['g-recaptcha-response'])){
+    if (!Captcha::isSuccess($_POST['h-captcha-response'])){
         header("HTTP/1.1 303 See Other");
         header("Location: /index.php");
         die(0);
