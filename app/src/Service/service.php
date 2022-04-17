@@ -12,12 +12,14 @@ class Service {
     private $imageUrl;
     private $success;
     private $bookableUntil;
+    private $db;
 
     /**
      * @param $serviceId
      * @throws DatabaseException
      */
-    public function __construct($serviceId) {
+    public function __construct($db, $serviceId) {
+        $this->db = $db;
         $this->serviceId = $serviceId;
         $this->success = true;
         $this->setServiceInfo();
@@ -90,9 +92,8 @@ class Service {
     function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($this->success) {
-            $db = Database::getDB();
             $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
-            $stmt = $db->prepare($sql);
+            $stmt = $this->db->prepare($sql);
             if (!$stmt) {
                 throw DatabaseException::queryPrepareFailed();
             }
@@ -121,14 +122,8 @@ class Service {
      */
     private function setServiceInfo(): void {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        try {
-            $db = Database::getDB();
-        } catch (DatabaseException $e) {
-            $this->success = false;
-            throw DatabaseException::connectionFailed();
-        }
         $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
-        $stmt = $db->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         if (!$stmt) {
             $this->success = false;
             throw DatabaseException::queryPrepareFailed();

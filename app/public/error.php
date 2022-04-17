@@ -1,4 +1,5 @@
 <?php
+require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 ?>
 <!DOCTYPE html>
@@ -17,7 +18,7 @@ $config = Config::getConfig();
     <script src="js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-<div class="container-fluid d-flex align-items-center justify-content-center h-100">
+<div class="container-fluid d-flex align-items-center justify-content-center error-container">
     <div class="card">
         <div class="card-body">
             <div class="row mb-4">

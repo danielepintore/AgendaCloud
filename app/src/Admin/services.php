@@ -10,10 +10,9 @@ class Services {
      * @throws DatabaseException
      */
     // gets the service that an employee is offering
-    public static function getEmployeeService($isAdmin, $employeeId): array {
+    public static function getEmployeeService($db, $isAdmin, $employeeId): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
-            $db = Database::getDB();
             $sql = "SELECT id, Nome, Durata, OraInizio, OraFine, Costo FROM Servizio WHERE(IsActive = TRUE)";
             $stmt = $db->prepare($sql);
             if (!$stmt) {
@@ -32,7 +31,6 @@ class Services {
                 throw DatabaseException::queryExecutionFailed();
             }
         } else {
-            $db = Database::getDB();
             $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.OraInizio, Servizio.OraFine, Servizio.Costo FROM Servizio, Offre WHERE (Offre.Dipendente_id = ? AND Offre.Servizio_id = Servizio.id)";
             $stmt = $db->prepare($sql);
             if (!$stmt) {
@@ -57,9 +55,8 @@ class Services {
     }
 
     // Add a service
-    public static function addServices($name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, $isActive, $description = "") {
+    public static function addServices($db, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, $isActive, $description = "") {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'INSERT INTO Servizio (id, Nome, Durata, OraInizio, OraFine, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?) ';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -83,9 +80,8 @@ class Services {
     }
 
     // Get the list of services
-    public static function getServiceList($id = null) {
+    public static function getServiceList($db, $id = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($id == null) {
             $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre WHERE Offre.Servizio_id=Servizio.id) AS NumDipendenti FROM Servizio';
         } else {
@@ -117,9 +113,8 @@ class Services {
     }
 
     // Get the list of employees that offer a service
-    public static function getEmployeeList($serviceId) {
+    public static function getEmployeeList($db, $serviceId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente, Offre  WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -143,9 +138,8 @@ class Services {
     }
 
     // update a service
-    public static function updateService($serviceId, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, bool $isActive, $description = "") {
+    public static function updateService($db, $serviceId, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, bool $isActive, $description = "") {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'UPDATE Servizio SET Nome = ?, Durata = ?, OraInizio = ?, OraFine = ?, Costo = ?, TempoPausa = ?, Descrizione = ?, IsActive = ?, BookableUntil = ? WHERE id = ?';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -169,9 +163,8 @@ class Services {
     }
 
     // remove a service from db
-    public static function deleteService($id) {
+    public static function deleteService($db, $id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'DELETE FROM Servizio WHERE Servizio.id = ?';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -190,10 +183,9 @@ class Services {
     }
 
     // get the list of employees that can be added to a service
-    public static function getEmployeesStatusForService($serviceId, $name){
+    public static function getEmployeesStatusForService($db, $serviceId, $name){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $employeesActive = \Admin\Services::getEmployeeList($serviceId);
-        $db = Database::getDB();
+        $employeesActive = \Admin\Services::getEmployeeList($db, $serviceId);
         $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ?) GROUP BY Dipendente.id ORDER BY Dipendente.Nome';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -227,9 +219,8 @@ class Services {
         return false;
     }
 
-    public static function addEmployeeToService($serviceId, $employeeId) {
+    public static function addEmployeeToService($db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'INSERT INTO Offre (Dipendente_id, Servizio_id) VALUES (?, ?)';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -247,9 +238,8 @@ class Services {
         return false;
     }
 
-    public static function removeEmployeeToService($serviceId, $employeeId) {
+    public static function removeEmployeeToService($db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'DELETE FROM Offre WHERE Offre.Dipendente_id = ? AND Offre.Servizio_id = ?';
         $stmt = $db->prepare($sql);
         if (!$stmt) {

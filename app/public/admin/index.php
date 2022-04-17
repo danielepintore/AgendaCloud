@@ -15,7 +15,8 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
             $credentialError = "wrongCaptcha";
         } else {
             // get db connection
-            $db = Database::getDB();
+            $database = new Database();
+            $db = $database->db;
             // make the query to check if the user exists
             $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE username = ?;";
             $stmt = $db->prepare($sql);
@@ -71,7 +72,9 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
         header("Location: /error.php");
     }
 } elseif (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
-    $user = new User();
+    $database = new Database();
+    $db = $database->db;
+    $user = new User($db);
     // check if user still exist in the database
     if (!$user->exist()){
         header("HTTP/1.1 303 See Other");

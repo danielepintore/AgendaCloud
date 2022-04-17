@@ -10,10 +10,9 @@ class Slot {
      * @throws DatabaseException
      * @throws ServiceException
      */
-    public static function getSlots($serviceId, $employeeId, $dateStr) {
+    public static function getSlots($db, $serviceId, $employeeId, $dateStr) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr);
-        $db = Database::getDB();
         // ottengo informazioni sul servizio richiesto
         $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
         $stmt = $db->prepare($sql);

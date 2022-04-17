@@ -28,8 +28,10 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         die(0);
     }
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
+    $database = new Database();
+    $db = $database->db;
     try {
-        $service = new Service($_POST['serviceId']);
+        $service = new Service($db,$_POST['serviceId']);
     } catch (DatabaseException | Exception $e) {
         if (DEBUG){
             print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
@@ -43,7 +45,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", $_POST['paymentMethod'], WAITING_APPROVAL);
+        $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", $_POST['paymentMethod'], WAITING_APPROVAL);
         try {
             // make the reservation
             $bookResponse = $appointment->book();
@@ -110,7 +112,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         }
 
         // now we need to make the appointment as booked
-        $appointment = new Appointment($_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, $_POST['paymentMethod'], PAYMENT_PENDING);
+        $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, $checkout_session->id, $_POST['paymentMethod'], PAYMENT_PENDING);
         try {
             $bookResponse = $appointment->book();
             // the slot is reserved

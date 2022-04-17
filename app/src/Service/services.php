@@ -4,9 +4,8 @@ class Services {
     /**
      * @throws DatabaseException
      */
-    public static function getAllServices(): array {
+    public static function getAllServices($db): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = "SELECT id, Nome, Durata, OraInizio, OraFine, Costo FROM Servizio WHERE(IsActive = TRUE)";
         $stmt = $db->prepare($sql);
         if (!$stmt) {

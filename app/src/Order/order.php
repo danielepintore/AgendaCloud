@@ -6,9 +6,8 @@ class Order {
      * @return bool
      * @throws DatabaseException
      */
-    public static function markAsPaid($session_id) {
+    public static function markAsPaid($db, $session_id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = "UPDATE Appuntamento SET Stato = ? WHERE SessionId = ?";
         $stmt = $db->prepare($sql);
         if (!$stmt) {

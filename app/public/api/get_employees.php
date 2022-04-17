@@ -2,9 +2,11 @@
 require_once(realpath(dirname(__FILE__, 3)) . '/src/Api/loader.php');
 
 if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId'])) {
+    $database = new Database();
+    $db = $database->db;
     // create a service object
     try {
-        $service = new Service($_GET['serviceId']);
+        $service = new Service($db, $_GET['serviceId']);
         $employees = $service->get_employees();
         // se non ci sono stati errori fornisci la risposta
         if (count($employees) == 0) {

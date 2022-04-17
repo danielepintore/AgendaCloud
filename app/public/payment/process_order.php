@@ -30,15 +30,17 @@ if ($event->type == 'checkout.session.completed') {
     $session = $event->data->object;
     // Fulfill the purchase...
     // Change DB order status
+    $database = new Database();
+    $db = $database->db;
     try {
         // mark order as paid
-        Order::markAsPaid($session->id);
+        Order::markAsPaid($db, $session->id);
         // get appointment info
-        $appointment = \Admin\Appointment::fetchAppointmentInfoBySessionID($session->id);
+        $appointment = \Admin\Appointment::fetchAppointmentInfoBySessionID($db, $session->id);
         // send email to the customer
         $body = MailClient::getConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
         $altBody = MailClient::getAltConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-        MailClient::addMailToQueue("La tua prenotazione", $body, $altBody, $session->customer_details->email, $appointment->name);
+        MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $session->customer_details->email, $appointment->name);
     } catch (DatabaseException | Exception $e) {
         // send email to supervisor if there are any problems
         $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode() . "\n" . $session;

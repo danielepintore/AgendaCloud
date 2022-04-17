@@ -10,9 +10,8 @@ class Appointment {
     /**
      * @throws DatabaseException
      */
-    public static function getAppointments($isAdmin, $date, $employeeId = null) {
+    public static function getAppointments($db, $isAdmin, $date, $employeeId = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($isAdmin) {
             if (\DateCheck::isToday($date)){
                 $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, Appuntamento.Data AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Appuntamento.Data = ? AND CURRENT_TIME() <= Appuntamento.OraFine AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.Stato = ?) ORDER BY Appuntamento.OraInizio';
@@ -75,9 +74,8 @@ class Appointment {
             }
         }
     }
-    public static function getAppointmentRequest($isAdmin, $employeeId = null){
+    public static function getAppointmentRequest($db, $isAdmin, $employeeId = null){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($isAdmin) {
             $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, Appuntamento.Data AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.MetodoPagamento_id = ? AND Appuntamento.Stato = ? AND CONCAT(Appuntamento.Data, Appuntamento.OraInizio) >= CONCAT(CURDATE(), CURTIME())) ORDER BY Appuntamento.Data, Appuntamento.OraInizio';
             $stmt = $db->prepare($sql);
@@ -132,9 +130,8 @@ class Appointment {
             }
         }
     }
-    public static function acceptAppointment($isAdmin, $appointmentId, $employeeId = null){
+    public static function acceptAppointment($db, $isAdmin, $appointmentId, $employeeId = null){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
             $stmt = $db->prepare($sql);
@@ -182,9 +179,8 @@ class Appointment {
         }
     }
 
-    public static function rejectAppointment($isAdmin, $appointmentId, $employeeId = null){
+    public static function rejectAppointment($db, $isAdmin, $appointmentId, $employeeId = null){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
             $stmt = $db->prepare($sql);
@@ -232,9 +228,8 @@ class Appointment {
         }
     }
 
-    public static function deleteAppointment($isAdmin, $appointmentId, $employeeId = null){
+    public static function deleteAppointment($db, $isAdmin, $appointmentId, $employeeId = null){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
             $stmt = $db->prepare($sql);
@@ -271,9 +266,8 @@ class Appointment {
             return false;
         }
     }
-    public static function fetchAppointmentInfo($appointmentId){
+    public static function fetchAppointmentInfo($db, $appointmentId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id);';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -291,9 +285,8 @@ class Appointment {
             throw DatabaseException::queryExecutionFailed();
         }
     }
-    public static function fetchAppointmentInfoBySessionID($sessionId){
+    public static function fetchAppointmentInfoBySessionID($db, $sessionId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.SessionId = ? AND Appuntamento.Cliente_id = Cliente.id);';
         $stmt = $db->prepare($sql);
         if (!$stmt) {

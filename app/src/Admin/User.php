@@ -6,16 +6,18 @@ class User {
     private $isLogged;
     private $username;
     private $isAdmin;
+    private $db;
 
     /**
      * @param $isLogged
      * @param $username
      * @param $email
      */
-    public function __construct() {
+    public function __construct($db) {
         $this->id = $_SESSION["userId"];
         $this->isLogged = $_SESSION["logged"];
         $this->username = $_SESSION["username"];
+        $this->db = $db;
         if ($_SESSION["isAdmin"] == 0) {
             $this->isAdmin = false;
         } else {
@@ -52,9 +54,8 @@ class User {
     }
 
     public function exist() {
-        $db = \Database::getDB();
         $sql = 'SELECT Dipendente.id FROM Dipendente WHERE Dipendente.id = ?';
-        $stmt = $db->prepare($sql);
+        $stmt = $this->db->prepare($sql);
         if (!$stmt) {
             throw DatabaseException::queryPrepareFailed();
         }

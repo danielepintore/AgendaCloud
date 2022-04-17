@@ -5,9 +5,8 @@ class Payment {
      * @return array
      * @throws DatabaseException
      */
-    public static function getPaymentMethods() {
+    public static function getPaymentMethods($db) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = "SELECT * FROM MetodoPagamento WHERE IsActive = TRUE";
         $stmt = $db->prepare($sql);
         if (!$stmt) {

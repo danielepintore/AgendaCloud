@@ -1,6 +1,8 @@
 <?php
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 $config = Config::getConfig();
+$database = new Database();
+$db = $database->db;
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -45,7 +47,7 @@ $config = Config::getConfig();
                                 <option value="-1" selected disabled hidden>Seleziona un servizio</option>
                                 <?php
                                 try {
-                                    $services = Services::getAllServices();
+                                    $services = Services::getAllServices($db);
                                     // se non è presente un errore
                                     foreach ($services as $s) {
                                         print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');
@@ -64,7 +66,7 @@ $config = Config::getConfig();
                                 <option value="-1" selected disabled hidden>Seleziona un metodo di pagamento</option>
                                 <?php
                                 try {
-                                    $paymentMethods = Payment::getPaymentMethods();
+                                    $paymentMethods = Payment::getPaymentMethods($db);
                                     // se non è presente un errore
                                     foreach ($paymentMethods as $paymentMethod) {
                                         print('<option value="' . $paymentMethod["id"] . '">' . $paymentMethod["name"] . '</option>');

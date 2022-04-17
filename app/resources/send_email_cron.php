@@ -55,12 +55,21 @@ try {
         $phpMailer = new MailClient();
         $emails = $stmt->get_result();
         foreach ($emails as $email) {
-            if (empty($email["receiverName"])){
-                $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], $email["destination"]);
+            if (DEBUG){
+                if (empty($email["receiverName"])){
+                    $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], "example@email-blackhole.com");
+                } else {
+                    $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], "example@email-blackhole.com", $email["receiverName"]);
+                }
+                updateMailStatus($email["id"]);
             } else {
-                $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], $email["destination"], $email["receiverName"]);
+                if (empty($email["receiverName"])){
+                    $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], $email["destination"]);
+                } else {
+                    $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], $email["destination"], $email["receiverName"]);
+                }
+                updateMailStatus($email["id"]);
             }
-            updateMailStatus($email["id"]);
         }
     } else {
         throw DatabaseException::queryExecutionFailed();

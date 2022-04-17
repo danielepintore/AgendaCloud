@@ -102,9 +102,8 @@ class MailClient {
         }
     }
 
-    public static function addMailToQueue($subject, $body, $altBody, $toAddress, $toName = null) {
+    public static function addMailToQueue($db, $subject, $body, $altBody, $toAddress, $toName = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if (empty($toName)){
             $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination) VALUES (NULL, ?, ?, ?, ?)';
         } else {

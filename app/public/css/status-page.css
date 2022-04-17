@@ -26,3 +26,6 @@ body {
 .card-text {
     font-size: larger;
 }
+.error-container{
+    height: 100vh;
+}

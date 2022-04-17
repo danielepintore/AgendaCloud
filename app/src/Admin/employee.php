@@ -4,9 +4,8 @@ use Database;
 use DatabaseException;
 
 class Employee {
-    public static function getEmployees($id = null){
+    public static function getEmployees($db, $id = null){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if ($id == null){
             $sql = 'SELECT id, Nome, Cognome, Ruolo, Username, UserType FROM Dipendente';
         } else {
@@ -36,9 +35,8 @@ class Employee {
         return false;
     }
 
-    public static function addEmployee($name, $surname, $role, $username, $password, $admin){
+    public static function addEmployee($db, $name, $surname, $role, $username, $password, $admin){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         $sql = 'INSERT INTO Dipendente (id, Nome, Cognome, Ruolo, Username, Password, UserType) VALUES (NULL, ?, ?, ?, ?, ?, ?)';
         $stmt = $db->prepare($sql);
         if (!$stmt) {
@@ -62,9 +60,8 @@ class Employee {
         return false;
     }
 
-    public static function updateEmployee($id, $name, $surname, $role, $username, $password, $admin){
+    public static function updateEmployee($db, $id, $name, $surname, $role, $username, $password, $admin){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $db = Database::getDB();
         if (empty($password)){
             $sql = 'UPDATE Dipendente SET Nome = ?, Cognome = ?, Ruolo = ?, Username = ?, UserType = ? WHERE (id = ?)';
         } else {
@@ -98,10 +95,9 @@ class Employee {
         return false;
     }
 
-    public static function deleteEmployee($employeId, $loggedId){
+    public static function deleteEmployee($db, $employeId, $loggedId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($loggedId != $employeId){
-            $db = Database::getDB();
             $sql = 'DELETE FROM Dipendente WHERE Dipendente.id = ?';
             $stmt = $db->prepare($sql);
             if (!$stmt) {

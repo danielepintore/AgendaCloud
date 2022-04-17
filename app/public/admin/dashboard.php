@@ -8,7 +8,9 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
-    $user = new User();
+    $database = new Database();
+    $db = $database->db;
+    $user = new User($db);
     // check if user still exist in the database
     if (!$user->exist()){
         header("HTTP/1.1 303 See Other");
