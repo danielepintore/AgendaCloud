@@ -1,8 +1,9 @@
-// This script need to be called with a cronjob every 1 minute so all pending sessions can be deleted
-// Example cronjob call php app/resources/remove_expired_sessions.php
-// * * * * *  /usr/bin/php app/resources/remove_expired_sessions.php >/dev/null 2>&1
-// connect to the database (with a specific limited) and get the list of sessions that should be deleted
 <?php
+/**
+ * This script need to be called with a cronjob every 1 minute so all pending sessions can be deleted
+ * Example cronjob call "php app/resources/remove_expired_sessions.php * * * * *  /usr/bin/php app/resources/remove_expired_sessions.php >/dev/null 2>&1" without quotes
+ * connect to the database (with a specific limited) and get the list of sessions that should be deleted
+ */
 require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 
 $config = Config::getConfig();
