@@ -2,48 +2,38 @@
 
 class Slot {
     /**
+     * @param Database $db
      * @param $serviceId
      * @param $employeeId
      * @param $dateStr
      * @return array
      * @throws DataException
      * @throws DatabaseException
-     * @throws ServiceException
+     * @throws ServiceException This function given the service identifier, the employee id and the date gives
+     * all the slots available
      */
-    public static function getSlots($db, $serviceId, $employeeId, $dateStr) {
+    public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr);
-        // ottengo informazioni sul servizio richiesto
+        // get service data from the database
         $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw DatabaseException::queryPrepareFailed();
-        }
-        if (!$stmt->bind_param('i', $serviceId)) {
-            throw DatabaseException::bindingParamsFailed();
-        }
-        if ($stmt->execute()) {
+        $status = $db->query($sql, "i", $serviceId);
+        if ($status) {
             //Success
-            $result = $stmt->get_result();
-            if ($stmt->affected_rows == 1) {
-                $service_info = $result->fetch_assoc();
+            $result = $db->getResult();
+            if ($db->getAffectedRows() == 1) { // The service exist
+                $service_info = $result[0];
                 // ottengo gli orari gia occupati
                 $sql = "SELECT Appuntamento.OraInizio AS OraInizio, Appuntamento.OraFine AS OraFine FROM Appuntamento WHERE Appuntamento.Data = ? AND Appuntamento.Dipendente_id = ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ?";
-                $stmt = $db->prepare($sql);
-                if (!$stmt) {
-                    throw DatabaseException::queryPrepareFailed();
-                }
                 $paymentExpired = PAYMENT_EXPIRED;
                 $rejectedByUser = REJECTED_BY_USER;
                 $canceled = CANCELED;
-                if (!$stmt->bind_param('siiii', $dateStr, $employeeId, $paymentExpired, $rejectedByUser, $canceled)) {
-                    throw DatabaseException::bindingParamsFailed();
-                }
-                if ($stmt->execute()) {
+                $status = $db->query($sql, "siiii", $dateStr, $employeeId, PAYMENT_EXPIRED, REJECTED_BY_USER, CANCELED);
+                if ($status) {
                     //Success
-                    $result = $stmt->get_result();
+                    $result = $db->getResult();
                     // we need to initialize this variable because if we don't do this php will throw an exception
-                    $orari = array(); // this variable will contain all already taken slots
+                    $orari = []; // this variable will contain all already taken slots
                     foreach ($result as $r) {
                         try {
                             $startDate = new DateTime($r["OraInizio"]);
@@ -98,14 +88,11 @@ class Slot {
                         $date->add($tempoIntervallo);
                     } while ($date < $endDate);
                     return $generated_slots;
-                } else {
-                    throw DatabaseException::queryExecutionFailed();
                 }
             } else {
                 throw ServiceException::serviceNotAvailable();
             }
-        } else {
-            throw DatabaseException::queryExecutionFailed();
         }
+        return [];
     }
 }

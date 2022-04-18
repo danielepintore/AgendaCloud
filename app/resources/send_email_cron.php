@@ -1,7 +1,9 @@
-// This script need to be called with a cronjob every 5/10 minutes
-// Example cronjob call php app/resources/send_email_cron.php
-// * * * * *  /usr/bin/php app/resources/send_email_cron.php >/dev/null 2>&1
 <?php
+/**
+ *  This script need to be called with a cronjob every 5/10 minutes
+ *  Example cronjob call php app/resources/send_email_cron.php
+ *  * * * * *  /usr/bin/php app/resources/send_email_cron.php >/dev/null 2>&1
+ */
 require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 $config = Config::getConfig();
 
@@ -12,8 +14,8 @@ function updateMailStatus($mailId){
         if ($db->connect_errno) {
             throw DatabaseException::connectionFailed();
         }
-        // status == 0 means email not sended
-        // status == 1 means email sended
+        // status == 0 means email not sent
+        // status == 1 means email sent
         $sql = 'UPDATE EmailQueue SET status = 1 WHERE (id = ?)';
         $stmt = $db->prepare($sql);
         if (!$stmt) {

@@ -30,8 +30,7 @@ if ($event->type == 'checkout.session.completed') {
     $session = $event->data->object;
     // Fulfill the purchase...
     // Change DB order status
-    $database = new Database();
-    $db = $database->db;
+    $db = new Database();
     try {
         // mark order as paid
         Order::markAsPaid($db, $session->id);
@@ -44,8 +43,7 @@ if ($event->type == 'checkout.session.completed') {
     } catch (DatabaseException | Exception $e) {
         // send email to supervisor if there are any problems
         $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode() . "\n" . $session;
-        $phpMailer = new MailClient();
-        $phpMailer->sendEmail("There are problems sending emails to customers", $body, $body, $config->mail->supervisor);
+        MailClient::addMailToQueue($db, "There are problems sending emails to customers", $body, $body, $config->mail->supervisor);
     }
 }
 http_response_code(200);

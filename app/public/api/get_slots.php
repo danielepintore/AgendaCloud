@@ -3,8 +3,8 @@ require_once(realpath(dirname(__FILE__, 3)) . '/src/Api/loader.php');
 if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && isset($_GET['employeeId']) &&
     is_numeric($_GET['employeeId']) && isset($_GET['date'])) {
     try {
-        $database = new Database();
-        $db = $database->db;
+        $db = new Database();
+        
         $slots = Slot::getSlots($db, $_GET['serviceId'], $_GET['employeeId'], $_GET['date']);
         // se non ci sono stati errori fornisci la risposta
         if (count($slots) == 0) {

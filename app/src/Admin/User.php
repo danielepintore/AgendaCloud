@@ -1,6 +1,8 @@
 <?php
 
 namespace Admin;
+use Database;
+
 class User {
     private $id;
     private $isLogged;
@@ -9,11 +11,9 @@ class User {
     private $db;
 
     /**
-     * @param $isLogged
-     * @param $username
-     * @param $email
+     * @param Database $db
      */
-    public function __construct($db) {
+    public function __construct(Database $db) {
         $this->id = $_SESSION["userId"];
         $this->isLogged = $_SESSION["logged"];
         $this->username = $_SESSION["username"];
@@ -53,26 +53,23 @@ class User {
         return $this->isAdmin;
     }
 
+    /**
+     * @throws \DatabaseException
+     */
     public function exist() {
         $sql = 'SELECT Dipendente.id FROM Dipendente WHERE Dipendente.id = ?';
-        $stmt = $this->db->prepare($sql);
-        if (!$stmt) {
-            throw DatabaseException::queryPrepareFailed();
-        }
-        if (!$stmt->bind_param('i', $this->id)) {
-            throw DatabaseException::bindingParamsFailed();
-        }
-        if ($stmt->execute()) {
+        $status = $this->db->query($sql, "i", $this->id);
+        if ($status) {
             //Success
-            $numRows = $stmt->get_result()->num_rows;
+            $this->db->getResult();
+            $numRows = $this->db->getAffectedRows();
             if ($numRows == 1){
                 return true;
             } else {
                 return false;
             }
-        } else {
-            throw DatabaseException::queryExecutionFailed();
         }
+        return false;
     }
 
 }

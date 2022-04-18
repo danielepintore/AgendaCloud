@@ -32,4 +32,12 @@ class DatabaseException extends Exception {
     public static function cantDeleteCurrentUser() {
         return new static("Can't delete the current user because it's the same user that is logged");
     }
+
+    public static function noResultAvailable() {
+        return new static("The query has failed to run and no result object is available");
+    }
+
+    public static function noResultFetched() {
+        return new static("The result object isn't fetched");
+    }
 }

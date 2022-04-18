@@ -1,8 +1,7 @@
 <?php
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 $config = Config::getConfig();
-$database = new Database();
-$db = $database->db;
+$db = new Database();
 ?>
 <!DOCTYPE html>
 <html lang="it">
@@ -47,7 +46,7 @@ $db = $database->db;
                                 <option value="-1" selected disabled hidden>Seleziona un servizio</option>
                                 <?php
                                 try {
-                                    $services = Services::getAllServices($db);
+                                    $services = Service::getAllServices($db);
                                     // se non è presente un errore
                                     foreach ($services as $s) {
                                         print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');

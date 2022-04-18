@@ -12,18 +12,59 @@ class Service {
     private $imageUrl;
     private $success;
     private $bookableUntil;
+    private $isActive;
     private $db;
 
     /**
      * @param $serviceId
+     * @param $name
+     * @param $duration
+     * @param $startTime
+     * @param $endTime
+     * @param $waitTime
+     * @param $cost
+     * @param $description
+     * @param $bookableUntil
+     * @param $isActive
+     * @param $db
+     */
+
+    public function __construct()
+    {
+        $arguments = func_get_args();
+        $numberOfArguments = func_num_args();
+
+        if (method_exists($this, $function = '__construct'.$numberOfArguments)) {
+            call_user_func_array(array($this, $function), $arguments);
+        }
+    }
+
+    /**
+     * @param Database $db
+     * @param $serviceId
      * @throws DatabaseException
      */
-    public function __construct($db, $serviceId) {
+    public function __construct2(Database $db, $serviceId) {
         $this->db = $db;
         $this->serviceId = $serviceId;
         $this->success = true;
         $this->setServiceInfo();
     }
+
+    public function __construct11($db, $serviceId, $name, $duration, $startTime, $endTime, $waitTime, $cost, $description, $bookableUntil, $isActive) {
+        $this->serviceId = $serviceId;
+        $this->name = $name;
+        $this->duration = $duration;
+        $this->startTime = $startTime;
+        $this->endTime = $endTime;
+        $this->waitTime = $waitTime;
+        $this->cost = $cost;
+        $this->description = $description;
+        $this->bookableUntil = $bookableUntil;
+        $this->isActive = $isActive;
+        $this->db = $db;
+    }
+
 
     /**
      * @return mixed
@@ -88,32 +129,44 @@ class Service {
         return $this->imageUrl;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getBookableUntil() {
+        return $this->bookableUntil;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getIsActive() {
+        return $this->isActive;
+    }
+
+
+
+    /**
+     * @throws ServiceException
+     * @throws DatabaseException
+     */
     function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($this->success) {
             $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
-            $stmt = $this->db->prepare($sql);
-            if (!$stmt) {
-                throw DatabaseException::queryPrepareFailed();
-            }
-            if (!$stmt->bind_param('i', $this->serviceId)) {
-                throw DatabaseException::bindingParamsFailed();
-            }
-            if ($stmt->execute()) {
+            $status = $this->db->query($sql, "i", $this->serviceId);
+            if ($status) {
                 //Success
-                $result = $stmt->get_result();
-                $response = array();
+                $result = $this->db->getResult();
+                $response = [];
                 foreach ($result as $r) {
                     $response[] = $r;
                 }
                 return $response;
-            } else {
-                throw DatabaseException::queryExecutionFailed();
             }
         } else {
             throw ServiceException::failedToGetServiceData();
         }
+        return [];
     }
 
     /**
@@ -123,19 +176,11 @@ class Service {
     private function setServiceInfo(): void {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
-        $stmt = $this->db->prepare($sql);
-        if (!$stmt) {
-            $this->success = false;
-            throw DatabaseException::queryPrepareFailed();
-        }
-        if (!$stmt->bind_param('i', $this->serviceId)) {
-            $this->success = false;
-            throw DatabaseException::bindingParamsFailed();
-        }
-        if ($stmt->execute()) {
+        $status = $this->db->query($sql, "i", $this->serviceId);
+        if ($status) {
             //Success
-            $result = $stmt->get_result();
-            $response = $result->fetch_assoc();
+            $result = $this->db->getResult();
+            $response = $result[0];
             $this->name = $response['Nome'];
             $this->duration = $response['Durata'];
             $this->startTime = $response['OraInizio'];
@@ -145,7 +190,9 @@ class Service {
             $this->description = $response['Descrizione'];
             $this->imageUrl = $response['ImmagineUrl'];
             $this->bookableUntil = $response['BookableUntil'];
+            $this->isActive = $response['IsActive'];
         } else {
+            // query failed
             $this->name = null;
             $this->duration = null;
             $this->startTime = null;
@@ -156,7 +203,6 @@ class Service {
             $this->imageUrl = null;
             $this->bookableUntil = null;
             $this->success = false;
-            throw DatabaseException::queryExecutionFailed();
         }
     }
 
@@ -172,5 +218,25 @@ class Service {
             throw ServiceException::failedToGetServiceData();
         }
 
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function getAllServices(Database $db): array {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "SELECT id, Nome, Durata, OraInizio, OraFine, Costo FROM Servizio WHERE(IsActive = TRUE)";
+        $status = $db->query($sql);
+        if ($status) {
+            //Success
+            $result = $db->getResult();
+            $response = [];
+            foreach ($result as $r) {
+                $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'],
+                    'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Costo' => $r['Costo']);
+            }
+            return $response;
+        }
+        return [];
     }
 }

@@ -5,8 +5,8 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     // user is logged
     // create user object
-    $database = new Database();
-    $db = $database->db;
+    $db = new Database();
+    
     $user = new User($db);
     // check if user still exist in the database
     if (!$user->exist()){

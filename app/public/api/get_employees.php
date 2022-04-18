@@ -2,8 +2,8 @@
 require_once(realpath(dirname(__FILE__, 3)) . '/src/Api/loader.php');
 
 if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId'])) {
-    $database = new Database();
-    $db = $database->db;
+    $db = new Database();
+    
     // create a service object
     try {
         $service = new Service($db, $_GET['serviceId']);

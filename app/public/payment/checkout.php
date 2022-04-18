@@ -28,8 +28,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         die(0);
     }
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
-    $database = new Database();
-    $db = $database->db;
+    $db = new Database();
+    
     try {
         $service = new Service($db,$_POST['serviceId']);
     } catch (DatabaseException | Exception $e) {

@@ -7,8 +7,8 @@ session_start();
 if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
-    $database = new Database();
-    $db = $database->db;
+    $db = new Database();
+    
     $user = new User($db);
     // check if user still exist in the database
     if (!$user->exist()){
@@ -28,11 +28,12 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         isset($_POST['serviceActive']) && isset($_POST['serviceDescription'])) {
         // create a service object
         try {
-            $service = \Admin\Services::updateService($db, $_POST['id'], $_POST['serviceName'], $_POST['serviceDuration'], $_POST['serviceStartTime'],
-                $_POST['serviceEndTime'], $_POST['serviceCost'], $_POST['serviceWaitTime'], $_POST['bookableUntil'],
-                filter_var($_POST['serviceActive'], FILTER_VALIDATE_BOOLEAN), $_POST['serviceDescription']);
+            $serviceData = new Service($db, $_POST['id'], $_POST['serviceName'], $_POST['serviceDuration'], $_POST['serviceStartTime'],
+                $_POST['serviceEndTime'], $_POST['serviceWaitTime'], $_POST['serviceCost'], $_POST['serviceDescription'], $_POST['bookableUntil'],
+                filter_var($_POST['serviceActive'], FILTER_VALIDATE_BOOLEAN));
+            $service = \Admin\Services::updateService($db, $serviceData);
             // se non ci sono stati errori fornisci la risposta
-            if ($service == true) {
+            if ($service) {
                 print(json_encode(array("error" => false)));
             } else {
                 print(json_encode(array("error" => true)));

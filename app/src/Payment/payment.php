@@ -5,17 +5,14 @@ class Payment {
      * @return array
      * @throws DatabaseException
      */
-    public static function getPaymentMethods($db) {
+    public static function getPaymentMethods(Database $db) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "SELECT * FROM MetodoPagamento WHERE IsActive = TRUE";
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw DatabaseException::queryPrepareFailed();
-        }
-        if ($stmt->execute()) {
+        $status = $db->query($sql);
+        if ($status) {
             //Success
-            $result = $stmt->get_result();
-            $response = array();
+            $result = $db->getResult();
+            $response = [];
             foreach ($result as $r) {
                 $response[] = array("id" => $r["id"], "name" => $r["Nome"]);
             }
@@ -25,8 +22,8 @@ class Payment {
         }
     }
 
-    public static function isAValidMethod($methodId) {
-        // check if the id provided is valid, currently we only accept 2 values
+    public static function isAValidMethod($methodId) { //todo check with db
+        // check if the id provided is valid, currently we only accept 2 values;
         if ($methodId < 1 || $methodId > 2) {
             // is invalid
             return false;

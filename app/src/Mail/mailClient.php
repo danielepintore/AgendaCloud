@@ -102,27 +102,22 @@ class MailClient {
         }
     }
 
-    public static function addMailToQueue($db, $subject, $body, $altBody, $toAddress, $toName = null) {
+    /**
+     * @throws DatabaseException
+     */
+    public static function addMailToQueue(Database $db, $subject, $body, $altBody, $toAddress, $toName = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if (empty($toName)){
             $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination) VALUES (NULL, ?, ?, ?, ?)';
         } else {
             $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination, receiverName) VALUES (NULL, ?, ?, ?, ?, ?)';
         }
-        $stmt = $db->prepare($sql);
-        if (!$stmt) {
-            throw DatabaseException::queryPrepareFailed();
-        }
         if (empty($toName)) {
-            if (!$stmt->bind_param('ssss', $subject, $body, $altBody, $toAddress)) {
-                throw DatabaseException::bindingParamsFailed();
-            }
+            $status = $db->query($sql, "ssss", $subject, $body, $altBody, $toAddress);
         } else {
-            if (!$stmt->bind_param('sssss', $subject, $body, $altBody, $toAddress, $toName)) {
-                throw DatabaseException::bindingParamsFailed();
-            }
+            $status = $db->query($sql, "sssss", $subject, $body, $altBody, $toAddress, $toName);
         }
-        if ($stmt->execute()) {
+        if ($status) {
             //Success
             return true;
         } else {
