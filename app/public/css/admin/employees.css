@@ -29,3 +29,12 @@
 .delete-user, .edit-user{
     cursor: pointer;
 }
+.loading-circe {
+    vertical-align: sub;
+}
+.name{
+    font-size: 1.4rem;
+}
+.status{
+    vertical-align: text-bottom;
+}

@@ -29,6 +29,9 @@ Obfuscate the js code
 -----------------------------------------------------------------
 
 TO DO:
+Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
+add the check if the employee is active
+change the code to check if an employee is active in all uses case
 Add payment method handlers
 Add holidays
 Add error modals to admin setup

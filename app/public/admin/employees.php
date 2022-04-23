@@ -11,8 +11,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()){
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()){
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
     }
@@ -37,8 +37,11 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     <link href='../css/dashboard.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
     <link href='../css/admin/employees.css' rel='stylesheet'>
+    <link rel="stylesheet" type="text/css" href="../css/loading.min.css"/>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
+    <script src="../js/jquery.validate.min.js"></script>
+    <script src="../js/additional-methods.min.js"></script>
     <script src="../js/admin/employees.js"></script>
 </head>
 <body>
@@ -65,33 +68,39 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="addEmployeeForm">
                         <div class="mb-2">
-                            <input type="text" placeholder="Nome" class="form-control" id="name">
+                            <input type="text" placeholder="Nome" class="form-control" id="name" name="name">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Cognome" class="form-control" id="surname">
+                            <input type="text" placeholder="Cognome" class="form-control" id="surname" name="surname">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Ruolo" class="form-control" id="role">
+                            <input type="text" placeholder="Ruolo" class="form-control" id="role" name="role">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Username" class="form-control" id="username">
+                            <input type="text" placeholder="Username" class="form-control" id="username" name="username">
                         </div>
                         <div class="mb-2">
-                            <input type="password" placeholder="Password" class="form-control" id="password">
+                            <input type="password" placeholder="Password" class="form-control" id="password" name="password">
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="admin">
-                            <label class="form-check-label" for="service-active">
+                            <label class="form-check-label">
                                 Amministratore
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="isActive" checked>
+                            <label class="form-check-label">
+                                Attivo
                             </label>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn" data-bs-dismiss="modal">Aggiungi</button>
+                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn"><span id="loadingCircleAddEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span> Aggiungi</button>
                 </div>
             </div>
         </div>
@@ -105,21 +114,21 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="editEmployeeForm">
                         <div class="mb-2">
-                            <input type="text" placeholder="Nome" class="form-control" id="name-edit">
+                            <input type="text" placeholder="Nome" class="form-control" id="name-edit" name="name">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Cognome" class="form-control" id="surname-edit">
+                            <input type="text" placeholder="Cognome" class="form-control" id="surname-edit" name="surname">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Ruolo" class="form-control" id="role-edit">
+                            <input type="text" placeholder="Ruolo" class="form-control" id="role-edit" name="role">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Username" class="form-control" id="username-edit">
+                            <input type="text" placeholder="Username" class="form-control" id="username-edit" name="username">
                         </div>
                         <div class="mb-2">
-                            <input type="password" placeholder="Nuova password" class="form-control" id="password-edit">
+                            <input type="password" placeholder="Nuova password" class="form-control" id="password-edit" name="password">
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="admin-edit">
@@ -127,11 +136,17 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                                 Amministratore
                             </label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="isActive-edit" checked>
+                            <label class="form-check-label">
+                                Attivo
+                            </label>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn" data-bs-dismiss="modal">Modifica</button>
+                    <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn"><span id="loadingCircleEditEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span> Modifica</button>
                 </div>
             </div>
         </div>
@@ -150,6 +165,39 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteEmployeeBtn" data-bs-dismiss="modal">Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="successModalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorModalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>

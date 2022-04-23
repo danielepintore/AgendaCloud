@@ -46,7 +46,7 @@ $db = new Database();
                                 <option value="-1" selected disabled hidden>Seleziona un servizio</option>
                                 <?php
                                 try {
-                                    $services = Service::getAllServices($db);
+                                    $services = Service::getActiveServices($db);
                                     // se non è presente un errore
                                     foreach ($services as $s) {
                                         print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');

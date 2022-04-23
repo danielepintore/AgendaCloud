@@ -32,3 +32,9 @@
 .employeeBtnRemove, .employeeBtnAdd{
     min-width: 30px;
 }
+.name{
+    font-size: 1.4rem;
+}
+.status{
+    vertical-align: text-bottom;
+}

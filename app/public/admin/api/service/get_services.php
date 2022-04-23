@@ -10,8 +10,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()) {
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()) {
         if (DEBUG) {
             print("The user no longer exist");
         } else {
@@ -20,8 +20,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         die(0);
     }
     try {
-        if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
-            $services = \Admin\Services::getServiceList($db, $_GET['id']);
+        if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && !empty($_GET['serviceId'])) {
+            $services = \Admin\Services::getServiceList($db, $_GET['serviceId']);
         } else {
             $services = \Admin\Services::getServiceList($db);
         }

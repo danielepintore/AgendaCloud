@@ -10,8 +10,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()) {
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()) {
         print(json_encode(array("error" => true)));
         die(0);
     }

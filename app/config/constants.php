@@ -21,9 +21,9 @@ or define("CASH", 2);
 
 // User type constants
 defined("ADMIN_USER")
-or define("ADMIN_USER", 1);
+or define("ADMIN_USER", 0);
 defined("WORKER_USER")
-or define("WORKER_USER", 2);
+or define("WORKER_USER", 1);
 
 // Pages id constants
 defined("DASHBOARD")

@@ -11,58 +11,41 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
     isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response'])) {
     try {
         //check if recaptcha is valid
-        if (!Captcha::isSuccess($_POST['h-captcha-response'])){
+        if (!Captcha::isSuccess($_POST['h-captcha-response'])) {
             $credentialError = "wrongCaptcha";
         } else {
             // get db connection
             $db = new Database();
-            
             // make the query to check if the user exists
-            $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE username = ?;";
-            $stmt = $db->prepare($sql);
-            if (!$stmt) {
-                throw DatabaseException::queryPrepareFailed();
-            }
-            if (!$stmt->bind_param('s', $_POST['username'])) {
-                throw DatabaseException::bindingParamsFailed();
-            }
-            if ($stmt->execute()) {
-                if ($stmt->store_result()) {
-                    // check the number of results
-                    if ($stmt->num_rows > 0) {
-                        // user exists
-                        if ($stmt->bind_result($userId, $username, $password, $userType) &&
-                            $stmt->fetch()) {
-                            if (password_verify($_POST['pwd'], $password)) {
-                                // correct credentials
-                                session_start();
-                                $_SESSION['logged'] = 1;
-                                $_SESSION['userId'] = $userId;
-                                $_SESSION['username'] = $username;
-                                if ($userType == ADMIN_USER) {
-                                    $_SESSION['isAdmin'] = 1;
-                                } else {
-                                    $_SESSION['isAdmin'] = 0;
-                                }
-                                // redirect to dashboard
-                                header("HTTP/1.1 303 See Other");
-                                header("Location: /admin/dashboard.php");
-                            } else {
-                                // wrong credentials
-                                $credentialError = "wrongPwdOrUser";
-                            }
+            $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE (Username = ? AND isActive = TRUE)";
+            $status = $db->query($sql, "s", $_POST['username']);
+            if ($status) {
+                // check the number of results
+                $result = $db->getResult()[0]; // TODO add a check for the passwords in the query
+                if ($db->getAffectedRows() > 0) {
+                    // user exists
+                    if (password_verify($_POST['pwd'], $result['Password'])) {
+                        // correct credentials
+                        session_start();
+                        $_SESSION['logged'] = 1;
+                        $_SESSION['userId'] = $result['id'];
+                        $_SESSION['username'] = $result['Username'];
+                        if ($result['UserType'] == ADMIN_USER) {
+                            $_SESSION['isAdmin'] = 1;
                         } else {
-                            throw DatabaseException::fetchData();
+                            $_SESSION['isAdmin'] = 0;
                         }
+                        // redirect to dashboard
+                        header("HTTP/1.1 303 See Other");
+                        header("Location: /admin/dashboard.php");
                     } else {
-                        // no user is found
-                        $credentialError = "userNotFound";
+                        // wrong credentials
+                        $credentialError = "wrongPwdOrUser";
                     }
                 } else {
-                    throw DatabaseException::storeResult();
+                    // no user is found
+                    $credentialError = "userNotFound";
                 }
-                // close connection
-                $stmt->close();
             } else {
                 throw DatabaseException::queryExecutionFailed();
             }
@@ -73,12 +56,20 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
     }
 } elseif (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     $db = new Database();
-    
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()){
-        header("HTTP/1.1 303 See Other");
-        header("Location: /admin/logout.php");
+    // check if user still exist in the database and is in active status
+    try {
+        if (!$user->exist() || !$user->isActive()) {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /admin/logout.php");
+        }
+    } catch (DatabaseException|Exception $e) {
+        if (DEBUG) {
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+        } else {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /admin/logout.php");
+        }
     }
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/dashboard.php");
@@ -104,7 +95,7 @@ switch ($credentialError) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php print("Login - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Login - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
@@ -163,7 +154,7 @@ switch ($credentialError) {
                     </div>
                 </div>
                 <div class="h-captcha"
-                     data-sitekey="<?php print($config->captcha->pub_key)?>"
+                     data-sitekey="<?php print($config->captcha->pub_key) ?>"
                      data-callback="submitForm"
                      data-size="invisible">
                 </div>

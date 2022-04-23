@@ -172,24 +172,24 @@ export function server(done) {
 function watch(done) {
 
     // image changes
-    gulp.watch(paths.images.src, minifyImages).on('change', browsersync.reload);
+    gulp.watch(paths.images.src).on('change', browsersync.reload);
 
     // JS changes
-    gulp.watch(paths.scripts.src, minifyScripts).on('change', browsersync.reload);
+    gulp.watch(paths.scripts.src).on('change', browsersync.reload);
 
     // CSS changes
-    gulp.watch([paths.styles.src], generateStyles).on('change', browsersync.reload);
+    gulp.watch([paths.styles.src]).on('change', browsersync.reload);
 
 
     // PHP changes
-    gulp.watch([paths.php.src, 'public/**/*.php', 'resources/**/*.php', 'config/**/*.php'], copyPhpSources).on('change', browsersync.reload);
+    gulp.watch([paths.php.src, 'public/**/*.php', 'resources/**/*.php', 'config/**/*.php']).on('change', browsersync.reload);
 
     // ENV file change
-    gulp.watch('baseEnv', modules).on('change', browsersync.reload);
+    gulp.watch('baseEnv').on('change', browsersync.reload);
 
     // Composer file change
-    gulp.watch('composer.json', modules).on('change', browsersync.reload);
-    gulp.watch('vendor/**/*', modules).on('change', browsersync.reload);
+    gulp.watch('composer.json').on('change', browsersync.reload);
+    gulp.watch('vendor/**/*').on('change', browsersync.reload);
 
     done();
 

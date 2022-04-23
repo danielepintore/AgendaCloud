@@ -72,4 +72,22 @@ class User {
         return false;
     }
 
+    /**
+     * @throws \DatabaseException
+     */
+    public function isActive() {
+        $sql = 'SELECT Dipendente.isActive FROM Dipendente WHERE Dipendente.id = ?';
+        $status = $this->db->query($sql, "i", $this->id);
+        if ($status) {
+            //Success
+            $result = $this->db->getResult()[0];
+            if ($result["isActive"] == 1){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
 }

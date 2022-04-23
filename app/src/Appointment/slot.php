@@ -15,6 +15,7 @@ class Slot {
     public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr);
+        // todo check if employee is active
         // get service data from the database
         $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
         $status = $db->query($sql, "i", $serviceId);

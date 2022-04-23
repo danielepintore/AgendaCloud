@@ -10,8 +10,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()) {
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()) {
         if (DEBUG) {
             print("The user no longer exist");
         } else {
@@ -36,7 +36,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     $_POST['serviceEndTime'], $_POST['serviceCost'], $_POST['serviceWaitTime'], $_POST['bookableUntil'], $_POST['serviceActive']);
             }
             // se non ci sono stati errori fornisci la risposta
-            if ($service == true) {
+            if ($service) {
                 print(json_encode(array("error" => false)));
             } else {
                 print(json_encode(array("error" => true)));

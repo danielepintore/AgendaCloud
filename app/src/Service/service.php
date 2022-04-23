@@ -152,7 +152,7 @@ class Service {
     function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($this->success) {
-            $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
+            $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ? AND Dipendente.isActive = TRUE)';
             $status = $this->db->query($sql, "i", $this->serviceId);
             if ($status) {
                 //Success
@@ -222,10 +222,11 @@ class Service {
 
     /**
      * @throws DatabaseException
+     * Gets the active services where there is at least one active employee
      */
-    public static function getAllServices(Database $db): array {
+    public static function getActiveServices(Database $db): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "SELECT id, Nome, Durata, OraInizio, OraFine, Costo FROM Servizio WHERE(IsActive = TRUE)";
+        $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.OraInizio, Servizio.OraFine, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
         $status = $db->query($sql);
         if ($status) {
             //Success

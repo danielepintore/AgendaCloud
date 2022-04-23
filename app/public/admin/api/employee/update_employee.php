@@ -10,8 +10,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()) {
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()) {
         if (DEBUG) {
             print("The user no longer exist");
         } else {
@@ -21,13 +21,14 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     }
     if (isset($_POST['id']) && is_numeric($_POST['id']) && !empty($_POST['id']) && isset($_POST['name']) && !empty($_POST['name']) &&
         isset($_POST['surname']) && !empty($_POST['surname']) && isset($_POST['role']) && !empty($_POST['role']) &&
-        isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['password']) && isset($_POST['admin'])) {
+        isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['password']) && isset($_POST['admin']) && isset($_POST['isActive'])) {
         // create a service object
         try {
             $service = \Admin\Employee::updateEmployee($db, $_POST['id'], $_POST['name'], $_POST['surname'], $_POST['role'],
-                $_POST['username'], $_POST['password'], $_POST['admin']);
+                $_POST['username'], $_POST['password'], filter_var($_POST['admin'], FILTER_VALIDATE_BOOLEAN),
+                filter_var($_POST['isActive'], FILTER_VALIDATE_BOOLEAN));
             // se non ci sono stati errori fornisci la risposta
-            if ($service == true) {
+            if ($service) {
                 print(json_encode(array("error" => false)));
             } else {
                 print(json_encode(array("error" => true)));

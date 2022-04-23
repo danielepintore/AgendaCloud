@@ -11,8 +11,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
     $db = new Database();
     
     $user = new User($db);
-    // check if user still exist in the database
-    if (!$user->exist()) {
+    // check if user still exist in the database and is in active status
+    if (!$user->exist() || !$user->isActive()) {
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
     }

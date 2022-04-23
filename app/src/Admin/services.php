@@ -8,9 +8,11 @@ use Service;
 
 class Services {
     /**
+     * @return array
      * @throws DatabaseException
+     * Gets the list of services associated to an employee based on it's id, if the user is an admin it gets all the
+     * active services, it doesn't check if the employee is active
      */
-    // gets the service that an employee is offering
     public static function getEmployeeService(Database $db, $isAdmin, $employeeId): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
@@ -43,7 +45,11 @@ class Services {
         return [];
     }
 
-    // Add a service
+    /**
+     * @return bool
+     * @throws DatabaseException
+     * Add a service to the database
+     */
     public static function addServices(Database $db, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, $isActive, $description = "") {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'INSERT INTO Servizio (id, Nome, Durata, OraInizio, OraFine, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?) ';
@@ -63,14 +69,18 @@ class Services {
     // Get the list of services
 
     /**
+     * @return array
      * @throws DatabaseException
+     * Gets the list of services for the admin services list page
+     * It's retrive from the database all service info, including the number of active employee that are associated to
+     * the service
      */
     public static function getServiceList(Database $db, $id = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($id == null) {
-            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre WHERE Offre.Servizio_id=Servizio.id) AS NumDipendenti FROM Servizio';
+            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio';
         } else {
-            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre WHERE Offre.Servizio_id=Servizio.id) AS NumDipendenti FROM Servizio WHERE Servizio.id = ?';
+            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio WHERE Servizio.id = ?';
         }
         if ($id != null) {
             $status = $db->query($sql, "i", $id);
@@ -91,14 +101,13 @@ class Services {
         return false;
     }
 
-    // Get the list of employees that offer a service
-
     /**
      * @throws DatabaseException
+     * Gets the list of active employees that are associated to the service
      */
-    public static function getEmployeeList(Database $db, $serviceId) {
+    public static function getActiveEmployeeList(Database $db, $serviceId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente, Offre  WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
+        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente, Offre  WHERE (Dipendente.isActive = TRUE AND Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ?)';
         $status = $db->query($sql, "i", $serviceId);
         if ($status) {
             //Success
@@ -116,6 +125,7 @@ class Services {
 
     /**
      * @throws DatabaseException
+     * Update service information
      */
     public static function updateService(Database $db, Service $service ) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
@@ -139,6 +149,7 @@ class Services {
 
     /**
      * @throws DatabaseException
+     * Delete a service from database
      */
     public static function deleteService(Database $db, $id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
@@ -155,11 +166,13 @@ class Services {
 
     /**
      * @throws DatabaseException
+     * Return a list of active employees with a field that allows to check if an employee can be added to a service or removed
+     * Also it performs a search with a name parameter
      */
     public static function getEmployeesStatusForService(Database $db, $serviceId, $name){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $employeesActive = \Admin\Services::getEmployeeList($db, $serviceId);
-        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ?) GROUP BY Dipendente.id ORDER BY Dipendente.Nome';
+        $employeesActive = \Admin\Services::getActiveEmployeeList($db, $serviceId);
+        $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ? AND Dipendente.isActive = TRUE) GROUP BY Dipendente.id ORDER BY Dipendente.Nome';
         $name = "%$name%";
         $status = $db->query($sql, "s", $name);
         if ($status) {
@@ -186,9 +199,11 @@ class Services {
 
     /**
      * @throws DatabaseException
+     * Allows to add an employee to a service
      */
     public static function addEmployeeToService(Database $db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        // TODO add a check if the employee is active
         $sql = 'INSERT INTO Offre (Dipendente_id, Servizio_id) VALUES (?, ?)';
         $status = $db->query($sql, "ii", $employeeId, $serviceId);
         if ($status) {
@@ -198,6 +213,13 @@ class Services {
         return false;
     }
 
+    /**
+     * @param $db
+     * @param $serviceId
+     * @param $employeeId
+     * @return bool
+     * Remove an employee from a service, it keeps all the previous booking
+     */
     public static function removeEmployeeToService($db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'DELETE FROM Offre WHERE Offre.Dipendente_id = ? AND Offre.Servizio_id = ?';

@@ -125,6 +125,7 @@ class Appointment {
                 }
             }
             if ($isAvailable) {
+                //TODO add a check to check if the employee is active
                 // slot presente tra quelli generati dall'api procedere con la prenotazione
                 $sql = "INSERT INTO Appuntamento (id, Cliente_id, Servizio_id, Dipendente_id, Data, OraInizio, OraFine, Stato, SessionId, AddedAt, MetodoPagamento_id) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, UNIX_TIMESTAMP(), ?)";
                 $status = $this->db->query($sql, "iiisssisi", $client_id, $this->serviceId, $this->employeeId, $this->date,
