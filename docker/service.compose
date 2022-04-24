@@ -1,0 +1,33 @@
+version: '3.1'
+services:
+  agendacloud:
+    build: . # we need to change it because in portainer all reference will break
+    expose:
+      - "80"
+    restart: always
+    environment:
+      VIRTUAL_HOST: test.agendacloud.it
+      LETSENCRYPT_HOST: test.agendacloud.it
+    volumes:
+      - .env:/var/www/html/.env
+    networks:
+      - default
+      - proxy-network
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: agenda-cloud
+      MYSQL_USER: agendacloud
+      MYSQL_PASSWORD: supersecurehere
+      MYSQL_ROOT_PASSWORD: supersecurehere
+    volumes:
+      - .dump.sql:/docker-entrypoint-initdb.d/00-dump.sql
+      - db:/var/lib/mysql
+volumes:
+  db:
+
+networks:
+  proxy-network:
+    external:
+      name: proxy-net

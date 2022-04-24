@@ -12,4 +12,8 @@ class DataException extends Exception {
     public static function wrongStartOrEndTime() {
         return new static('The string passed to DateTime constructor is invalid');
     }
+
+    public static function unableToGetHolidays() {
+        return new static('There was a problem while getting the holidays');
+    }
 }

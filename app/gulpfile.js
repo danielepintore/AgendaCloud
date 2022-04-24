@@ -69,18 +69,10 @@ function modules(done) {
     //JQuery validator
     var jqueryValidate = gulp.src('./node_modules/jquery-validation/dist/*.min.js')
         .pipe(gulp.dest(paths.scripts.dest));
-    //Composer vendor
-    var composer = gulp.src(paths.composer.src)
-        .pipe(gulp.dest(paths.composer.dest));
     //Composer files
     var composerFile = gulp.src('composer.json')
         .pipe(gulp.dest('build/'));
-    //Base env file
-    var envFile = gulp.src('./baseEnv')
-        .pipe(rename({basename: '.env'}))
-        .pipe(gulp.dest('build/'));
-    done();
-    return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composer, composerFile, envFile);
+    return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composerFile);
 }
 
 export function minifyImages() {

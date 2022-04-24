@@ -2,6 +2,7 @@
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 $db = new Database();
+error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
 <html lang="it">

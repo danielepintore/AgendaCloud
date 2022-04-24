@@ -5,7 +5,7 @@ use Admin\Employee;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();

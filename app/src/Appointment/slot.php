@@ -17,7 +17,7 @@ class Slot {
     public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr);
-        //check if the date is an holiday
+        //check if the date is a holiday
         $holidayInfo = DateCheck::getHolidayInfo($db, $dateStr, $serviceId, $employeeId);
         // check if the employee is active
         if (\Admin\Employee::isActive($db, $employeeId)) {

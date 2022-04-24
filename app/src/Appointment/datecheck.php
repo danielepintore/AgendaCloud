@@ -68,8 +68,7 @@ class DateCheck {
                 $holidays[] = ["date" => $r['Data'], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
             }
             return $holidays;
-        } else {
-            return false;
         }
+        return [];
     }
 }

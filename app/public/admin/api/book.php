@@ -5,7 +5,7 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 4)) . '/vendor/autoload.php';
 require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
+if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged']) {
     // user is logged
     // create user object
     $db = new Database();

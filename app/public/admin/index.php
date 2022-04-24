@@ -54,7 +54,7 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
         header("HTTP/1.1 303 See Other");
         header("Location: /error.php");
     }
-} elseif (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
+} elseif (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged']) {
     $db = new Database();
     $user = new User($db);
     // check if user still exist in the database and is in active status

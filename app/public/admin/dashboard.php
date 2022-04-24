@@ -5,7 +5,7 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
+if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged']) {
     // user is logged
     // create user object
     $db = new Database();
