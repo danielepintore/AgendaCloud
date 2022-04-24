@@ -1,3 +1,4 @@
+// donetyping method that triggers every time the user stop to type in a textbox
 $.fn.extend({
     donetyping: function (callback, timeout) {
         timeout = timeout || 1e3; // 1 second default timeout
@@ -52,6 +53,9 @@ function getEmployeesToAdd(serviceId, name) {
                     }
                 });
                 // add listeners
+                /**
+                 * Remove employee lister
+                 */
                 $(".employeeBtnRemove").on('click', function () {
                     $.get('/admin/api/service/remove_employee_to_service.php', {
                         serviceId: $('#confirmAddEmployeeBtn').val(),
@@ -71,6 +75,9 @@ function getEmployeesToAdd(serviceId, name) {
                         })
                 });
 
+                /**
+                 * Add employee listener
+                 */
                 $(".employeeBtnAdd").on('click', function () {
                     $.get('/admin/api/service/add_employee_to_service.php', {
                         serviceId: $('#confirmAddEmployeeBtn').val(),
@@ -126,6 +133,10 @@ function getEmployeesList(serviceId) {
         });
 }
 
+/**
+ * @param serviceId
+ * Populate the edit modal and enables the confirm edit button
+ */
 function populateEditModal(serviceId) {
     $("#service-name-edit").val("");
     $("#service-duration-edit").val("");
@@ -174,32 +185,56 @@ function getServicesList() {
                         '<div class="d-flex w-100 justify-content-between"> ' +
                         '<div><span class="name mb-1 me-1">' + element.name + '</span><small class="status">(' + element.isActive + ')</small></div>' +
                         '<div class="pointer"><small>' + element.startTime + '-' + element.endTime + '</small>' +
-                        '<i class="fa-solid fa-pen edit-service ms-2" value="' + element.id + '"></i><i class="fa-solid fa-user-group view-employees ms-2" value="' + element.id + '"></i><i class="fa-solid fa-trash ms-2 delete-service" value="' + element.id + '"></i></div>' +
+                        '<i class="fa-solid fa-pen edit-service ms-2" value="' + element.id + '"></i>' +
+                        '<i class="fa-solid fa-user-group view-employees ms-2" value="' + element.id + '"></i>' +
+                        '<i class="fa-solid fa-trash delete-service ms-2" value="' + element.id + '"></i>' +
+                        '<i class="fa-solid fa-calendar-day holiday-calendar ms-2" value="' + element.id + '"></i></div>' +
                         '</div><div class="d-flex w-100 justify-content-between"><h7 class="mb-1">' + element.cost + '€</h7></div>' +
                         '<div class="d-flex w-100 justify-content-between">  ' +
                         '<small>Durata: ' + element.duration + ' minuti</small>' +
                         '<small>Numero dipendenti: ' + element.employeesNumber + '</small>' +
                         '</div></a>');
                 });
+
+                // Service listeners
+                /**
+                 * Edit service modal
+                 */
                 $(".edit-service").on("click", function () {
-                    serviceId = $(this).attr("value");
+                    let serviceId = $(this).attr("value");
                     populateEditModal(serviceId);
                     $("#editServiceBtn").attr('value', serviceId);
                     // open modal to confirm
                     $("#editServiceModal").modal("show");
                 });
+                /**
+                 * View employee modal
+                 */
                 $(".view-employees").on("click", function () {
-                    serviceId = $(this).attr("value");
+                    let serviceId = $(this).attr("value");
                     getEmployeesList(serviceId);
-                    $("#addEmployeesBtn").attr('value', serviceId);
+                    $("#editEmployeesBtn").attr('value', serviceId);
                     // open modal to confirm
                     $("#showEmployeesModal").modal("show");
                 });
+                /**
+                 * Delete service modal
+                 */
                 $(".delete-service").on("click", function () {
-                    serviceId = $(this).attr("value");
+                    let serviceId = $(this).attr("value");
                     $("#confirmDeleteServiceBtn").attr('value', serviceId);
                     // open modal to confirm
                     $("#deleteServiceModal").modal("show");
+                });
+                /**
+                 * Holiday modal
+                 */
+                $(".holiday-calendar").on("click", function () {
+                    let serviceId = $(this).attr("value");
+                    getHolidaysForService(serviceId, $("#daySearchHoliday").val())
+                    $("#addHolidayButton").attr('value', serviceId);
+                    // open modal to confirm
+                    $("#viewHolidaysModal").modal("show");
                 });
             } else if (data.length === 0) {
                 // display no appointments message
@@ -218,6 +253,34 @@ function getServicesList() {
         });
 }
 
+function getHolidaysForService(serviceId, searchField){
+    $.get("/admin/api/service/get_holidays.php", {serviceId: serviceId, date: searchField})
+        .done(function (data){
+            $("#serviceHolidayTableBody").empty();
+            if (!data.error && data.length > 0) {
+                $("#infoHolidayService").addClass("d-none");
+                $("#serviceHolidayTable").removeClass("d-none");
+                data.forEach(element => {
+                    $("#serviceHolidayTableBody").append("<tr><td>" + element.date+ "</td><td>" + element.startTime +
+                        "</td><td>" + element.endTime + '</td><td><button type="button" value="' + element.id + '" class="employeeBtnAdd btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td></tr>');
+                });
+            } else if (data.length == 0){
+                $("#infoHolidayService").removeClass("d-none");
+                if (searchField === ""){
+                    $("#infoHolidayService").html("Non ci sono giorni di chiusura per questo servizio");
+                } else {
+                    $("#infoHolidayService").html("Non ci sono giorni di chiusura per questo servizio con questa ricerca");
+                }
+                $("#serviceHolidayTable").addClass("d-none");
+            } else {
+
+            }
+        })
+        .fail(function (){
+
+        });
+}
+
 // function to launch when the DOM is loaded
 $(function () {
     getServicesList();
@@ -226,6 +289,7 @@ $(function () {
         $("#addServiceModal").modal("show");
     });
 
+    // Set up validation scheme with Jquery validate plugin
     $("#confirmAddServiceBtn").on("click", function () {
         $("#addServiceForm").validate({
             rules: {
@@ -314,6 +378,7 @@ $(function () {
         }
     });
 
+    // Set up validation scheme with Jquery validate plugin
     $("#editServiceBtn").on("click", function () {
         $("#editServiceForm").validate({
             rules: {
@@ -415,13 +480,118 @@ $(function () {
             })
     });
 
-    $("#addEmployeesBtn").on('click', function () {
+    // Set up validation scheme with Jquery validate plugin
+    $("#confirmAddHolidayButton").on("click", function () {
+        $("#addHolidayForm").validate({
+            rules: {
+                holidayDate: {required: true, maxlength: 10},
+                holidayStartTime: {required: true},
+                holidayEndTime: {required: true}
+            },
+            messages: {
+                holidayDate: "È necessario inserire una data corretta",
+                holidayStartTime: "È necessario inserire un orario di inizio valido",
+                holidayEndTime: "È necessario inserire un orario di fine valido",
+            },
+            errorPlacement: function (error, element) {
+                var placement = $(element).data('error');
+                if (placement) {
+                    $(placement).append(error);
+                } else {
+                    error.insertAfter(element);
+                }
+            }
+        });
+        if ($("#addHolidayForm").valid()) {
+            // show loading animation
+            $("#loadingCircleAddHoliday").removeClass("d-none");
+            // prepare start and end time if full day check box is selected
+            let startTime;
+            let endTime;
+            if ($("#holidayFullDayCheckBox").prop('checked')) {
+                startTime = "00:00";
+                endTime = "23:59";
+            } else {
+                startTime = $("#holidayStartTime").val();
+                endTime = $("#holidayEndTime").val();
+            }
+            // make request
+            $.get("/admin/api/service/add_holiday.php", {
+                serviceId: $(this).val(),
+                date: $("#holidayDate").val(),
+                startTime: startTime,
+                endTime: endTime,
+            })
+                .done(function (data) {
+                    // hide loading animation
+                    $("#loadingCircleAddHoliday").addClass("d-none");
+                    // Hide add employee modal
+                    $("#addHolidayModal").modal("hide");
+                    if (!data.error) {
+                        // set success modal data
+                        $("#successModalTitle").html("Giorno di chiusura aggiunto");
+                        $("#successModalMessage").html("Il giorno di chiusura del servizio è stato aggiunto");
+                        // show success modal
+                        $("#successModal").modal("show");
+                        getServicesList()
+                    } else {
+                        // set error modal data
+                        $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
+                        $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                        // show confirmation modal
+                        $("#errorModal").modal("show");
+                    }
+                }).fail(function () {
+                // hide loading animation
+                $("#loadingCircleAddHoliday").addClass("d-none");
+                // Hide add employee modal
+                $("#addHolidayModal").modal("hide");
+                // set error modal data
+                $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
+                $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                // show confirmation modal
+                $("#errorModal").modal("show");
+            });
+        }
+    });
+
+    // handler for the add employee button
+    $("#editEmployeesBtn").on('click', function () {
         $("#editEmployeesModal").modal('show');
         $("#confirmAddEmployeeBtn").attr('value', $(this).attr("value"));
         getEmployeesToAdd($("#confirmAddEmployeeBtn").val(), $("#employeeNameSearch").val());
     });
 
+    // implementing the callback for the donetyping function
     $("#employeeNameSearch").donetyping(function () {
         getEmployeesToAdd($("#confirmAddEmployeeBtn").val(), $("#employeeNameSearch").val());
-    })
+    });
+
+    // handler for the add holidays button
+    $("#addHolidayButton").on('click', function (){
+        $("#addHolidayModal").modal('show');
+        $("#confirmAddHolidayButton").attr('value', $(this).attr("value"));
+    });
+
+    // implementing the callback for the donetyping function
+    $("#daySearchHoliday").on('change',function () {
+        getHolidaysForService($("#addHolidayButton").val(), $("#daySearchHoliday").val());
+    });
+
+    // set handler for the full-day checkbox in add holiday modal
+    $("#holidayFullDayCheckBox").on('change', function (){
+        if ($(this).prop('checked')){
+            $("#holidayStartTime").prop('disabled', true);
+            $("#holidayStartTime").val('');
+            $("#holidayEndTime").prop('disabled', true);
+            $("#holidayEndTime").val('');
+            $("#errorholidayStartTime").addClass('d-none');
+            $("#errorholidayEndTime").addClass('d-none');
+        } else {
+            $("#holidayStartTime").prop('disabled', false);
+            $("#holidayEndTime").prop('disabled', false);
+            $("#errorholidayStartTime").removeClass('d-none');
+            $("#errorholidayEndTime").removeClass('d-none');
+        }
+    });
 })

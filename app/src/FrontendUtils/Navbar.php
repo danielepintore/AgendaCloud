@@ -70,6 +70,9 @@ class Navbar {
                                     <li class="nav-item me-2">
                                         <a class="nav-link" href="employees.php"">Dipendenti</a>
                                     </li>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                                    </li>
                                     <?php break;
                                 case EMPLOYEES:
                                     ?>
@@ -79,13 +82,31 @@ class Navbar {
                                     <li class="nav-item me-2">
                                         <a class="nav-link active" href="employees.php"">Dipendenti</a>
                                     </li>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                                    </li>
                                     <?php break;
+                                case SETTINGS:
+                                    ?>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link" href="services.php">Servizi</a>
+                                    </li>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link" href="employees.php"">Dipendenti</a>
+                                    </li>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link active" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                                    </li>
+                                <?php break;
                                 default: ?>
                                     <li class="nav-item me-2">
                                         <a class="nav-link" href="services.php">Servizi</a>
                                     </li>
                                     <li class="nav-item me-2">
                                         <a class="nav-link" href="employees.php"">Dipendenti</a>
+                                    </li>
+                                    <li class="nav-item me-2">
+                                        <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
                                     </li>
                                     <?php break;
                             }
@@ -138,6 +159,9 @@ class Navbar {
                             <li class="nav-item mt-2">
                                 <a class="nav-link" href="employees.php">Dipendenti</a>
                             </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                            </li>
                             <?php break;
                         case EMPLOYEES:
                             ?>
@@ -147,6 +171,21 @@ class Navbar {
                             <li class="nav-item mt-2">
                                 <a class="nav-link active" href="employees.php">Dipendenti</a>
                             </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                            </li>
+                            <?php break;
+                        case SETTINGS:
+                            ?>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link" href="services.php">Servizi</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link" href="employees.php">Dipendenti</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link active" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
+                            </li>
                             <?php break;
                         default:
                             ?>
@@ -155,6 +194,9 @@ class Navbar {
                             </li>
                             <li class="nav-item mt-2">
                                 <a class="nav-link" href="employees.php">Dipendenti</a>
+                            </li>
+                            <li class="nav-item mt-2">
+                                <a class="nav-link" href="settings.php"><i class="fa-solid fa-gear"></i> Impostazioni</a>
                             </li>
                             <?php break;
                     }

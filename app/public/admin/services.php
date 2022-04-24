@@ -154,7 +154,6 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                                 <input type="time" value="" class="form-control" id="service-endTime-edit" name="endTime" data-error="#errorEndTime-edit">
                             </div>
                             <p id="errorEndTime-edit"></p>
-                            <label for="service-bookableUntilTime-edit" class="form-label">Non permettere di prenotare se mancano meno di </label>
                             <div class="input-group mb-2">
                                 <input type="number" value="" placeholder="Costo" class="form-control" id="service-cost-edit" name="cost" data-error="#errorCost-edit">
                                 <span class="input-group-text">€</span>
@@ -213,8 +212,8 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="addEmployeesBtn" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica i dipendenti</button>
                     <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="editEmployeesBtn" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica i dipendenti</button>
                 </div>
             </div>
         </div>
@@ -261,6 +260,79 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-danger" id="confirmDeleteServiceBtn" data-bs-dismiss="modal">Elimina</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewHolidaysModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi dei giorni di chiusura per il servizio</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-2">
+                        <input type="date" placeholder="Giorno" class="form-control" id="daySearchHoliday">
+                    </div>
+                    <p id="infoHolidayService""></p>
+                    <table class="table d-none text-center" id="serviceHolidayTable">
+                        <thead>
+                        <th scope="col">Giorno</th>
+                        <th scope="col">Ora inizio</th>
+                        <th scope="col">Ora fine</th>
+                        <th scope="col">Azione</th>
+                        </thead>
+                        <tbody id="serviceHolidayTableBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="addHolidayButton" data-bs-dismiss="modal"><i class="fa-solid fa-plus"></i> Aggiungi un giorno</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addHolidayModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi una nuova giornata</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addHolidayForm">
+                        <div class="mb-2">
+                            <label for="holidayDate" class="form-label">Data:</label>
+                            <input type="date" placeholder="Data" class="form-control" id="holidayDate" name="holidayDate" data-error="#errorHolidayDate">
+                        </div>
+                        <p id="errorHolidayDate"></p>
+                        <div class="mb-2">
+                            <label for="holidayStartTime" class="form-label">Orario inizio:</label>
+                            <div class="input-group mb-2">
+                                <input type="time" value="08:00" class="form-control" id="holidayStartTime" name="holidayStartTime" data-error="#errorholidayStartTime">
+                            </div>
+                            <p id="errorholidayStartTime"></p>
+                            <label for="holidayEndTime" class="form-label">Orario fine:</label>
+                            <div class="input-group mb-2">
+                                <input type="time" value="12:00" class="form-control" id="holidayEndTime" name="holidayEndTime" data-error="#errorholidayEndTime">
+                            </div>
+                            <p id="errorholidayEndTime"></p>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="holidayFullDayCheckBox">
+                            <label class="form-check-label" for="service-active">
+                                Tutto il giorno
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi</button>
                 </div>
             </div>
         </div>

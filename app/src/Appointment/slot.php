@@ -15,6 +15,8 @@ class Slot {
     public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr);
+        //check if the date is an holiday
+        $holidayInfo = DateCheck::getHolidayInfo($db, $dateStr, $serviceId);
         // todo check if employee is active
         // get service data from the database
         $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
@@ -26,9 +28,6 @@ class Slot {
                 $service_info = $result[0];
                 // ottengo gli orari gia occupati
                 $sql = "SELECT Appuntamento.OraInizio AS OraInizio, Appuntamento.OraFine AS OraFine FROM Appuntamento WHERE Appuntamento.Data = ? AND Appuntamento.Dipendente_id = ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ?";
-                $paymentExpired = PAYMENT_EXPIRED;
-                $rejectedByUser = REJECTED_BY_USER;
-                $canceled = CANCELED;
                 $status = $db->query($sql, "siiii", $dateStr, $employeeId, PAYMENT_EXPIRED, REJECTED_BY_USER, CANCELED);
                 if ($status) {
                     //Success
@@ -88,6 +87,21 @@ class Slot {
                         }
                         $date->add($tempoIntervallo);
                     } while ($date < $endDate);
+                    // if there is a holidays remove some slots
+                    if (sizeof($holidayInfo) > 0) {
+                        $slotsWithHolidays = [];
+                        foreach ($holidayInfo as $holiday) {
+                            foreach ($generated_slots as $slot) {
+                                if ($slot["start_time"] <= $holiday['startTime'] && $slot['end_time'] <= $holiday['startTime']) {
+                                    $slotsWithHolidays[] = $slot;
+                                } elseif ($slot["start_time"] >= $holiday['endTime']) {
+                                    $slotsWithHolidays[] = $slot;
+                                }
+                            }
+                            $generated_slots = $slotsWithHolidays;
+                            $slotsWithHolidays = [];
+                        }
+                    }
                     return $generated_slots;
                 }
             } else {

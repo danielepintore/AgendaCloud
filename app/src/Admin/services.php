@@ -127,7 +127,7 @@ class Services {
      * @throws DatabaseException
      * Update service information
      */
-    public static function updateService(Database $db, Service $service ) {
+    public static function updateService(Database $db, Service $service) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'UPDATE Servizio SET Nome = ?, Durata = ?, OraInizio = ?, OraFine = ?, Costo = ?, TempoPausa = ?, Descrizione = ?, IsActive = ?, BookableUntil = ? WHERE id = ?';
         if ($service->getIsActive()) {
@@ -169,7 +169,7 @@ class Services {
      * Return a list of active employees with a field that allows to check if an employee can be added to a service or removed
      * Also it performs a search with a name parameter
      */
-    public static function getEmployeesStatusForService(Database $db, $serviceId, $name){
+    public static function getEmployeesStatusForService(Database $db, $serviceId, $name) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $employeesActive = \Admin\Services::getActiveEmployeeList($db, $serviceId);
         $sql = 'SELECT Dipendente.id, Dipendente.Nome, Dipendente.Cognome FROM Dipendente WHERE (CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) LIKE ? AND Dipendente.isActive = TRUE) GROUP BY Dipendente.id ORDER BY Dipendente.Nome';
@@ -181,15 +181,15 @@ class Services {
             $result = $db->getResult();
             foreach ($result as $r) {
                 $isFound = false;
-                foreach ($employeesActive as $activeEmployees){
-                    if ($r['id'] == $activeEmployees['id']){
-                        $employees[] = array("id" =>$r['id'], "name" => $r['Nome'], "surname" => $r['Cognome'], "available_action" => "delete");
+                foreach ($employeesActive as $activeEmployees) {
+                    if ($r['id'] == $activeEmployees['id']) {
+                        $employees[] = array("id" => $r['id'], "name" => $r['Nome'], "surname" => $r['Cognome'], "available_action" => "delete");
                         $isFound = true;
                         break;
                     }
                 }
-                if (!$isFound){
-                    $employees[] = array("id" =>$r['id'], "name" => $r['Nome'], "surname" => $r['Cognome'], "available_action" => "add");
+                if (!$isFound) {
+                    $employees[] = array("id" => $r['id'], "name" => $r['Nome'], "surname" => $r['Cognome'], "available_action" => "add");
                 }
             }
             return $employees;
@@ -214,13 +214,14 @@ class Services {
     }
 
     /**
-     * @param $db
+     * @param Database $db
      * @param $serviceId
      * @param $employeeId
      * @return bool
      * Remove an employee from a service, it keeps all the previous booking
+     * @throws DatabaseException
      */
-    public static function removeEmployeeToService($db, $serviceId, $employeeId) {
+    public static function removeEmployeeToService(Database $db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'DELETE FROM Offre WHERE Offre.Dipendente_id = ? AND Offre.Servizio_id = ?';
         $status = $db->query($sql, "ii", $employeeId, $serviceId);
@@ -229,5 +230,40 @@ class Services {
             return true;
         }
         return false;
+    }
+
+    /**
+     * @throws DatabaseException
+     * Gets an array containing all holidays for a specifc service with a limit of 10 entries per query
+     */
+    public static function searchHolidays(Database $db, $serviceId, $date) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT DATE_FORMAT(Data, "%e/%m/%Y") AS Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoChiusuraServizio WHERE (Servizio_id = ? AND Data LIKE ? AND Data >= CURDATE()) LIMIT 10';
+        $status = $db->query($sql, "is", $serviceId, "%$date%");
+        if ($status) {
+            $result = $db->getResult();
+            $holidays = [];
+            foreach ($result as $r) {
+                $holidays[] = ["date" => $r["Data"], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
+            }
+            return $holidays;
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     * Add a holiday to a service
+     */
+    public static function addHoliday(Database $db, $serviceId, $date, $startTime, $endTime) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "INSERT INTO GiornoChiusuraServizio (Data, OraInizio, OraFine, Servizio_id) VALUES (?, ?, ?, ?)";
+        $status = $db->query($sql, "sssi", $date, $startTime, $endTime, $serviceId);
+        if ($status && $db->getAffectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

@@ -34,6 +34,8 @@ defined("SERVICES")
 or define("SERVICES", 3);
 defined("EMPLOYEES")
 or define("EMPLOYEES", 4);
+defined("SETTINGS")
+or define("SETTINGS", 5);
 
 defined("DEBUG")
 or define("DEBUG", true); // todo change in production

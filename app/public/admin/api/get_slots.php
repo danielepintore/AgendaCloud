@@ -29,17 +29,29 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
                 print(json_encode($slots));
             }
         } catch (DatabaseException|SlotException|Exception $e) {
-            print(json_encode(array("error" => true)));
+            if (DEBUG) {
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+            } else {
+                print(json_encode(array("error" => true)));
+            }
             die(0);
         }
     } else {
-        print(json_encode(array("error" => true)));
+        if (DEBUG) {
+            print("Something isn't set");
+        } else {
+            print(json_encode(array("error" => true)));
+        }
         die(0);
     }
 
 } else {
     // user isn't logged
     // redirect to login page
-    print(json_encode(array("error" => true)));
+    if (DEBUG) {
+        print("The user isn't logged");
+    } else {
+        print(json_encode(array("error" => true)));
+    }
     die(0);
 }

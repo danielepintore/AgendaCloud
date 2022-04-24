@@ -26,19 +26,19 @@ Prenotazione servizi non attivi (Con passaggio di parametri arbitrari)
 prenotazioni date passate o future ma disattivate (Con passaggio di parametri arbitrari)
 Add recaptcha
 Obfuscate the js code
+change the code to check if an employee is active in all uses case
+Add error modals to admin setup
+manage the errors in a better way and fix some of the error messages
+Check service Integration in all classes and
+RECHECK FIX PAYMENTS STATUS CODE
+Add payment method handlers enable and disable
 -----------------------------------------------------------------
 
 TO DO:
 Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
 add the check if the employee is active
-change the code to check if an employee is active in all uses case
-Add payment method handlers
+Add config php with db
 Add holidays
-Add error modals to admin setup
-Ask the password in order to change user data
-RECHECK FIX PAYMENTS STATUS CODE
-Check service Integration in all classes and
-manage the errors in a better way and fix some of the error messages
 Code review
 
 

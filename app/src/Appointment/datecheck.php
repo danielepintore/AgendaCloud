@@ -47,4 +47,26 @@ class DateCheck {
             return false;
         }
     }
+
+    /**
+     * @throws DatabaseException
+     * Check if a date is a holiday date for a specific service, and returns the array associated to the query
+     * in order to generate the correct slots
+     */
+    public static function getHolidayInfo(Database $db, $dateString, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        // todo add check for the employee free day
+        $sql = 'SELECT Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoChiusuraServizio WHERE (Data = ? AND Servizio_id = ?)';
+        $status = $db->query($sql, "si", $dateString, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() > 0){
+            $holidays = [];
+            foreach ($result as $r){
+                $holidays[] = ["date" => $r['Data'], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
+            }
+            return $holidays;
+        } else {
+            return false;
+        }
+    }
 }
