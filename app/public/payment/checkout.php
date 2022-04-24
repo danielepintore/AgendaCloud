@@ -42,7 +42,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         die(0);
     }
     // we need to check if the selected payment method is cash or credit cart
-    if (Payment::isAValidMethod($_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
+    if (Payment::isAValidMethod($db, $_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
         // now we need to make the appointment as booked
         $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", $_POST['paymentMethod'], WAITING_APPROVAL);
@@ -64,7 +64,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             }
             die(0);
         }
-    } elseif (Payment::isAValidMethod($_POST['paymentMethod'])) {
+    } elseif (Payment::isAValidMethod($db, $_POST['paymentMethod'])) {
         // valid payment method, credit card selected
         // check price
         if ($service->getCost() * 100 < 50) {

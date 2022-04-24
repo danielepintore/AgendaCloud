@@ -37,13 +37,17 @@ function getPaymentMethods() {
                     updatePaymentMethod($(this).prop('checked'), paymentMethodId)
                 })
             } else {
-                //TODO show error
-                $('#servicesList').empty();
+                $('#paymentMethodsList').empty();
+                $('#paymentMethodsList').append('<div class="card-body">' +
+                    '<p class="card-text noPaymentMethods">C\'è stato un errore, per favore riprova</p>' +
+                    '</div>');
             }
         })
         .fail(function () {
-            //TODO show error
-            $('#servicesList').empty()
+            $('#paymentMethodsList').empty()
+            $('#paymentMethodsList').append('<div class="card-body">' +
+                '<p class="card-text noPaymentMethods">C\'è stato un errore, per favore riprova</p>' +
+                '</div>');
         });
 }
 $(function (){

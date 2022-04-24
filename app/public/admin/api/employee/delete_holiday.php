@@ -1,6 +1,5 @@
 <?php
 
-use Admin\PaymentMethods;
 use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
@@ -20,17 +19,28 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         }
         die(0);
     }
-    try {
-            $paymentMethods = Payment::getPaymentMethods($db);
-        // se non ci sono stati errori fornisci la risposta
-        if (count($paymentMethods) == 0) {
-            print(json_encode(array()));
-        } else {
-            print(json_encode($paymentMethods));
+    if (isset($_GET['holidayId']) && is_numeric($_GET['holidayId']) && !empty($_GET['holidayId'])) {
+        // create a service object
+        try {
+            $status = \Admin\Employee::deleteHoliday($db, $_GET['holidayId']);
+            // se non ci sono stati errori fornisci la risposta
+            if ($status) {
+                print(json_encode(array("error" => false)));
+            } else {
+                print(json_encode(array("error" => true)));
+            }
+        } catch (DatabaseException|Exception $e) {
+            if (DEBUG) {
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                die(0);
+            } else {
+                print(json_encode(array("error" => true)));
+                die(0);
+            }
         }
-    } catch (DatabaseException|Exception $e) {
+    } else {
         if (DEBUG) {
-            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            print("Something isn't setted up");
             die(0);
         } else {
             print(json_encode(array("error" => true)));

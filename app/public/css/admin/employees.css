@@ -26,7 +26,7 @@
 .list-group-item{
     cursor: default;
 }
-.delete-user, .edit-user{
+.delete-user, .edit-user, .holiday-user{
     cursor: pointer;
 }
 .loading-circe {
@@ -37,4 +37,7 @@
 }
 .status{
     vertical-align: text-bottom;
+}
+.noEmployees{
+    font-size: 1.15rem;
 }

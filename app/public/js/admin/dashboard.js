@@ -41,21 +41,25 @@ function getAppointments(date) {
                     $("#deleteModal").modal("show");
 
                 });
-            } else if (data.length === 0) {
+            } else if (!data.error && data.length == 0) {
                 // display no appointments message
-                $('#appointmentList').append('');
+                $('#appointmentList').empty();
                 $('#appointmentList').append('<div class="card-body">' +
                     '<p class="card-text noAppointments">Non ci sono appuntamenti per il giorno selezionato</p>' +
                     '</div>');
             } else {
-                //TODO show error
                 $('#appointmentList').empty();
+                $('#appointmentList').append('<div class="card-body">' +
+                    '<p class="card-text noAppointments">C\'è stato un errore, per favore riprova</p>' +
+                    '</div>');
             }
             timeout = setTimeout(getAppointments, 1000 * 60, date)
         })
         .fail(function () {
-            //TODO show error
             $('#appointmentList').empty()
+            $('#appointmentList').append('<div class="card-body">' +
+                '<p class="card-text noAppointments">C\'è stato un errore, per favore riprova</p>' +
+                '</div>');
         });
 }
 
@@ -94,18 +98,22 @@ function getPendingAppointments(date) {
                 setPendingButtons();
             } else if (data.length === 0) {
                 // display no appointments message
-                $('#pendingAppointmentsList').append('');
+                $('#pendingAppointmentsList').empty();
                 $('#pendingAppointmentsList').append('<div class="card-body">' +
                     '<p class="card-text noAppointments">Non ci sono appuntamenti da accettare</p>' +
                     '</div>');
             } else {
-                //TODO show error
                 $('#pendingAppointmentsList').empty();
+                $('#pendingAppointmentsList').append('<div class="card-body">' +
+                    '<p class="card-text noAppointments">C\'è stato un errore, per favore riprova</p>' +
+                    '</div>');
             }
         })
         .fail(function () {
-            //TODO show error
             $('#pendingAppointmentsList').empty()
+            $('#pendingAppointmentsList').append('<div class="card-body">' +
+                '<p class="card-text noAppointments">C\'è stato un errore, per favore riprova</p>' +
+                '</div>');
         });
 }
 
@@ -228,7 +236,6 @@ $(function () {
                     getAppointments($(".day-selected").attr("value"));
                 } else {
                     // c'è stato nessun errore non fare nulla
-                    // todo add a error modal
                 }
             })
             .fail(function () {

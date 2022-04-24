@@ -65,7 +65,7 @@ $db = new Database();
                                 <option value="-1" selected disabled hidden>Seleziona un metodo di pagamento</option>
                                 <?php
                                 try {
-                                    $paymentMethods = Payment::getPaymentMethods($db);
+                                    $paymentMethods = Payment::getActivePaymentMethods($db);
                                     // se non è presente un errore
                                     foreach ($paymentMethods as $paymentMethod) {
                                         print('<option value="' . $paymentMethod["id"] . '">' . $paymentMethod["name"] . '</option>');

@@ -19,35 +19,34 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         }
         die(0);
     }
-    try {
-        if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && !empty($_GET['serviceId'])) {
-            if ($_GET['date'] == null){
-                $_GET['date'] = "";
-            }
-            $holidays = \Admin\Services::searchHolidays($db, $_GET['serviceId'], $_GET['date']);
+    if (isset($_GET['employeeId']) && !empty($_GET['employeeId']) && is_numeric($_GET['employeeId']) &&
+        isset($_GET['holidayDate']) && !empty($_GET['holidayDate']) && isset($_GET['holidayStartTime']) &&
+        !empty($_GET['holidayStartTime']) && isset($_GET['holidayEndTime']) && !empty($_GET['holidayEndTime'])) {
+        // create a service object
+        try {
+            $status = \Admin\Employee::addHoliday($db, $_GET['employeeId'], $_GET['holidayDate'], $_GET['holidayStartTime'], $_GET['holidayEndTime']);
             // se non ci sono stati errori fornisci la risposta
-            if (count($holidays) == 0) {
-                print(json_encode(array()));
+            if ($status) {
+                print(json_encode(array("error" => false)));
             } else {
-                print(json_encode($holidays));
+                print(json_encode(array("error" => true)));
             }
-        } else {
+        } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
-                print("Something isn't setted up");
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
                 die(0);
             } else {
                 print(json_encode(array("error" => true)));
                 die(0);
             }
         }
-    } catch (DatabaseException|Exception $e) {
-        if (DEBUG) {
-            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
-            die(0);
+    } else {
+        if (DEBUG){
+            print("something isn't set");
         } else {
             print(json_encode(array("error" => true)));
-            die(0);
         }
+        die(0);
     }
 } else {
     // user isn't logged

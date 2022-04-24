@@ -9,10 +9,10 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
     // user is logged
     // create user object
     $db = new Database();
-    
+
     $user = new User($db);
     // check if user still exist in the database and is in active status
-    if (!$user->exist() || !$user->isActive()){
+    if (!$user->exist() || !$user->isActive()) {
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
     }
@@ -26,7 +26,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php print("Servizi - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Servizi - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
@@ -47,7 +47,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
 <div class="container">
     <?php Navbar::printNavBar($user, SERVICES); ?>
     <div class="container">
-        <button type="submit" id="addServiceBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i class="fa-solid fa-plus"></i> Aggiungi un servizio</button>
+        <button type="submit" id="addServiceBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i
+                    class="fa-solid fa-plus"></i> Aggiungi un servizio
+        </button>
         <div class="col-12 mt-2 mb-2">
             <div class="card w-auto">
                 <div class="card-header">
@@ -68,39 +70,47 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 <div class="modal-body">
                     <form id="addServiceForm">
                         <div class="mb-2">
-                            <input type="text" placeholder="Nome" class="form-control" id="service-name" name="name" data-error="#errorName">
+                            <input type="text" placeholder="Nome" class="form-control" id="service-name" name="name"
+                                   data-error="#errorName">
                         </div>
                         <p id="errorName"></p>
                         <div class="input-group mb-2">
-                            <input type="number" placeholder="Durata" class="form-control" id="service-duration" name="duration" data-error="#errorDuration">
+                            <input type="number" placeholder="Durata" class="form-control" id="service-duration"
+                                   name="duration" data-error="#errorDuration">
                             <span class="input-group-text">minuti</span>
                         </div>
                         <p id="errorDuration"></p>
                         <div class="mb-2">
                             <label for="service-startTime" class="form-label">Orario apertura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="08:00" class="form-control" id="service-startTime" name="startTime" data-error="#errorStartTime">
+                                <input type="time" value="08:00" class="form-control" id="service-startTime"
+                                       name="startTime" data-error="#errorStartTime">
                             </div>
                             <p id="errorStartTime"></p>
                             <label for="service-endTime" class="form-label">Orario chiusura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="service-endTime" name="endTime" data-error="#errorEndTime">
+                                <input type="time" value="12:00" class="form-control" id="service-endTime"
+                                       name="endTime" data-error="#errorEndTime">
                             </div>
                             <p id="errorEndTime"></p>
                             <div class="input-group mb-2">
-                                <input type="number" value="15" placeholder="Costo" class="form-control" id="service-cost" name="cost" data-error="#errorCost">
+                                <input type="number" value="15" placeholder="Costo" class="form-control"
+                                       id="service-cost" name="cost" data-error="#errorCost">
                                 <span class="input-group-text">€</span>
                             </div>
                             <p id="errorCost"></p>
                             <label for="service-waitTime" class="form-label">Tempo di attesa tra appuntamenti:</label>
                             <div class="input-group mb-2">
-                                <input type="number" value="0" class="form-control" id="service-waitTime" name="waitTime" data-error="#errorWaitTime">
+                                <input type="number" value="0" class="form-control" id="service-waitTime"
+                                       name="waitTime" data-error="#errorWaitTime">
                                 <span class="input-group-text">minuti</span>
                             </div>
                             <p id="errorWaitTime"></p>
-                            <label for="service-bookableUntilTime" class="form-label">Non permettere di prenotare se mancano meno di </label>
+                            <label for="service-bookableUntilTime" class="form-label">Non permettere di prenotare se
+                                mancano meno di </label>
                             <div class="input-group mb-2">
-                                <input type="number" value="0" class="form-control" id="service-bookableUntilTime" name="bookableUntil" data-error="#errorBookableUntil">
+                                <input type="number" value="0" class="form-control" id="service-bookableUntilTime"
+                                       name="bookableUntil" data-error="#errorBookableUntil">
                                 <span class="input-group-text">minuti</span>
                             </div>
                             <p id="errorBookableUntil"></p>
@@ -119,7 +129,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddServiceBtn"><span id="loadingCircleAddService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi</button>
+                    <button type="button" class="btn btn-success" id="confirmAddServiceBtn"><span
+                                id="loadingCircleAddService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                    </button>
                 </div>
             </div>
         </div>
@@ -135,39 +147,48 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 <div class="modal-body">
                     <form id="editServiceForm">
                         <div class="mb-2">
-                            <input type="text" placeholder="Nome" class="form-control" id="service-name-edit" name="name" data-error="#errorName-edit">
+                            <input type="text" placeholder="Nome" class="form-control" id="service-name-edit"
+                                   name="name" data-error="#errorName-edit">
                         </div>
                         <p id="errorName-edit"></p>
                         <div class="input-group mb-2">
-                            <input type="number" placeholder="Durata" class="form-control" id="service-duration-edit" name="duration" data-error="#errorDuration-edit">
+                            <input type="number" placeholder="Durata" class="form-control" id="service-duration-edit"
+                                   name="duration" data-error="#errorDuration-edit">
                             <span class="input-group-text">minuti</span>
                         </div>
                         <p id="errorDuration-edit"></p>
                         <div class="mb-2">
                             <label for="service-startTime-edit" class="form-label">Orario apertura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-startTime-edit" name="startTime" data-error="#errorStartTime-edit">
+                                <input type="time" value="" class="form-control" id="service-startTime-edit"
+                                       name="startTime" data-error="#errorStartTime-edit">
                             </div>
                             <p id="errorStartTime-edit"></p>
                             <label for="service-endTime-edit" class="form-label">Orario chiusura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-endTime-edit" name="endTime" data-error="#errorEndTime-edit">
+                                <input type="time" value="" class="form-control" id="service-endTime-edit"
+                                       name="endTime" data-error="#errorEndTime-edit">
                             </div>
                             <p id="errorEndTime-edit"></p>
                             <div class="input-group mb-2">
-                                <input type="number" value="" placeholder="Costo" class="form-control" id="service-cost-edit" name="cost" data-error="#errorCost-edit">
+                                <input type="number" value="" placeholder="Costo" class="form-control"
+                                       id="service-cost-edit" name="cost" data-error="#errorCost-edit">
                                 <span class="input-group-text">€</span>
                             </div>
                             <p id="errorCost-edit"></p>
-                            <label for="service-waitTime-edit" class="form-label">Tempo di attesa tra appuntamenti:</label>
+                            <label for="service-waitTime-edit" class="form-label">Tempo di attesa tra
+                                appuntamenti:</label>
                             <div class="input-group mb-2">
-                                <input type="number" value="" class="form-control" id="service-waitTime-edit" name="waitTime" data-error="#errorWaitTime-edit">
+                                <input type="number" value="" class="form-control" id="service-waitTime-edit"
+                                       name="waitTime" data-error="#errorWaitTime-edit">
                                 <span class="input-group-text">minuti</span>
                             </div>
                             <p id="errorWaitTime-edit"></p>
-                            <label for="service-bookableUntilTime-edit" class="form-label">Non permettere di prenotare se mancano meno di </label>
+                            <label for="service-bookableUntilTime-edit" class="form-label">Non permettere di prenotare
+                                se mancano meno di </label>
                             <div class="input-group mb-2">
-                                <input type="number" value="" class="form-control" id="service-bookableUntilTime-edit" name="bookableUntil" data-error="#errorBookableUntil-edit">
+                                <input type="number" value="" class="form-control" id="service-bookableUntilTime-edit"
+                                       name="bookableUntil" data-error="#errorBookableUntil-edit">
                                 <span class="input-group-text">minuti</span>
                             </div>
                             <p id="errorBookableUntil-edit"></p>
@@ -186,7 +207,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="editServiceBtn"><span id="loadingCircleEditService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Modifica</button>
+                    <button type="button" class="btn btn-success" id="editServiceBtn"><span
+                                id="loadingCircleEditService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Modifica
+                    </button>
                 </div>
             </div>
         </div>
@@ -212,8 +235,12 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-success" id="editEmployeesBtn" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica i dipendenti</button>
+                    <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">
+                        Chiudi
+                    </button>
+                    <button type="button" class="btn btn-success" id="editEmployeesBtn" data-bs-dismiss="modal"><i
+                                class="fa-solid fa-pen"></i> Modifica i dipendenti
+                    </button>
                 </div>
             </div>
         </div>
@@ -242,7 +269,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn" data-bs-dismiss="modal">
+                        Chiudi
+                    </button>
                 </div>
             </div>
         </div>
@@ -259,7 +288,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteServiceBtn" data-bs-dismiss="modal">Elimina</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteServiceBtn" data-bs-dismiss="modal">
+                        Elimina
+                    </button>
                 </div>
             </div>
         </div>
@@ -273,9 +304,12 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="input-group mb-2">
-                        <input type="date" placeholder="Giorno" class="form-control" id="daySearchHoliday">
-                    </div>
+                    <form id="searchDateForm">
+                        <div class="input-group mb-2">
+                            <input type="date" placeholder="Giorno" max="2099-12-31" class="form-control"
+                                   id="daySearchHoliday" data-error="#infoHolidayService">
+                        </div>
+                    </form>
                     <p id="infoHolidayService""></p>
                     <table class="table d-none text-center" id="serviceHolidayTable">
                         <thead>
@@ -290,7 +324,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-success" id="addHolidayButton" data-bs-dismiss="modal"><i class="fa-solid fa-plus"></i> Aggiungi un giorno</button>
+                    <button type="button" class="btn btn-success" id="addHolidayButton" data-bs-dismiss="modal"><i
+                                class="fa-solid fa-plus"></i> Aggiungi un giorno
+                    </button>
                 </div>
             </div>
         </div>
@@ -307,18 +343,22 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                     <form id="addHolidayForm">
                         <div class="mb-2">
                             <label for="holidayDate" class="form-label">Data:</label>
-                            <input type="date" placeholder="Data" class="form-control" id="holidayDate" name="holidayDate" data-error="#errorHolidayDate">
+                            <input type="date" placeholder="Data" class="form-control" id="holidayDate"
+                                   name="holidayDate"
+                                   data-error="#errorHolidayDate">
                         </div>
                         <p id="errorHolidayDate"></p>
                         <div class="mb-2">
                             <label for="holidayStartTime" class="form-label">Orario inizio:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="08:00" class="form-control" id="holidayStartTime" name="holidayStartTime" data-error="#errorholidayStartTime">
+                                <input type="time" value="08:00" class="form-control" id="holidayStartTime"
+                                       name="holidayStartTime" data-error="#errorholidayStartTime">
                             </div>
                             <p id="errorholidayStartTime"></p>
                             <label for="holidayEndTime" class="form-label">Orario fine:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="holidayEndTime" name="holidayEndTime" data-error="#errorholidayEndTime">
+                                <input type="time" value="12:00" class="form-control" id="holidayEndTime"
+                                       name="holidayEndTime" data-error="#errorholidayEndTime">
                             </div>
                             <p id="errorholidayEndTime"></p>
                         </div>
@@ -332,7 +372,9 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi</button>
+                    <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
+                                id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                    </button>
                 </div>
             </div>
         </div>

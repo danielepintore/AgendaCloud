@@ -28,7 +28,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged']) {
             } else {
                 print(json_encode($slots));
             }
-        } catch (DatabaseException|SlotException|Exception $e) {
+        } catch (DatabaseException|SlotException|EmployeeException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
             } else {

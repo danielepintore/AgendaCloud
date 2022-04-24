@@ -203,12 +203,13 @@ class Services {
      */
     public static function addEmployeeToService(Database $db, $serviceId, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        // TODO add a check if the employee is active
-        $sql = 'INSERT INTO Offre (Dipendente_id, Servizio_id) VALUES (?, ?)';
-        $status = $db->query($sql, "ii", $employeeId, $serviceId);
-        if ($status) {
-            //Success
-            return true;
+        if (Employee::isActive($db, $employeeId)) {
+            $sql = 'INSERT INTO Offre (Dipendente_id, Servizio_id) VALUES (?, ?)';
+            $status = $db->query($sql, "ii", $employeeId, $serviceId);
+            if ($status) {
+                //Success
+                return true;
+            }
         }
         return false;
     }
@@ -238,13 +239,13 @@ class Services {
      */
     public static function searchHolidays(Database $db, $serviceId, $date) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT DATE_FORMAT(Data, "%e/%m/%Y") AS Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoChiusuraServizio WHERE (Servizio_id = ? AND Data LIKE ? AND Data >= CURDATE()) LIMIT 10';
+        $sql = 'SELECT id, DATE_FORMAT(Data, "%e/%m/%Y") AS Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoChiusuraServizio WHERE (Servizio_id = ? AND Data LIKE ? AND Data >= CURDATE()) LIMIT 10';
         $status = $db->query($sql, "is", $serviceId, "%$date%");
         if ($status) {
             $result = $db->getResult();
             $holidays = [];
             foreach ($result as $r) {
-                $holidays[] = ["date" => $r["Data"], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
+                $holidays[] = ["id" => $r['id'], "date" => $r["Data"], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
             }
             return $holidays;
         } else {
@@ -260,6 +261,17 @@ class Services {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "INSERT INTO GiornoChiusuraServizio (Data, OraInizio, OraFine, Servizio_id) VALUES (?, ?, ?, ?)";
         $status = $db->query($sql, "sssi", $date, $startTime, $endTime, $serviceId);
+        if ($status && $db->getAffectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function deleteHoliday(Database $db, $holidayId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "DELETE FROM GiornoChiusuraServizio WHERE GiornoChiusuraServizio.id = ?";
+        $status = $db->query($sql, "i", $holidayId);
         if ($status && $db->getAffectedRows() == 1) {
             return true;
         } else {

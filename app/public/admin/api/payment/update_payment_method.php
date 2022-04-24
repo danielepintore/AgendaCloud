@@ -23,7 +23,7 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         isset($_GET['status']) && !empty($_GET['status'])){
         // create a service object
         try {
-            $paymentMethods = \Admin\PaymentMethods::updatePaymentMethodStatus($db, $_GET['paymentMethodId'],
+            $paymentMethods = Payment::updatePaymentMethodStatus($db, $_GET['paymentMethodId'],
                 filter_var($_GET['status'], FILTER_VALIDATE_BOOLEAN));
             // se non ci sono stati errori fornisci la risposta
             if ($paymentMethods) {

@@ -21,7 +21,7 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
             $status = $db->query($sql, "s", $_POST['username']);
             if ($status) {
                 // check the number of results
-                $result = $db->getResult()[0]; // TODO add a check for the passwords in the query
+                $result = $db->getResult()[0];
                 if ($db->getAffectedRows() > 0) {
                     // user exists
                     if (password_verify($_POST['pwd'], $result['Password'])) {

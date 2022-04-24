@@ -32,13 +32,13 @@ manage the errors in a better way and fix some of the error messages
 Check service Integration in all classes and
 RECHECK FIX PAYMENTS STATUS CODE
 Add payment method handlers enable and disable
+Add holidays
+Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
 -----------------------------------------------------------------
 
 TO DO:
-Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
 add the check if the employee is active
 Add config php with db
-Add holidays
 Code review
 
 

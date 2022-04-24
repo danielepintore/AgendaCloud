@@ -1,6 +1,5 @@
 <?php
 
-use Admin\PaymentMethods;
 use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
@@ -21,12 +20,25 @@ if (session_status() == PHP_SESSION_ACTIVE && $_SESSION['logged'] && $_SESSION['
         die(0);
     }
     try {
-            $paymentMethods = Payment::getPaymentMethods($db);
-        // se non ci sono stati errori fornisci la risposta
-        if (count($paymentMethods) == 0) {
-            print(json_encode(array()));
+        if (isset($_GET['employeeId']) && is_numeric($_GET['employeeId']) && !empty($_GET['employeeId'])) {
+            if ($_GET['date'] == null){
+                $_GET['date'] = "";
+            }
+            $holidays = \Admin\Employee::searchHolidays($db, $_GET['employeeId'], $_GET['date']);
+            // se non ci sono stati errori fornisci la risposta
+            if (count($holidays) == 0) {
+                print(json_encode(array()));
+            } else {
+                print(json_encode($holidays));
+            }
         } else {
-            print(json_encode($paymentMethods));
+            if (DEBUG) {
+                print("Something isn't setted up");
+                die(0);
+            } else {
+                print(json_encode(array("error" => true)));
+                die(0);
+            }
         }
     } catch (DatabaseException|Exception $e) {
         if (DEBUG) {
