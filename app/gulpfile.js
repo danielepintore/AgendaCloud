@@ -72,6 +72,7 @@ function modules(done) {
     //Composer files
     var composerFile = gulp.src('composer.json')
         .pipe(gulp.dest('build/'));
+    done();
     return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composerFile);
 }
 
