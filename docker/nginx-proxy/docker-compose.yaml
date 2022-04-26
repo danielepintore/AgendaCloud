@@ -3,6 +3,7 @@ version: '2'
 services:
   nginx-proxy:
     image: jwilder/nginx-proxy
+    restart: always
     container_name: nginx-proxy
     ports:
       - "80:80"
@@ -20,6 +21,7 @@ services:
 
   acme-companion:
     image: nginxproxy/acme-companion
+    restart: always
     container_name: nginx-proxy-acme
     volumes_from:
       - nginx-proxy

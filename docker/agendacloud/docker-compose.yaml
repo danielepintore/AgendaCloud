@@ -1,0 +1,34 @@
+version: '3.1'
+services:
+  agendacloud:
+    image: k0w4sk1/agendacloud:latest
+    expose:
+      - "80"
+    restart: always
+    environment:
+      VIRTUAL_HOST: DOMAIN.COM
+      LETSENCRYPT_HOST: DOMAIN.COM
+      LETSENCRYPT_EMAIL: EMAIL@SOMETHING.COM
+    volumes:
+      - /home/agendacloud/configs/COMPANY_NAME/env:/var/www/html/.env
+    networks:
+      - default
+      - proxy-network
+  db:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: agendacloud
+      MYSQL_USER: agendacloud
+      MYSQL_PASSWORD: supersecurehere
+      MYSQL_ROOT_PASSWORD: supersecurehere
+    volumes:
+      - /home/agendacloud/configs/base.sql:/docker-entrypoint-initdb.d/00-dump.sql
+      - db:/var/lib/mysql
+volumes:
+  db:
+
+networks:
+  proxy-network:
+    external:
+      name: proxy-net
