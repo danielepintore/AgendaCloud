@@ -34,15 +34,16 @@ RECHECK FIX PAYMENTS STATUS CODE
 Add payment method handlers enable and disable
 Add holidays
 Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
+implement docker (last thing to do)
 -----------------------------------------------------------------
 
 TO DO:
+allows employee to make bookings without max day limitation
 add the check if the employee is active
 Add config php with db
 Code review
 
 
-implement docker (last thing to do)
 
 Useful command:
 For debugging ->
