@@ -18,9 +18,9 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && isset($_GET['date'])) {
         try {
             if (isset($_GET["employeeId"])) {
-                $slots = Slot::getSlots($db, $_GET['serviceId'], $_GET["employeeId"], $_GET['date']);
+                $slots = Slot::getSlots($db, $_GET['serviceId'], $_GET["employeeId"], $_GET['date'], $user->isActive());
             } else {
-                $slots = Slot::getSlots($db, $_GET['serviceId'], $user->getId(), $_GET['date']);
+                $slots = Slot::getSlots($db, $_GET['serviceId'], $user->getId(), $_GET['date'], $user->isActive());
             }
             // se non ci sono stati errori fornisci la risposta
             if (count($slots) == 0) {

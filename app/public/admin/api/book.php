@@ -22,7 +22,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         //admins bookings
         // the first thing to do is to check if the date is valid
         try {
-            DateCheck::isValidDate($_POST['date']);
+            DateCheck::isValidDate($_POST['date'], $user->isActive());
         } catch (DataException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
@@ -49,8 +49,8 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         // valid payment method, cash selected
         // now we need to make the appointment as booked
-        $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", CASH, WAITING_APPROVAL);
         try {
+            $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", CASH, WAITING_APPROVAL, $user->isActive());
             // make the reservation
             $bookResponse = $appointment->book();
             // the slot is reserved
@@ -68,7 +68,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         // no admin bookings
         // the first thing to do is to check if the date is valid
         try {
-            DateCheck::isValidDate($_POST['date']);
+            DateCheck::isValidDate($_POST['date'], $user->isActive());
         } catch (DataException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
@@ -94,8 +94,8 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         // valid payment method, cash selected
         // now we need to make the appointment as booked
-        $appointment = new Appointment($db, $_POST['serviceId'], $user->getId(), $_POST['date'], $_POST['slot'], $client, "", CASH, APPOINTMENT_CONFIRMED);
         try {
+            $appointment = new Appointment($db, $_POST['serviceId'], $user->getId(), $_POST['date'], $_POST['slot'], $client, "", CASH, APPOINTMENT_CONFIRMED, $user->isActive());
             // make the reservation
             $bookResponse = $appointment->book();
             // the slot is reserved

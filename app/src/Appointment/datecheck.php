@@ -6,10 +6,13 @@ class DateCheck {
      * @return bool
      * @throws DataException
      */
-    public static function isValidDate($date) {
+    public static function isValidDate($date, $isUserAuthenticated = false) {
         $config = Config::getConfig();
         try {
             $date = new DateTime($date);
+            if ($isUserAuthenticated){
+                return true;
+            }
         } catch (Exception $e) {
             throw DataException::invalidData();
         }

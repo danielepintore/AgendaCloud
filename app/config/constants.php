@@ -38,4 +38,4 @@ defined("SETTINGS")
 or define("SETTINGS", 5);
 
 defined("DEBUG")
-or define("DEBUG", true); // todo change in production
+or define("DEBUG", false); // todo change in production

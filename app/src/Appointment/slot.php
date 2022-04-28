@@ -1,5 +1,7 @@
 <?php
 
+use Admin\User;
+
 class Slot {
     /**
      * @param Database $db
@@ -14,9 +16,9 @@ class Slot {
      * This function given the service identifier, the employee id and the date gives
      * all the slots available
      */
-    public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr) {
+    public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr, $isUserAuthenticated = false) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        DateCheck::isValidDate($dateStr);
+        DateCheck::isValidDate($dateStr, $isUserAuthenticated);
         //check if the date is a holiday
         $holidayInfo = DateCheck::getHolidayInfo($db, $dateStr, $serviceId, $employeeId);
         // check if the employee is active
