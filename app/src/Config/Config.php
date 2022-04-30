@@ -38,11 +38,11 @@ class Config {
                 "pub_key" => $_ENV["CAPTCHA_PUB_KEY"],
             ),
             "environment" => (object)array(
-                "name" => "debug", // TODO: change to production and disable debug
-                "debug" => true,
+                "name" => "production", // TODO: change to production and disable debug
+                "debug" => false,
             ),
             "urls" => (object)array(
-                "baseUrl" => "http://" . $_ENV['DOMAIN_NAME'] // TODO change to https in production
+                "baseUrl" => "https://" . $_ENV['DOMAIN_NAME'] // TODO change to https in production
             ),
             "stripe" => (object)array(
                 "secret_api_key" => $_ENV['STRIPE_SECRET_API_KEY'],
