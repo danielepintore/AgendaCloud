@@ -48,6 +48,10 @@ class Slot {
                                 throw DataException::wrongStartOrEndTime();
                             }
                         }
+                        // if the user is authenticated we can disable the BookableUntil time interval
+                        if($isUserAuthenticated){
+                            $service_info["BookableUntil"] = 0;
+                        }
                         // generazione slots liberi
                         $total_interval_time = $service_info["Durata"] + $service_info["TempoPausa"];
                         try {
