@@ -25,7 +25,7 @@ jobs:
             curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
             sudo apt install -y nodejs
             cd app
-            npm install --global gulp-cli
+            sudo npm install --global gulp-cli
             npm install
             gulp build
       # build docker image
