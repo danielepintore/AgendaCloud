@@ -185,12 +185,13 @@ class Appointment {
      */
     public static function fetchAppointmentInfo(Database $db, $appointmentId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id);';
+        $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id)';
         $status = $db->query($sql, "i", $appointmentId);
         if ($status) {
             //Success, we should find only one appointment
             $result = $db->getResult();
             if ($db->getAffectedRows() == 1) {
+                $result = $result[0];
                 return (object)array("name" => $result["Nome"], "email" => $result["Email"], "date" => $result["Data"],
                     "startTime" => $result["OraInizio"], "endTime" => $result["OraFine"]);
             } else {

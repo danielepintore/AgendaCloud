@@ -238,7 +238,7 @@ function getServicesList() {
                 // display no appointments message
                 $('#servicesList').append('');
                 $('#servicesList').append('<div class="card-body">' +
-                    '<p class="card-text noServices">Non sono presenti dei servizi, creane uno col pulsante qua sopra</p>' +
+                    '<p class="card-text noServices">Non sono presenti dei servizi, creane uno con il pulsante qua sopra</p>' +
                     '</div>');
             } else {
                 $('#servicesList').empty();

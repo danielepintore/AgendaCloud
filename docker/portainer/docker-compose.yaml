@@ -5,11 +5,23 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     restart: always
+    expose:
+      - "9000"
+    environment:
+      VIRTUAL_HOST: portainer-${HOSTNAME}.agendacloud.it
+      VIRTUAL_PORT: 9000
+      LETSENCRYPT_HOST: portainer-${HOSTNAME}.agendacloud.it
+      LETSENCRYPT_EMAIL: pintdany@gmail.com
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - portainer-data:/data
-    ports:
-      - 9443:9443
+    networks:
+      - default
+      - proxy-network
+
 volumes:
   portainer-data:
+networks:
+  proxy-network:
+    name: proxy-net
