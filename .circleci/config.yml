@@ -17,8 +17,7 @@ jobs:
       # install dependencies
       - run:
           name: Install dependencies
-          command: |
-          sudo apt update && sudo apt install npm -y
+          command: sudo apt update && sudo apt install npm -y
 
 
       # Build the image
