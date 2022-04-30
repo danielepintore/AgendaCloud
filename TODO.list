@@ -37,13 +37,13 @@ Prenotazione con dipendenti non attivi (Con passaggio di parametri arbitrari)
 implement docker (last thing to do)
 allows employee to make bookings without max day limitation
 add the check if the employee is active
+Disable credit card by default in base sql
+don't let admin enable credit card if all settings arent setted up
+Allow admin and employee to ignore bookable until time
 -----------------------------------------------------------------
 
 TO DO:
 Change docs for watchtower
-Disable credit card by default in base sql
-don't let admin enable credit card if all settings arent setted up
-
 Implementare servizi di gruppo con calcolo dinamico del prezzo
 Aggiungi pausa pranzo per servizi in modo da evitare di creare due servizi per mattina e pomeriggio
 Add config php with db
