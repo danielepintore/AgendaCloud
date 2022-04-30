@@ -91,7 +91,7 @@ class Database {
     }
 
     public function getInsertId(){
-        return $this->lastQueryStmt->affected_rows;
+        return $this->lastQueryStmt->insert_id;
     }
 
     public function __destruct() {
