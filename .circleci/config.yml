@@ -20,8 +20,10 @@ jobs:
       # install dependencies
       - run:
           name: Install dependencies
-          command: | 
-            sudo apt update && sudo apt install npm -y
+          command: |
+            sudo apt update
+            curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
+            sudo apt install -y nodejs
             cd app
             npm install
       # build app with gulp
