@@ -20,10 +20,10 @@ jobs:
       # install dependencies
       - run:
           name: Install dependencies
-          command: |
-          sudo apt update && sudo apt install npm -y
-          cd app
-          npm install
+          command: | 
+            sudo apt update && sudo apt install npm -y
+            cd app
+            npm install
       # build app with gulp
       - run:
           name: Build project with gulp
