@@ -28,6 +28,7 @@ class Payment {
      * Return all payments method availables
      */
     public static function getPaymentMethods(\Database $db) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "SELECT * FROM MetodoPagamento";
         $status = $db->query($sql);
         if ($status) {
@@ -51,6 +52,7 @@ class Payment {
      * Updates the status of a payment method
      */
     public static function updatePaymentMethodStatus(\Database $db, $paymentMethodId, $status) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         //cash cannot be disabled
         if ($paymentMethodId == CASH){
             return false;
@@ -69,11 +71,17 @@ class Payment {
      * Check if the payment method provided is valid and active
      */
     public static function isAValidMethod(Database $db, $methodId) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
+            $config = new Config();
             $sql = "SELECT isActive FROM MetodoPagamento WHERE id = ?";
             $status = $db->query($sql, "i", $methodId);
             $result = $db->getResult();
             if ($status && $db->getAffectedRows() == 1) {
+                if ($methodId == CREDIT_CARD &&
+                    empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret)) {
+                    return false;
+                }
                 if ($result[0]['isActive'] == 1) {
                     return true;
                 }

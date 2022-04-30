@@ -8,7 +8,7 @@ require_once(realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php');
 
 $config = Config::getConfig();
 // connect to database
-if (!empty($config->stripe->secret_api_key)) {
+if (!empty($config->stripe->secret_api_key) && !empty($config->stripe->endpoint_secret)) {
     try {
         $db = new mysqli($config->db->host, $config->db->expire_user, $config->db->expire_pwd, $config->db->dbname);
         if ($db->connect_errno) {
