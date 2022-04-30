@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  build:
+    # Use `docker:stable` as the Docker container to run this job in
+    docker:
+      - image: cimg/base:stable
+
+    steps:
+      # Checkout the repository files (Download files from git)
+      - checkout
+
+      # Set up a separate Docker environment to run `docker` commands in
+      - setup_remote_docker:
+          version: 20.10.12
+
+      # install dependencies
+      - run:
+          name: Install dependencies
+          command: |
+          sudo apt update && sudo apt install npm -y
+
+
+      # Build the image
+      #- run:
+      #    name: Build Docker image
+      #    command: docker build --tag helloworld .
