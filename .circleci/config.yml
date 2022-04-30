@@ -23,13 +23,10 @@ jobs:
           command: |
             sudo apt update
             curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-            sudo apt install -y nodejs npm
+            sudo apt install -y nodejs
             cd app
             npm install
-      # build app with gulp
-      - run:
-          name: Build project with gulp
-          command: cd app & gulp build
+            gulp build
       # build docker image
       - run:
           name: Build Docker image
