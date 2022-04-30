@@ -53,8 +53,14 @@ class Payment {
      */
     public static function updatePaymentMethodStatus(\Database $db, $paymentMethodId, $status) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $config = new Config();
         //cash cannot be disabled
         if ($paymentMethodId == CASH){
+            return false;
+        }
+        // if credit card isn't configured don't enable it
+        if ($paymentMethodId == CREDIT_CARD &&
+            empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret)) {
             return false;
         }
         $sql = "UPDATE MetodoPagamento SET isActive = ? WHERE MetodoPagamento.id = ?";
