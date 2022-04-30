@@ -14,25 +14,29 @@ import {merge} from "browser-sync/dist/cli/cli-options.js";
 const paths = {
     styles: {
         src: 'public/css/**/*.css',
-        dest: 'build/public/css/',
+        dest: 'build/build/public/css/',
         excludeMin: '!public/css/**/*.min.css'
     },
     images: {
         src: 'public/img/**/*',
-        dest: 'build/public/img/',
+        dest: 'build/build/public/img/',
     },
     scripts: {
         src: 'public/js/**/*.js',
-        dest: 'build/public/js/',
+        dest: 'build/build/public/js/',
         excludeMin: '!public/js/**/*.min.js'
     },
     php: {
         src: 'src/**/*.php',
-        dest: 'build/src/'
+        dest: 'build/build/src/'
     },
     composer: {
         src: 'vendor/**/*',
-        dest: 'build/vendor'
+        dest: 'build/build/vendor'
+    },
+    docker: {
+        src: '../docker/agendacloud/image/*',
+        dest: 'build'
     }
 };
 /*
@@ -59,7 +63,7 @@ function modules(done) {
     var fontAwesomeCSS = gulp.src('./node_modules/@fortawesome/fontawesome-free/css/fontawesome.min.css')
         .pipe(gulp.dest(paths.styles.dest));
     var fontAwesomeFonts = gulp.src('./node_modules/@fortawesome/fontawesome-free/webfonts/*')
-        .pipe(gulp.dest('build/public/webfonts'));
+        .pipe(gulp.dest('build/build/public/webfonts'));
     // jQuery
     var jquery = gulp.src('./node_modules/jquery/dist/jquery.min.js')
         .pipe(gulp.dest(paths.scripts.dest));
@@ -71,7 +75,7 @@ function modules(done) {
         .pipe(gulp.dest(paths.scripts.dest));
     //Composer files
     var composerFile = gulp.src('composer.json')
-        .pipe(gulp.dest('build/'));
+        .pipe(gulp.dest('build/build'));
     done();
     return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composerFile);
 }
@@ -141,16 +145,21 @@ function copyPhpSources(done) {
              collapseWhitespace: true,
              ignoreCustomFragments: [/<\?[\s\S]*?(?:\?>|$)/]
          }))
-         .pipe(gulp.dest('build/public/'));
+         .pipe(gulp.dest('build/build/public/'));
 
      var resourcesDir = gulp.src('resources/**/*.php')
-         .pipe(gulp.dest('build/resources/'));
+         .pipe(gulp.dest('build/build/resources/'));
 
     var configDir = gulp.src('config/**/*.php')
-        .pipe(gulp.dest('build/config/'));
+        .pipe(gulp.dest('build/build/config/'));
 
      done();
     return merge(srcDir, publicDir, resourcesDir, configDir);
+}
+
+function copyDockerFiles(){
+    return gulp.src(paths.docker.src)
+        .pipe(gulp.dest(paths.docker.dest));
 }
 
 // browser-sync
@@ -188,7 +197,7 @@ function watch(done) {
 
 }
 
-const build = gulp.series(modules, copyPhpSources, minifyImages, generateStyles, minifyScripts);
+const build = gulp.series(modules, copyDockerFiles, copyPhpSources, minifyImages, generateStyles, minifyScripts);
 const run = gulp.series(watch, server);
 export default run;
 export {build as build};
