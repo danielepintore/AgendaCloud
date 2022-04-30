@@ -5,8 +5,9 @@ executors:
     # Define the image tag
     environment:
       IMAGE_TAG: k0w4sk1/agendacloud:latest
-    docker:
-      - image: cimg/base:stable
+    machine:
+      image: ubuntu-2004:current
+      resource_class: arm.medium
 
 jobs:
   build:
@@ -14,9 +15,6 @@ jobs:
     steps:
       # Checkout the repository files (Download files from git)
       - checkout
-      # Set up a separate Docker environment to run `docker` commands in
-      - setup_remote_docker:
-          version: 20.10.12
       # install dependencies
       - run:
           name: Install dependencies
@@ -45,7 +43,6 @@ jobs:
   push:
     executor: docker-publisher
     steps:
-      - setup_remote_docker
       - attach_workspace:
           at: /tmp/workspace
       - run:
