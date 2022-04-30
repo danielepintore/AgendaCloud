@@ -24,4 +24,5 @@ volumes:
   portainer-data:
 networks:
   proxy-network:
-    name: proxy-net
+    external:
+      name: proxy-net
