@@ -60,7 +60,7 @@ class Payment {
         }
         // if credit card isn't configured don't enable it
         if ($paymentMethodId == CREDIT_CARD &&
-            empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret)) {
+            (empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret))) {
             return false;
         }
         $sql = "UPDATE MetodoPagamento SET isActive = ? WHERE MetodoPagamento.id = ?";

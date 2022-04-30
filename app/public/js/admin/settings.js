@@ -1,14 +1,21 @@
-function updatePaymentMethod(status, paymentMethodId){
+function updatePaymentMethod(status, paymentMethodId) {
     $.get("/admin/api/payment/update_payment_method.php", {paymentMethodId: paymentMethodId, status: status})
-        .done(function (data){
-            if (!data.error){
-                getPaymentMethods();
+        .done(function (data) {
+            if (data.error){
+                $("#errorAlert").html("Non è stato possibile effettuare l'operazione, contatta l'assistenza");
+                $("#errorAlert").removeClass('d-none');
+            } else {
+                $("#errorAlert").addClass('d-none');
             }
+            getPaymentMethods();
         })
-        .fail(function (){
-
+        .fail(function () {
+            $("#errorAlert").html("Non è stato possibile effettuare l'operazione, contatta l'assistenza");
+            $("#errorAlert").removeClass('d-none');
+            getPaymentMethods();
         });
 }
+
 function getPaymentMethods() {
     $.get("/admin/api/payment/get_payment_methods.php")
         .done(function (data) {
@@ -26,10 +33,10 @@ function getPaymentMethods() {
                     $('#paymentMethodsList').append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"> ' +
                         '<div class="d-flex w-100 justify-content-between"> ' +
                         '<div><span class="name mb-1 me-1">' + element.name + '</span><small class="status">(' + element.isActive + ')</small></div>' +
-                        '<div><label class="switch" style="font-size: .75rem">' + checkbox +'<span class="slider round"></span></label></div>' +
+                        '<div><label class="switch" style="font-size: .75rem">' + checkbox + '<span class="slider round"></span></label></div>' +
                         '</div></a>');
                 });
-                $(".togglePayment").on('click', function (){
+                $(".togglePayment").on('click', function () {
                     let paymentMethodId = $(this).attr("value");
                     // hide the switch button
                     // make the request to change the status of payment method
@@ -50,6 +57,7 @@ function getPaymentMethods() {
                 '</div>');
         });
 }
-$(function (){
+
+$(function () {
     getPaymentMethods()
 })

@@ -45,6 +45,8 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
 <div class="container">
     <?php Navbar::printNavBar($user, SETTINGS); ?>
     <div class="container">
+        <div class="alert alert-danger d-none" id="errorAlert" role="alert">
+        </div>
         <div class="col-12 mt-3 mb-2">
             <div class="card w-auto">
                 <div class="card-header">
