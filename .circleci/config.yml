@@ -5,6 +5,7 @@ executors:
     # Define the image tag
     environment:
       IMAGE_TAG: k0w4sk1/agendacloud:latest
+      PLATFORMS: linux/amd64,linux/arm64
     docker:
       - image: cimg/base:stable
 
@@ -30,43 +31,17 @@ jobs:
             gulp build
       # install buildx
 
-      # build docker image
+      # build and push docker image
       - run:
           name: Build Docker image
           command: |
             cd app/build
-            docker build --tag "${IMAGE_TAG}" .
-      - run:
-          name: Archive Docker image
-          command: docker save --output image.tar "${IMAGE_TAG}"
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar
-
-  push:
-    executor: docker-publisher
-    steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          name: Load Docker image
-          command: docker load --input /tmp/workspace/image.tar
-      - run:
-          name: Publish Docker image
-          command: |
-            echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-            docker push "${IMAGE_TAG}"
-
+            docker buildx build --platform ${PLATFORMS} --tag "${IMAGE_TAG}" --push .
 workflows:
   version: 2
   build-push:
     jobs:
-      - build
-      - push:
-          requires:
-            - build
+      - build:
           filters:
             branches:
               only: main
