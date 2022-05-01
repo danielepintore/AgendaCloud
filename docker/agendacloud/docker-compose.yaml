@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   agendacloud:
-    image: k0w4sk1/agendacloud:latest
+    image: index.docker.io/k0w4sk1/agendacloud:latest
     expose:
       - "80"
     restart: always
