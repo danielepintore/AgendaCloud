@@ -45,6 +45,7 @@ jobs:
           name: Build Docker image
           command: |
             cd app/build
+            echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
             docker buildx build --platform ${PLATFORMS} --tag "${IMAGE_TAG}" --push .
 workflows:
   version: 2
