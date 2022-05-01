@@ -85,7 +85,7 @@ class Payment {
             $result = $db->getResult();
             if ($status && $db->getAffectedRows() == 1) {
                 if ($methodId == CREDIT_CARD &&
-                    empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret)) {
+                    (empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret))) {
                     return false;
                 }
                 if ($result[0]['isActive'] == 1) {
