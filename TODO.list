@@ -40,6 +40,7 @@ add the check if the employee is active
 Disable credit card by default in base sql
 don't let admin enable credit card if all settings arent setted up
 Allow admin and employee to ignore bookable until time
+ADD notification when an appointment is deleted
 -----------------------------------------------------------------
 
 TO DO:
