@@ -10,8 +10,7 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # configure php.ini file
 RUN sed -i 's/;date.timezone =/date.timezone = "Europe\/Rome"/g' $PHP_INI_DIR/php.ini-production
 # set a production php.ini file
-# todo uncomment in prod this
-# RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 # install zip and unzip for composer
