@@ -78,37 +78,72 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         \Stripe\Stripe::setApiKey($config->stripe->secret_api_key);
 
         $domain = $config->urls->baseUrl;
-
-        // check if the service have an image to display
-        if ($service->getImageUrl() != null) {
-            $checkout_session = \Stripe\Checkout\Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'name' => $service->getName(),
-                    'description' => $service->getDescription(),
-                    'images' => [$service->getImageUrl()],
-                    'amount' => $price,
-                    'currency' => 'eur',
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
-                'cancel_url' => $domain,
-            ]);
-        } else {
-            $checkout_session = \Stripe\Checkout\Session::create([
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                    'name' => $service->getName(),
-                    'description' => $service->getDescription(),
-                    'amount' => $price,
-                    'currency' => 'eur',
-                    'quantity' => 1,
-                ]],
-                'mode' => 'payment',
-                'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
-                'cancel_url' => $domain,
-            ]);
+        try {
+            // check if the service have an image to display
+            if (!empty($service->getImageUrl()) && !empty($service->getDescription())) {
+                $checkout_session = \Stripe\Checkout\Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'name' => $service->getName(),
+                        'description' => $service->getDescription(),
+                        'images' => [$service->getImageUrl()],
+                        'amount' => $price,
+                        'currency' => 'eur',
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
+                    'cancel_url' => $domain,
+                ]);
+            } elseif (!empty($service->getDescription())) {
+                $checkout_session = \Stripe\Checkout\Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'name' => $service->getName(),
+                        'description' => $service->getDescription(),
+                        'amount' => $price,
+                        'currency' => 'eur',
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
+                    'cancel_url' => $domain,
+                ]);
+            } elseif (!empty($service->getImageUrl())) {
+                $checkout_session = \Stripe\Checkout\Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'name' => $service->getName(),
+                        'images' => [$service->getImageUrl()],
+                        'amount' => $price,
+                        'currency' => 'eur',
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
+                    'cancel_url' => $domain,
+                ]);
+            } else {
+                $checkout_session = \Stripe\Checkout\Session::create([
+                    'payment_method_types' => ['card'],
+                    'line_items' => [[
+                        'name' => $service->getName(),
+                        'amount' => $price,
+                        'currency' => 'eur',
+                        'quantity' => 1,
+                    ]],
+                    'mode' => 'payment',
+                    'success_url' => $domain . '/payment/success.php?sessionId={CHECKOUT_SESSION_ID}&paymentMethod=' . $_POST['paymentMethod'],
+                    'cancel_url' => $domain,
+                ]);
+            }
+        } catch (Exception $e){
+            if (DEBUG){
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            } else {
+                header("HTTP/1.1 303 See Other");
+                header("Location: /error.php");
+            }
         }
 
         // now we need to make the appointment as booked
