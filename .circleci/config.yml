@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Prepare docker buildx
           command: |
-            docker buildx create xbuilder
+            docker buildx create --name xbuilder
             docker buildx use xbuilder
             docker buildx inspect --bootstrap
       # build and push docker image
