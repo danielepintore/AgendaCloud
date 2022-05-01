@@ -57,7 +57,7 @@ try {
         $phpMailer = new MailClient();
         $emails = $stmt->get_result();
         foreach ($emails as $email) {
-            if (DEBUG){
+            if (DEBUG && $config->environment->name == "debug"){
                 if (empty($email["receiverName"])){
                     $phpMailer->sendEmail($email["subject"], $email["body"], $email["altBody"], "example@email-blackhole.com");
                 } else {
