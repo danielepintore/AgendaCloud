@@ -65,3 +65,7 @@ obfuscate code at https://www.obfuscator.io/
 
 Remember to set the correct timezone (Europe/Rome) in php.ini file, we can se the location with php --ini
 date.timezone = "Europe/Rome"
+
+https://betterprogramming.pub/setting-up-a-multi-arch-docker-build-with-circleci-and-alpine-for-your-apple-m1-ba739ef1f754
+
+https://emmer.dev/blog/publishing-docker-images-with-circleci/
