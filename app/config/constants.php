@@ -1,4 +1,6 @@
 <?php
+require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
+$config = Config::getConfig();
 // Payment status constants
 defined("PAYMENT_PENDING")
 or define("PAYMENT_PENDING", 2);
@@ -38,4 +40,4 @@ defined("SETTINGS")
 or define("SETTINGS", 5);
 
 defined("DEBUG")
-or define("DEBUG", true); // todo change in production
+or define("DEBUG", $config->environment->debug);

@@ -38,8 +38,8 @@ class Config {
                 "pub_key" => $_ENV["CAPTCHA_PUB_KEY"],
             ),
             "environment" => (object)array(
-                "name" => "production", // TODO: change to production and disable debug
-                "debug" => false,
+                "name" => "production",
+                "debug" => filter_var($_ENV["DEBUG"], FILTER_VALIDATE_BOOLEAN),
             ),
             "urls" => (object)array(
                 "baseUrl" => "https://" . $_ENV['DOMAIN_NAME'] // TODO change to https in production
