@@ -4,6 +4,7 @@ namespace Admin;
 
 use Database;
 use DatabaseException;
+use MailClient;
 
 class Appointment {
     /**
@@ -166,17 +167,30 @@ class Appointment {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
             $status = $db->query($sql, "ii", CANCELED, $appointmentId);
             if ($status) {
-                //Success
+                // Send mail to customer
+                $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
+                $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                if (!empty($appointment->email)) {
+                    MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
+                }
                 return true;
             }
         } else {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Dipendente_id = ?';
             $status = $db->query($sql, "iii", CANCELED, $appointmentId, $employeeId);
             if ($status) {
-                //Success
+                // Send mail to customer
+                $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
+                $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                if (!empty($appointment->email)) {
+                    MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
+                }
                 return true;
             }
         }
+
         return false;
     }
 
