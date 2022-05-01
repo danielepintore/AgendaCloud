@@ -53,7 +53,7 @@ class Payment {
      */
     public static function updatePaymentMethodStatus(\Database $db, $paymentMethodId, $status) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $config = new Config();
+        $config = Config::getConfig();
         //cash cannot be disabled
         if ($paymentMethodId == CASH){
             return false;
@@ -61,6 +61,7 @@ class Payment {
         // if credit card isn't configured don't enable it
         if ($paymentMethodId == CREDIT_CARD &&
             (empty($config->stripe->secret_api_key) || empty($config->stripe->endpoint_secret))) {
+            print("nope");
             return false;
         }
         $sql = "UPDATE MetodoPagamento SET isActive = ? WHERE MetodoPagamento.id = ?";
@@ -79,7 +80,7 @@ class Payment {
     public static function isAValidMethod(Database $db, $methodId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         try {
-            $config = new Config();
+            $config = Config::getConfig();
             $sql = "SELECT isActive FROM MetodoPagamento WHERE id = ?";
             $status = $db->query($sql, "i", $methodId);
             $result = $db->getResult();
