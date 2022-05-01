@@ -29,8 +29,13 @@ jobs:
             sudo npm install --global gulp-cli
             npm install
             gulp build
-      # install buildx
-
+      # prepare docker buildx
+      - run:
+          name: Prepare docker buildx
+          command: |
+            docker buildx create xbuilder
+            docker buildx use xbuilder
+            docker buildx inspect --bootstrap
       # build and push docker image
       - run:
           name: Build Docker image
