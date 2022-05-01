@@ -30,7 +30,9 @@ class Session {
                     $sessionId["SessionId"]
                 );
             } catch (Exception $e) {
-                throw PaymentException::failedToInvalidateSession();
+                // TODO edit this but for now continue
+                // ignore and continue
+                //throw PaymentException::failedToInvalidateSession();
             }
         }
     }
