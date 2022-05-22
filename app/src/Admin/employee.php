@@ -169,4 +169,25 @@ class Employee {
             return false;
         }
     }
+
+    public static function getEmployeeWorkingTimes(Database $db, $employeeId) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, IsCustom, StartDate, EndDate FROM OrariDipendente WHERE (Dipendente_id = ?)';
+        $status = $db->query($sql, "i", $employeeId);
+        if ($status) {
+            $result = $db->getResult();
+            $standardTime = [];
+            $customTime = [];
+            foreach ($result as $r) {
+                if ($r['IsCustom'] == 0){
+                    $standardTime[] = ["day" => $r['GiornoSettimana'], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                } else {
+                    $customTime[] = ["startDate" => $r["StartDate"], "EndDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                }
+            }
+            return ["standard" => $standardTime, "custom" => $customTime];
+        } else {
+            return [];
+        }
+    }
 }
