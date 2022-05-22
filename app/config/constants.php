@@ -39,5 +39,21 @@ or define("EMPLOYEES", 4);
 defined("SETTINGS")
 or define("SETTINGS", 5);
 
+// Constants for weekdays
+defined("LUNEDI")
+or define("LUNEDI", 0);
+defined("MARTEDI")
+or define("MARTEDI", 1);
+defined("MERCOLEDI")
+or define("MERCOLEDI", 2);
+defined("GIOVEDI")
+or define("GIOVEDI", 3);
+defined("VENERDI")
+or define("VENERDI", 4);
+defined("SABATO")
+or define("SABATO", 5);
+defined("DOMENICA")
+or define("DOMENICA", 6);
+
 defined("DEBUG")
 or define("DEBUG", $config->environment->debug);
