@@ -5,14 +5,14 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
-    
+
     $user = new User($db);
     // check if user still exist in the database and is in active status
-    if (!$user->exist() || !$user->isActive()){
+    if (!$user->exist() || !$user->isActive()) {
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
     }
@@ -26,7 +26,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php print("Dipendenti - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Dipendenti - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
@@ -48,7 +48,9 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
 <div class="container">
     <?php Navbar::printNavBar($user, EMPLOYEES); ?>
     <div class="container">
-        <button type="submit" id="addEmployeeBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i class="fa-solid fa-plus"></i> Aggiungi un dipendente</button>
+        <button type="submit" id="addEmployeeBtn" class="btn btn-success d-block me-0 ms-auto mt-2"><i
+                    class="fa-solid fa-plus"></i> Aggiungi un dipendente
+        </button>
         <div class="col-12 mt-2 mb-2">
             <div class="card w-auto">
                 <div class="card-header">
@@ -79,10 +81,12 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                             <input type="text" placeholder="Ruolo" class="form-control" id="role" name="role">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Username" class="form-control" id="username" name="username">
+                            <input type="text" placeholder="Username" class="form-control" id="username"
+                                   name="username">
                         </div>
                         <div class="mb-2">
-                            <input type="password" placeholder="Password" class="form-control" id="password" name="password">
+                            <input type="password" placeholder="Password" class="form-control" id="password"
+                                   name="password">
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="admin">
@@ -100,7 +104,10 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn"><span id="loadingCircleAddEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span> Aggiungi</button>
+                    <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn"><span
+                                id="loadingCircleAddEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span>
+                        Aggiungi
+                    </button>
                 </div>
             </div>
         </div>
@@ -119,16 +126,19 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                             <input type="text" placeholder="Nome" class="form-control" id="name-edit" name="name">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Cognome" class="form-control" id="surname-edit" name="surname">
+                            <input type="text" placeholder="Cognome" class="form-control" id="surname-edit"
+                                   name="surname">
                         </div>
                         <div class="mb-2">
                             <input type="text" placeholder="Ruolo" class="form-control" id="role-edit" name="role">
                         </div>
                         <div class="mb-2">
-                            <input type="text" placeholder="Username" class="form-control" id="username-edit" name="username">
+                            <input type="text" placeholder="Username" class="form-control" id="username-edit"
+                                   name="username">
                         </div>
                         <div class="mb-2">
-                            <input type="password" placeholder="Nuova password" class="form-control" id="password-edit" name="password">
+                            <input type="password" placeholder="Nuova password" class="form-control" id="password-edit"
+                                   name="password">
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" value="" id="admin-edit">
@@ -146,7 +156,10 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn"><span id="loadingCircleEditEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span> Modifica</button>
+                    <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn"><span
+                                id="loadingCircleEditEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span>
+                        Modifica
+                    </button>
                 </div>
             </div>
         </div>
@@ -164,7 +177,9 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteEmployeeBtn" data-bs-dismiss="modal">Elimina</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteEmployeeBtn" data-bs-dismiss="modal">
+                        Elimina
+                    </button>
                 </div>
             </div>
         </div>
@@ -249,6 +264,41 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
                                 id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imposta gli orari di lavoro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#defaultWorkTimes" type="button" role="tab" aria-controls="Orari standard" aria-selected="true">Orari standard</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#customWorkTimes" type="button" role="tab" aria-controls="Orari speciali" aria-selected="false">Orari speciali</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="defaultWorkTimes" role="tabpanel" aria-labelledby="defaultWorkTimes">
+                            <div id="defaultWorkTimesTable" class="mb-2"></div>
+                            <button id="EditWorkingTimeBtn" type="button" class="btn btn-success w-100" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica orari</button>
+                        </div>
+                        <div class="tab-pane fade" id="customWorkTimes" role="tabpanel" aria-labelledby="customWorkTimes">
+                            <div id="customWorkTimesTable" class="mb-2"></div>
+                            <button id="AddCustomWorkingTimeBtn" type="button" class="btn btn-success w-100" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Aggiungi orari</button>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>

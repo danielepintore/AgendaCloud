@@ -59,6 +59,7 @@ function getEmployeesList() {
                         '<div><span class="name mb-1 me-1">' + element.name + ' ' + element.surname + '</span><small class="status">(' + element.isActive + ')</small></div>' +
                         '<div class="pointer">' +
                         '<i class="fa-solid fa-pen edit-user ms-2" value="' + element.id + '"></i>' +
+                        '<i class="fa-solid fa-clock working-times ms-2" value="' + element.id + '"></i>' +
                         '<i class="fa-solid fa-calendar-day holiday-user ms-2" value="' + element.id + '"></i>' +
                         '<i class="fa-solid fa-trash ms-2 delete-user" value="' + element.id + '"></i></div>' +
                         '</div><div class="d-flex w-100 justify-content-between"><h7 class="mb-1">' + element.role + '</h7></div>' +
@@ -67,16 +68,22 @@ function getEmployeesList() {
                         '<small>' + element.userType + '</small>' +
                         '</div></a>');
                 });
+                /**
+                 * Edit user modal
+                 */
                 $(".edit-user").on("click", function () {
-                    let userId = $(this).attr("value");
-                    $("#confirmEditEmployeeBtn").attr('value', userId);
-                    populateEditModal(userId);
+                    let employeeId = $(this).attr("value");
+                    $("#confirmEditEmployeeBtn").attr('value', employeeId);
+                    populateEditModal(employeeId);
                     // open modal to confirm
                     $("#editEmployeeModal").modal("show");
                 });
+                /**
+                 * Delete user modal
+                 */
                 $(".delete-user").on("click", function () {
-                    let userId = $(this).attr("value");
-                    $("#confirmDeleteEmployeeBtn").attr('value', userId);
+                    let employeeId = $(this).attr("value");
+                    $("#confirmDeleteEmployeeBtn").attr('value', employeeId);
                     // open modal to confirm
                     $("#deleteEmployeeModal").modal("show");
                 });
@@ -84,11 +91,21 @@ function getEmployeesList() {
                  * Holiday modal
                  */
                 $(".holiday-user").on("click", function () {
-                    let userId = $(this).attr("value");
-                    getHolidaysForUser(userId, $("#daySearchHoliday").val())
-                    $("#addHolidayButton").attr('value', userId);
+                    let employeeId = $(this).attr("value");
+                    getHolidaysForUser(employeeId, $("#daySearchHoliday").val())
+                    $("#addHolidayButton").attr('value', employeeId);
                     // open modal to confirm
                     $("#viewHolidaysModal").modal("show");
+                });
+                /**
+                 * Working times modal
+                 */
+                $(".working-times").on("click", function () {
+                    let employeeId = $(this).attr("value");
+                    generateWorkTimesTables(employeeId);
+                    $("#EditWorkingTimeBtn").attr('value', employeeId);
+                    // open modal to confirm
+                    $("#editWorkTimesModal").modal("show");
                 });
             } else if (data.length === 0) {
                 // display no appointments message
@@ -108,6 +125,43 @@ function getEmployeesList() {
             $('#employeeList').append('<div class="card-body">' +
                 '<p class="card-text noEmployees">C\'è stato un errore, per favore riprova</p>' +
                 '</div>');
+        });
+}
+
+/**
+ * Function to generate the tables in the set worktimes modal in employee page
+ */
+function generateWorkTimesTables(employeeId) {
+    $.get('/admin/api/employee/get_working_times.php', {employeeId: employeeId})
+        .done(function (data) {
+            let table = $('#defaultWorkTimesTable');
+            table.empty();
+            if (!data.error && data["standard"].length > 0) {
+                // There aren't errors
+                // Generate the table
+                const days = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+                // generate the default worktime table
+                let tbody;
+                let counter = 0;
+                table.append('<table class="table text-center"><thead><tr>' +
+                    '<th scope="col">Giorno</th>' +
+                    '<th scope="col">Ore lavorative</th>' +
+                    '<th scope="col">Pausa pranzo</th>' +
+                    '</tr></thead><tbody></tbody></table>');
+                tbody = table.find("tbody");
+                days.forEach(day => {
+                    let dayInfo = data["standard"][counter];
+                    tbody.append('<tr>' +
+                        '<td>' + day + '</td>' +
+                        '<td><span class="badge bg-secondary">' + dayInfo.workStartTime + ' - ' + dayInfo.workEndTime + '</span></td>' +
+                        '<td><span class="badge bg-secondary">' + dayInfo.breakStartTime + ' - ' + dayInfo.breakEndTime + '</span></td>' +
+                        '</tr>');
+                    counter++;
+                });
+            }
+        })
+        .fail(function () {
+
         });
 }
 
