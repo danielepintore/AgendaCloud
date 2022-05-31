@@ -172,17 +172,21 @@ class Employee {
 
     public static function getEmployeeWorkingTimes(Database $db, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, IsCustom, StartDate, EndDate FROM OrariDipendente WHERE (Dipendente_id = ?)';
+        $sql = 'SELECT GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariDipendente WHERE (Dipendente_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
         $status = $db->query($sql, "i", $employeeId);
         if ($status) {
             $result = $db->getResult();
             $standardTime = [];
             $customTime = [];
             foreach ($result as $r) {
+                if ($r['InizioPausa'] == null){$r['InizioPausa'] = "";}
+                if ($r['FinePausa'] == null){$r['FinePausa'] = "";}
                 if ($r['IsCustom'] == 0){
                     $standardTime[] = ["day" => $r['GiornoSettimana'], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
                 } else {
-                    $customTime[] = ["startDate" => $r["StartDate"], "EndDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                    if ($r['StartDate'] == null){$r['StartDate'] = "";}
+                    if ($r['EndDate'] == null){$r['EndDate'] = "";}
+                    $customTime[] = ["startDate" => $r["StartDate"], "endDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
                 }
             }
             return ["standard" => $standardTime, "custom" => $customTime];
