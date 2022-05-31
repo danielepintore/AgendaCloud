@@ -134,6 +134,7 @@ function getEmployeesList() {
 function generateWorkTimesTables(employeeId) {
     $.get('/admin/api/employee/get_working_times.php', {employeeId: employeeId})
         .done(function (data) {
+            // populate standard worktimes table
             let table = $('#defaultWorkTimesTable');
             table.empty();
             if (!data.error && data["standard"].length > 0) {
@@ -159,6 +160,33 @@ function generateWorkTimesTables(employeeId) {
                     counter++;
                 });
             }
+
+            // populate custom worktimes table
+            table = $('#customWorkTimesTable');
+            table.empty();
+            if (!data.error && data["custom"].length > 0) {
+                // There aren't errors
+                // generate the custom worktime table
+                let tbody;
+                let counter = 0;
+                table.append('<table class="table text-center"><thead><tr>' +
+                    '<th scope="col">Data inizio</th>' +
+                    '<th scope="col">Data fine</th>' +
+                    '<th scope="col">Ore lavorative</th>' +
+                    '<th scope="col">Pausa pranzo</th>' +
+                    '</tr></thead><tbody></tbody></table>');
+                tbody = table.find("tbody");
+                data["custom"].forEach(customTime => {
+                    tbody.append('<tr>' +
+                        '<td>' + String(customTime.startDate) + '</td>' +
+                        '<td>' + String(customTime.endDate) + '</td>' +
+                        '<td><span class="badge bg-secondary">' + String(customTime.workStartTime)  + ' - ' + String(customTime.workEndTime) + '</span></td>' +
+                        '<td><span class="badge bg-secondary">' + String(customTime.breakStartTime) + ' - ' + String(customTime.breakEndTime) + '</span></td>' +
+                        '</tr>');
+                    counter++;
+                });
+            }
+
         })
         .fail(function () {
 
