@@ -344,59 +344,57 @@ $(function () {
             }
         })
         if ($("#addServiceForm").valid()) {
-            // show loading animation
-            $("#loadingCircleAddService").removeClass("d-none");
-            // make request
-            $.post("/admin/api/service/add_service.php", {
-                serviceName: $("#service-name").val(),
-                serviceDuration: $("#service-duration").val(),
-                serviceStartTime: $("#service-startTime").val(),
-                serviceEndTime: $("#service-endTime").val(),
-                serviceCost: $("#service-cost").val(),
-                serviceWaitTime: $("#service-waitTime").val(),
-                bookableUntil: $("#service-bookableUntilTime").val(),
-                serviceDescription: $("#service-description").val(),
-                serviceActive: $("#service-active").prop("checked")
-            })
-                .done(function (data) {
-                    // hide loading animation
-                    $("#loadingCircleAddService").addClass("d-none");
+            let buttonLoader = new ButtonLoader("#confirmAddServiceBtn");
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/service/add_service.php", {
+                    serviceName: $("#service-name").val(),
+                    serviceDuration: $("#service-duration").val(),
+                    serviceStartTime: $("#service-startTime").val(),
+                    serviceEndTime: $("#service-endTime").val(),
+                    serviceCost: $("#service-cost").val(),
+                    serviceWaitTime: $("#service-waitTime").val(),
+                    bookableUntil: $("#service-bookableUntilTime").val(),
+                    serviceDescription: $("#service-description").val(),
+                    serviceActive: $("#service-active").prop("checked")
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide add employee modal
+                        $("#addServiceModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Servizio aggiunto");
+                            $("#successModalMessage").html("Il servizio è stato aggiunto");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            getServicesList();
+                            // clean all the fields
+                            $("#service-name").val("");
+                            $("#service-duration").val("");
+                            $("#service-startTime").val("");
+                            $("#service-endTime").val("");
+                            $("#service-cost").val("");
+                            $("#service-waitTime").val("");
+                            $("#service-bookableUntilTime").val("");
+                            $("#service-description").val("");
+                            $("#service-active").prop("checked", true);
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Servizio non aggiunto");
+                            $("#errorModalMessage").html("Il servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
                     // Hide add employee modal
                     $("#addServiceModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Servizio aggiunto");
-                        $("#successModalMessage").html("Il servizio è stato aggiunto");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        getServicesList();
-                        // clean all the fields
-                        $("#service-name").val("");
-                        $("#service-duration").val("");
-                        $("#service-startTime").val("");
-                        $("#service-endTime").val("");
-                        $("#service-cost").val("");
-                        $("#service-waitTime").val("");
-                        $("#service-bookableUntilTime").val("");
-                        $("#service-description").val("");
-                        $("#service-active").prop("checked", true);
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Servizio non aggiunto");
-                        $("#errorModalMessage").html("Il servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleAddService").addClass("d-none");
-                // Hide add employee modal
-                $("#addServiceModal").modal("hide");
-                // set error modal data
-                $("#errorModalTitle").html("Servizio non aggiunto");
-                $("#errorModalMessage").html("Il servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show confirmation modal
-                $("#errorModal").modal("show");
+                    // set error modal data
+                    $("#errorModalTitle").html("Servizio non aggiunto");
+                    $("#errorModalMessage").html("Il servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     });
@@ -433,50 +431,49 @@ $(function () {
             }
         })
         if ($("#editServiceForm").valid()) {
-            // show loading animation
-            $("#loadingCircleEditService").removeClass("d-none");
-            // make request
-            $.post("/admin/api/service/update_service.php", {
-                id: $(this).val(),
-                serviceName: $("#service-name-edit").val(),
-                serviceDuration: $("#service-duration-edit").val(),
-                serviceStartTime: $("#service-startTime-edit").val(),
-                serviceEndTime: $("#service-endTime-edit").val(),
-                serviceCost: $("#service-cost-edit").val(),
-                serviceWaitTime: $("#service-waitTime-edit").val(),
-                bookableUntil: $("#service-bookableUntilTime-edit").val(),
-                serviceDescription: $("#service-description-edit").val(),
-                serviceActive: $("#service-active-edit").prop("checked")
-            })
-                .done(function (data) {
-                    // hide loading animation
-                    $("#loadingCircleEditService").addClass("d-none");
+            let buttonLoader = new ButtonLoader("#editServiceBtn");
+            let id = $(this).val();
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/service/update_service.php", {
+                    id: id,
+                    serviceName: $("#service-name-edit").val(),
+                    serviceDuration: $("#service-duration-edit").val(),
+                    serviceStartTime: $("#service-startTime-edit").val(),
+                    serviceEndTime: $("#service-endTime-edit").val(),
+                    serviceCost: $("#service-cost-edit").val(),
+                    serviceWaitTime: $("#service-waitTime-edit").val(),
+                    bookableUntil: $("#service-bookableUntilTime-edit").val(),
+                    serviceDescription: $("#service-description-edit").val(),
+                    serviceActive: $("#service-active-edit").prop("checked")
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide add employee modal
+                        $("#editServiceModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Servizio modificato");
+                            $("#successModalMessage").html("Il servizio è stato modificato");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            getServicesList()
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Servizio non modificato");
+                            $("#errorModalMessage").html("Il servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
                     // Hide add employee modal
                     $("#editServiceModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Servizio modificato");
-                        $("#successModalMessage").html("Il servizio è stato modificato");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        getServicesList()
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Servizio non modificato");
-                        $("#errorModalMessage").html("Il servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleEditService").addClass("d-none");
-                // Hide add employee modal
-                $("#editServiceModal").modal("hide");
-                // set error modal data
-                $("#errorModalTitle").html("Servizio non modificato");
-                $("#errorModalMessage").html("Il servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show confirmation modal
-                $("#errorModal").modal("show");
+                    // set error modal data
+                    $("#errorModalTitle").html("Servizio non modificato");
+                    $("#errorModalMessage").html("Il servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     });
@@ -526,54 +523,54 @@ $(function () {
             }
         });
         if ($("#addHolidayForm").valid()) {
-            // show loading animation
-            $("#loadingCircleAddHoliday").removeClass("d-none");
-            // prepare start and end time if full day check box is selected
-            let startTime;
-            let endTime;
-            if ($("#holidayFullDayCheckBox").prop('checked')) {
-                startTime = "00:00";
-                endTime = "23:59";
-            } else {
-                startTime = $("#holidayStartTime").val();
-                endTime = $("#holidayEndTime").val();
-            }
-            // make request
-            $.get("/admin/api/service/add_holiday.php", {
-                serviceId: $(this).val(),
-                date: $("#holidayDate").val(),
-                startTime: startTime,
-                endTime: endTime,
-            })
-                .done(function (data) {
-                    // hide loading animation
-                    $("#loadingCircleAddHoliday").addClass("d-none");
+            let buttonLoader = new ButtonLoader("#confirmAddHolidayButton")
+            let serviceId = $(this).val();
+            buttonLoader.makeRequest(function (){
+                // prepare start and end time if full day check box is selected
+                let startTime;
+                let endTime;
+                if ($("#holidayFullDayCheckBox").prop('checked')) {
+                    startTime = "00:00";
+                    endTime = "23:59";
+                } else {
+                    startTime = $("#holidayStartTime").val();
+                    endTime = $("#holidayEndTime").val();
+                }
+                // make request
+                $.get("/admin/api/service/add_holiday.php", {
+                    serviceId: serviceId,
+                    date: $("#holidayDate").val(),
+                    startTime: startTime,
+                    endTime: endTime,
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide add employee modal
+                        $("#addHolidayModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Giorno di chiusura aggiunto");
+                            $("#successModalMessage").html("Il giorno di chiusura del servizio è stato aggiunto");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            getServicesList()
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
+                            $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
                     // Hide add employee modal
                     $("#addHolidayModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Giorno di chiusura aggiunto");
-                        $("#successModalMessage").html("Il giorno di chiusura del servizio è stato aggiunto");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        getServicesList()
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
-                        $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleAddHoliday").addClass("d-none");
-                // Hide add employee modal
-                $("#addHolidayModal").modal("hide");
-                // set error modal data
-                $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
-                $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show confirmation modal
-                $("#errorModal").modal("show");
+                    // set error modal data
+                    $("#errorModalTitle").html("Giorno di chiusura non aggiunto");
+                    $("#errorModalMessage").html("Il giorno di chiusura non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     });

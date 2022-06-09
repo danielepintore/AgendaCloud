@@ -42,6 +42,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery.validate.min.js"></script>
     <script src="../js/additional-methods.min.js"></script>
+    <script src="../js/buttonLoader.js"></script>
     <script src="../js/admin/employees.js"></script>
 </head>
 <body>
@@ -105,7 +106,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmAddEmployeeBtn"><span
-                                id="loadingCircleAddEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span>
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span>
                         Aggiungi
                     </button>
                 </div>
@@ -157,7 +158,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmEditEmployeeBtn"><span
-                                id="loadingCircleEditEmployee" class="ld ld-ring ld-cycle loading-circe d-none"></span>
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span>
                         Modifica
                     </button>
                 </div>
@@ -262,8 +263,56 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
-                                id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="workTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imposta gli orari di lavoro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body" style="">
+                    <div id="employeeWorkTimesTab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#defaultWorkTimes"
+                                        type="button" role="tab" aria-controls="Orari standard" aria-selected="true">
+                                    Orari standard
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                        data-bs-target="#customWorkTimes" type="button" role="tab"
+                                        aria-controls="Orari speciali" aria-selected="false">Orari speciali
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="defaultWorkTimes" role="tabpanel"
+                                 aria-labelledby="defaultWorkTimes">
+                                <div id="defaultWorkTimesTable" class="mb-2"></div>
+                                <button id="showModalEditWorkingTimeBtn" type="button" class="btn btn-success w-100"><i
+                                            class="fa-solid fa-pen"></i> Modifica orari
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="customWorkTimes" role="tabpanel"
+                                 aria-labelledby="customWorkTimes">
+                                <div id="customWorkTimesTable" class="mb-2"></div>
+                                <button id="showCustomWorkingTimeModal" type="button" class="btn btn-success w-100"><i
+                                            class="fa-solid fa-plus"></i> Aggiungi orari
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
                 </div>
             </div>
         </div>
@@ -273,32 +322,85 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Imposta gli orari di lavoro</h5>
+                    <h5 class="modal-title">Modifica gli orari di lavoro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#defaultWorkTimes" type="button" role="tab" aria-controls="Orari standard" aria-selected="true">Orari standard</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#customWorkTimes" type="button" role="tab" aria-controls="Orari speciali" aria-selected="false">Orari speciali</button>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="defaultWorkTimes" role="tabpanel" aria-labelledby="defaultWorkTimes">
-                            <div id="defaultWorkTimesTable" class="mb-2"></div>
-                            <button id="EditWorkingTimeBtn" type="button" class="btn btn-success w-100" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Modifica orari</button>
-                        </div>
-                        <div class="tab-pane fade" id="customWorkTimes" role="tabpanel" aria-labelledby="customWorkTimes">
-                            <div id="customWorkTimesTable" class="mb-2"></div>
-                            <button id="AddCustomWorkingTimeBtn" type="button" class="btn btn-success w-100" data-bs-dismiss="modal"><i class="fa-solid fa-pen"></i> Aggiungi orari</button>
-                        </div>
+                    <h6>Scegli un giorno:</h6>
+                    <div class="day-container">
+                        <div class="day-selector first-day">Lun</div>
+                        <div class="day-selector">Mar</div>
+                        <div class="day-selector">Mer</div>
+                        <div class="day-selector">Gio</div>
+                        <div class="day-selector">Ven</div>
+                        <div class="day-selector">Sab</div>
+                        <div class="day-selector last-day">Dom</div>
                     </div>
-
+                    <h6>Orario inizio lavoro:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario fine lavoro:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario inizio pausa:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario fine pausa:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="free-day-checkbox">
+                        <label class="form-check-label">
+                            Giorno libero
+                        </label>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="editWorkingTimeButton"><i
+                                class="fa-solid fa-pen"></i><span
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Modifica
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addCustomWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Aggiungi un orario di lavoro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Scegli un giorno:</h6>
+                    <input type="date" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario inizio lavoro:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario fine lavoro:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario inizio pausa:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <h6>Orario fine pausa:</h6>
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
+                           data-error="#errorStartTime">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="free-day-custom-checkbox">
+                        <label class="form-check-label">
+                            Giorno libero
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="addCustomWorkingTimeButton"><i
+                                class="fa-solid fa-plus"></i><span
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
+                    </button>
                 </div>
             </div>
         </div>

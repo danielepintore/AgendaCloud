@@ -5,7 +5,7 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
@@ -37,10 +37,12 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     <link href='../css/dashboard.css' rel='stylesheet' type='text/css'>
     <link href='../css/admin/services.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
+    <link href='../css/loading.min.css' rel='stylesheet'>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery.validate.min.js"></script>
     <script src="../js/additional-methods.min.js"></script>
+    <script type="text/javascript" src="../js/buttonLoader.js"></script>
     <script type="text/javascript" src="../js/admin/services.js"></script>
 </head>
 <body>
@@ -130,7 +132,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmAddServiceBtn"><span
-                                id="loadingCircleAddService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
                     </button>
                 </div>
             </div>
@@ -208,7 +210,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="editServiceBtn"><span
-                                id="loadingCircleEditService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Modifica
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Modifica
                     </button>
                 </div>
             </div>
@@ -235,7 +237,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Chiudi
                     </button>
                     <button type="button" class="btn btn-success" id="editEmployeesBtn" data-bs-dismiss="modal"><i
@@ -373,7 +375,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
-                                id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
                     </button>
                 </div>
             </div>

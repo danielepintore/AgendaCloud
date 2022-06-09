@@ -103,9 +103,58 @@ function getEmployeesList() {
                 $(".working-times").on("click", function () {
                     let employeeId = $(this).attr("value");
                     generateWorkTimesTables(employeeId);
-                    $("#EditWorkingTimeBtn").attr('value', employeeId);
+                    $("#showModalEditWorkingTimeBtn").on("click", function () {
+                        $("#editWorkingTimeButton").attr('value', employeeId);
+                        $(".day-selector").on("click", function () {
+                            $(this).toggleClass("active");
+                        });
+                        $("#free-day-checkbox").on("click", function (){
+                            let inputFields = $(this).parent().parent().find('input[type="time"]');
+                            if ($(this).prop('checked')){
+                                inputFields.prop('disabled', true);
+                                inputFields.val('');
+                            } else {
+                                inputFields.prop('disabled', false);
+                                inputFields.val('08:00');
+                            }
+                        });
+                        $("#editWorkingTimeButton").on("click", function () {
+                            let buttonLoader = new ButtonLoader("#editWorkingTimeButton", true);
+                            buttonLoader.makeRequest(function (){
+                               // Todo implement the request
+
+                            });
+                        });
+                        $("#workTimesModal").modal("hide");
+                        // open edit modal
+                        $("#editWorkTimesModal").modal("show");
+                    });
+
+                    $("#showCustomWorkingTimeModal").on("click", function (){
+                        $("#free-day-custom-checkbox").on("click", function (){
+                            let inputFields = $(this).parent().parent().find('input[type="time"]');
+                            if ($(this).prop('checked')){
+                                inputFields.prop('disabled', true);
+                                inputFields.val('');
+                            } else {
+                                inputFields.prop('disabled', false);
+                                inputFields.val('08:00');
+                            }
+                        });
+
+                        $("#addCustomWorkingTimeButton").on("click", function () {
+                           let buttonLoader = new ButtonLoader("#addCustomWorkingTimeButton", true);
+                           buttonLoader.makeRequest(function () {
+                              // todo add callback here
+                           });
+                        });
+                        $("#workTimesModal").modal("hide");
+                        // open edit modal
+                        $("#addCustomWorkTimesModal").modal("show");
+                    });
+
                     // open modal to confirm
-                    $("#editWorkTimesModal").modal("show");
+                    $("#workTimesModal").modal("show");
                 });
             } else if (data.length === 0) {
                 // display no appointments message
@@ -174,6 +223,7 @@ function generateWorkTimesTables(employeeId) {
                     '<th scope="col">Data fine</th>' +
                     '<th scope="col">Ore lavorative</th>' +
                     '<th scope="col">Pausa pranzo</th>' +
+                    '<th scope="col">Azione</th>' +
                     '</tr></thead><tbody></tbody></table>');
                 tbody = table.find("tbody");
                 data["custom"].forEach(customTime => {
@@ -182,6 +232,7 @@ function generateWorkTimesTables(employeeId) {
                         '<td>' + String(customTime.endDate) + '</td>' +
                         '<td><span class="badge bg-secondary">' + String(customTime.workStartTime)  + ' - ' + String(customTime.workEndTime) + '</span></td>' +
                         '<td><span class="badge bg-secondary">' + String(customTime.breakStartTime) + ' - ' + String(customTime.breakEndTime) + '</span></td>' +
+                        '<td><button type="button" value="' + customTime.timeId +'" class="employeeBtnAdd btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
                         '</tr>');
                     counter++;
                 });
@@ -268,54 +319,55 @@ $(function () {
         })
         if ($("#addEmployeeForm").valid()) {
             // show loading animation
-            $("#loadingCircleAddEmployee").removeClass("d-none");
-            // make request
-            $.post("/admin/api/employee/add_employee.php", {
-                name: $("#name").val(),
-                surname: $("#surname").val(),
-                role: $("#role").val(),
-                username: $("#username").val(),
-                password: $("#password").val(),
-                admin: $("#admin").prop("checked"),
-                isActive: $("#isActive").prop("checked")
-            })
-                .done(function (data) {
+            let buttonLoader = new ButtonLoader("#confirmAddEmployeeBtn");
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/employee/add_employee.php", {
+                    name: $("#name").val(),
+                    surname: $("#surname").val(),
+                    role: $("#role").val(),
+                    username: $("#username").val(),
+                    password: $("#password").val(),
+                    admin: $("#admin").prop("checked"),
+                    isActive: $("#isActive").prop("checked")
+                })
+                    .done(function (data) {
+                        // hide loading animation
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide add employee modal
+                        $("#addEmployeeModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Dipendente aggiunto");
+                            $("#successModalMessage").html("Il dipendente è stato aggiunto");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            getEmployeesList();
+                            // clean all the fields
+                            $("#name").val("");
+                            $("#surname").val("");
+                            $("#role").val("");
+                            $("#username").val("");
+                            $("#password").val("");
+                            $("#admin").prop("checked", false);
+                            $("#isActive").prop("checked", true);
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Dipendente non aggiunto");
+                            $("#errorModalMessage").html("Il dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
                     // hide loading animation
-                    $("#loadingCircleAddEmployee").addClass("d-none");
+                    buttonLoader.hideLoadingAnimation();
                     // Hide add employee modal
                     $("#addEmployeeModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Dipendente aggiunto");
-                        $("#successModalMessage").html("Il dipendente è stato aggiunto");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        getEmployeesList();
-                        // clean all the fields
-                        $("#name").val("");
-                        $("#surname").val("");
-                        $("#role").val("");
-                        $("#username").val("");
-                        $("#password").val("");
-                        $("#admin").prop("checked", false);
-                        $("#isActive").prop("checked", true);
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Dipendente non aggiunto");
-                        $("#errorModalMessage").html("Il dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleAddEmployee").addClass("d-none");
-                // Hide add employee modal
-                $("#addEmployeeModal").modal("hide");
-                // set error modal data
-                $("#errorModalTitle").html("Dipendente non aggiunto");
-                $("#errorModalMessage").html("Il dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show error modal
-                $("#errorModal").modal("show");
+                    // set error modal data
+                    $("#errorModalTitle").html("Dipendente non aggiunto");
+                    $("#errorModalMessage").html("Il dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show error modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     })
@@ -338,48 +390,46 @@ $(function () {
             }
         })
         if ($("#editEmployeeForm").valid()) {
-            // show loading animation
-            $("#loadingCircleEditEmployee").removeClass("d-none");
-            // make request
-            $.post("/admin/api/employee/update_employee.php", {
-                id: $(this).val(),
-                name: $("#name-edit").val(),
-                surname: $("#surname-edit").val(),
-                role: $("#role-edit").val(),
-                username: $("#username-edit").val(),
-                password: $("#password-edit").val(),
-                admin: $("#admin-edit").prop("checked"),
-                isActive: $("#isActive-edit").prop("checked")
-            })
-                .done(function (data) {
-                    // hide loading animation
-                    $("#loadingCircleEditEmployee").addClass("d-none");
-                    // Hide edit employee modal
-                    $("#editEmployeeModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Informazioni modificate");
-                        $("#successModalMessage").html("Le informazioni del dipendente sono state modificate");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        getEmployeesList();
-                        // clean all the fields
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Informazioni non modificate");
-                        $("#errorModalMessage").html("Le informazioni del dipendente non sono state modificate, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                        // clean all the fields
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleEditEmployee").addClass("d-none");
-                // set error modal data
-                $("#errorModalTitle").html("Informazioni non modificate");
-                $("#errorModalMessage").html("Le informazioni del dipendente non sono state modificate, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show confirmation modal
-                $("#errorModal").modal("show");
+            let buttonLoader = new ButtonLoader("#confirmEditEmployeeBtn")
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/employee/update_employee.php", {
+                    id: $(this).val(),
+                    name: $("#name-edit").val(),
+                    surname: $("#surname-edit").val(),
+                    role: $("#role-edit").val(),
+                    username: $("#username-edit").val(),
+                    password: $("#password-edit").val(),
+                    admin: $("#admin-edit").prop("checked"),
+                    isActive: $("#isActive-edit").prop("checked")
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide edit employee modal
+                        $("#editEmployeeModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Informazioni modificate");
+                            $("#successModalMessage").html("Le informazioni del dipendente sono state modificate");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            getEmployeesList();
+                            // clean all the fields
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Informazioni non modificate");
+                            $("#errorModalMessage").html("Le informazioni del dipendente non sono state modificate, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                            // clean all the fields
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
+                    // set error modal data
+                    $("#errorModalTitle").html("Informazioni non modificate");
+                    $("#errorModalMessage").html("Le informazioni del dipendente non sono state modificate, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     });
@@ -466,60 +516,59 @@ $(function () {
             }
         })
         if ($("#addHolidayForm").valid()) {
-            // show loading animation
-            $("#loadingCircleAddHoliday").removeClass("d-none");
-            // check if all day ceckbox is checked
-            let startTime;
-            let endTime;
-            if ($("#holidayFullDayCheckBox").prop('checked')) {
-                startTime = "00:00";
-                endTime = "23:59";
-            } else {
-                startTime = $("#holidayStartTime").val();
-                endTime = $("#holidayEndTime").val();
-            }
-            // make request
-            $.get("/admin/api/employee/add_holiday.php", {
-                holidayDate: $("#holidayDate").val(),
-                holidayStartTime: startTime,
-                holidayEndTime: endTime,
-                employeeId: $("#confirmAddHolidayButton").val(),
-            })
-                .done(function (data) {
-                    // hide loading animation
-                    $("#loadingCircleAddHoliday").addClass("d-none");
+            let buttonLoader = new ButtonLoader("#confirmAddHolidayButton");
+            buttonLoader.makeRequest(function () {
+                // check if all day ceckbox is checked
+                let startTime;
+                let endTime;
+                if ($("#holidayFullDayCheckBox").prop('checked')) {
+                    startTime = "00:00";
+                    endTime = "23:59";
+                } else {
+                    startTime = $("#holidayStartTime").val();
+                    endTime = $("#holidayEndTime").val();
+                }
+                // make request
+                $.get("/admin/api/employee/add_holiday.php", {
+                    holidayDate: $("#holidayDate").val(),
+                    holidayStartTime: startTime,
+                    holidayEndTime: endTime,
+                    employeeId: $("#confirmAddHolidayButton").val(),
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        // Hide add employee modal
+                        $("#addHolidayModal").modal("hide");
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Giorno di ferie aggiunto");
+                            $("#successModalMessage").html("Il giorno di ferie del dipendente è stato aggiunto");
+                            // show success modal
+                            $("#successModal").modal("show");
+                            // clean all the fields
+                            $("#holidayDate").val("");
+                            $("#holidayStartTime").val("");
+                            $("#holidayEndTime").val("");
+                            $("#holidayStartTime").prop('disabled', false);
+                            $("#holidayEndTime").prop('disabled', false);
+                            $("#holidayFullDayCheckBox").prop('checked', false);
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Giorno di ferie non aggiunto");
+                            $("#errorModalMessage").html("Il giorno di ferie non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
                     // Hide add employee modal
                     $("#addHolidayModal").modal("hide");
-                    if (!data.error) {
-                        // set success modal data
-                        $("#successModalTitle").html("Giorno di ferie aggiunto");
-                        $("#successModalMessage").html("Il giorno di ferie del dipendente è stato aggiunto");
-                        // show success modal
-                        $("#successModal").modal("show");
-                        // clean all the fields
-                        $("#holidayDate").val("");
-                        $("#holidayStartTime").val("");
-                        $("#holidayEndTime").val("");
-                        $("#holidayStartTime").prop('disabled', false);
-                        $("#holidayEndTime").prop('disabled', false);
-                        $("#holidayFullDayCheckBox").prop('checked', false);
-                    } else {
-                        // set error modal data
-                        $("#errorModalTitle").html("Giorno di ferie non aggiunto");
-                        $("#errorModalMessage").html("Il giorno di ferie non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                        // show confirmation modal
-                        $("#errorModal").modal("show");
-                    }
-                }).fail(function () {
-                // hide loading animation
-                $("#loadingCircleAddHoliday").addClass("d-none");
-                // Hide add employee modal
-                $("#addHolidayModal").modal("hide");
-                // set error modal data
-                $("#errorModalTitle").html("Giorno di ferie non aggiunto");
-                $("#errorModalMessage").html("Il giorno di ferie non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
-                // show confirmation modal
-                $("#errorModal").modal("show");
+                    // set error modal data
+                    $("#errorModalTitle").html("Giorno di ferie non aggiunto");
+                    $("#errorModalMessage").html("Il giorno di ferie non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
             });
         }
     });
