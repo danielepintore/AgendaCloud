@@ -172,7 +172,7 @@ class Employee {
 
     public static function getEmployeeWorkingTimes(Database $db, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariDipendente WHERE (Dipendente_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
+        $sql = 'SELECT idOrariDipendente, GiornoSettimana, TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro, TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariDipendente WHERE (Dipendente_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
         $status = $db->query($sql, "i", $employeeId);
         if ($status) {
             $result = $db->getResult();
@@ -186,7 +186,7 @@ class Employee {
                 } else {
                     if ($r['StartDate'] == null){$r['StartDate'] = "";}
                     if ($r['EndDate'] == null){$r['EndDate'] = "";}
-                    $customTime[] = ["startDate" => $r["StartDate"], "endDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                    $customTime[] = ["timeId" => $r["idOrariDipendente"], "startDate" => $r["StartDate"], "endDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
                 }
             }
             return ["standard" => $standardTime, "custom" => $customTime];
