@@ -165,7 +165,7 @@ function copyDockerFiles(){
 // browser-sync
 export function server(done) {
     if (browsersync) browsersync.init({
-        proxy: "agendacloud.it:3000"});
+        proxy: "127.0.0.1:3000"});
     done();
 }
 
