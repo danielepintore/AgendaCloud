@@ -17,6 +17,66 @@ $.validator.addMethod("time", function(value, element) {
     return true;
 }, "Inserisci un orario corretto");
 
+$.validator.addMethod("timeGreaterThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
+        let isGreater = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isGreater = true;
+                continue;
+            }
+            isGreater = new Date("2000T" + value) > new Date("2000T" + $(params[i]).val());
+            if (!isGreater){
+                return isGreater;
+            }
+        }
+        return isGreater;
+    } else {
+        return this.optional(element);
+    }
+});
+
+$.validator.addMethod("timeLessThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
+        let isLess = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isLess = true;
+                continue;
+            }
+            isLess = new Date("2000T" + value) < new Date("2000T" + $(params[i]).val());
+            if (!isLess){
+                return isLess;
+            }
+        }
+        return isLess;
+    } else {
+        return this.optional(element);
+    }
+});
+
+$.validator.addMethod("dateEqualOrGreaterThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date(value + "T00:00:00.000Z"))) {
+        let isGreater = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isGreater = true;
+                continue;
+            }
+            isGreater = new Date(value + "T00:00:00.000Z") >= new Date($(params[i]).val() + "T00:00:00.000Z");
+            if (!isGreater){
+                return isGreater;
+            }
+        }
+        return isGreater;
+    } else {
+        return this.optional(element);
+    }
+});
+
 function populateEditModal(employeeId) {
     // clean all the fields
     $("#name-edit").val("");
@@ -599,23 +659,26 @@ $(function () {
         $("#updateWorkTimeForm").validate({
             rules: {
                 startTime: {required: true, time: true},
-                endTime: {required: true, time: true},
-                startBreak: {required:function () {
+                endTime: {required: true, time: true, timeGreaterThan: ["#workTime-startTime"]},
+                startBreak: {required: function () {
                         return $("#workTime-endBreak").val() != ""
-                    }, time: true},
+                    }, time: true, timeGreaterThan: ["#workTime-startTime"], timeLessThan: ["#workTime-endTime", "#workTime-endBreak"]},
                 endBreak: {required: function () {
                         return $("#workTime-startBreak").val() != ""
-                    }, time: true},
+                    }, time: true, timeGreaterThan: ["#workTime-startBreak"], timeLessThan: ["#workTime-endTime"]},
                 freeDayCheckbox: {required: false},
             },
             messages: {
-                startTime: "Inserisci una data valida",
-                endTime: "Inserisci una data valida",
+                startTime: "Inserisci un'ora valida",
+                endTime: "Inserisci un'ora valida",
+                startBreak: "Inserisci un'ora valida",
+                endBreak: "Inserisci un'ora valida",
             }
         });
         if (daysSelected.length === 0){
             $("#workTimeAlert").removeClass('d-none');
         }
+
         if ($("#updateWorkTimeForm").valid() && daysSelected.length > 0){
             let jsonObject = new Object();
             jsonObject.timeType = "standard";
@@ -667,15 +730,15 @@ $(function () {
         $("#addCustomWorkTimeForm").validate({
             rules: {
                 startCustomDay: {required: true, date: true},
-                endCustomDay: {required: true, date: true},
+                endCustomDay: {required: true, date: true, dateEqualOrGreaterThan: ["#workTime-startCustomDay"]},
                 customStartTime: {time: true},
-                customEndTime: {time: true},
+                customEndTime: {time: true, timeGreaterThan: ["#workTime-customStartTime"]},
                 customStartBreak: {required: function () {
                         return $("#workTime-customEndBreak").val() != ""
-                    } ,time: true},
+                    } ,time: true, timeGreaterThan: ["#workTime-customStartTime"], timeLessThan: ["#workTime-customEndTime", "#workTime-customEndBreak"]},
                 customEndBreak: {required: function () {
                         return $("#workTime-customStartBreak").val() != ""
-                    }, time: true},
+                    }, time: true, timeGreaterThan: ["#workTime-customStartBreak"], timeLessThan: ["#workTime-customEndTime"]},
                 freeDayCheckbox: {required: false},
             },
             messages: {
@@ -685,22 +748,13 @@ $(function () {
                 customEndBreak: "Inserisci una data valida"
             }
         });
-        let startDate = new Date($("#workTime-startCustomDay").val());
-        startDate.setHours(0);
-        startDate.setMinutes(0);
-        startDate.setSeconds(0);
-        startDate.setMilliseconds(0);
-        let endDate = new Date($("#workTime-endCustomDay").val());
-        endDate.setHours(0);
-        endDate.setMinutes(0);
-        endDate.setSeconds(0);
-        endDate.setMilliseconds(0);
+        let startDate = new Date($("#workTime-startCustomDay").val() + "T00:00:00.000Z");
         let today = new Date();
         today.setHours(0);
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        if ($("#addCustomWorkTimeForm").valid() && startDate >= today && startDate <= endDate){
+        if ($("#addCustomWorkTimeForm").valid() && startDate >= today){
             let jsonObject = new Object();
             jsonObject.timeType = "custom";
             jsonObject.userId = $("#addCustomWorkingTimeButton").val();
@@ -711,7 +765,6 @@ $(function () {
             jsonObject.endTime = $("#workTime-customEndTime").val();
             jsonObject.startBreak = $("#workTime-customStartBreak").val();
             jsonObject.endBreak = $("#workTime-customEndBreak").val();
-            console.log(JSON.stringify(jsonObject));
             buttonLoader.makeRequest(function () {
                 $.post("/admin/api/employee/update_working_time.php", {
                     data: JSON.stringify(jsonObject),
@@ -747,4 +800,18 @@ $(function () {
             });
         }
     });
+    $("#workTime-startCustomDay").on('change', function () {
+        let startDate = new Date($("#workTime-startCustomDay").val() + "T00:00:00.000Z");
+        let today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+        if (!$("#customWorkTimeAlert").hasClass('d-none') && startDate >= today){
+            $("#customWorkTimeAlert").addClass('d-none');
+        }
+        if ($("#customWorkTimeAlert").hasClass('d-none') && startDate < today){
+            $("#customWorkTimeAlert").removeClass('d-none');
+        }
+    })
 })

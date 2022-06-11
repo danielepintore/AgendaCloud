@@ -398,6 +398,12 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                         </label>
                     </div>
                     </form>
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="customWorkTimeAlert" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <div>
+                            Devi selezionare un giorno che non sia già passato!
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="addCustomWorkingTimeButton"><i

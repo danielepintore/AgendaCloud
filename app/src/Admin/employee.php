@@ -227,7 +227,12 @@ class Employee {
             $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
             $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
             $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
-            $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+            // validate input if freeday isn't set
+            if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+            } else {
+                return false;
+            }
         } else {
             $sql = 'UPDATE OrariDipendente SET InizioLavoro = ?, FineLavoro = ?, InizioPausa = ?, FinePausa = ? WHERE(Dipendente_id = ? AND GiornoSettimana = ?)';
             if ($data->freeDay) {
@@ -242,7 +247,12 @@ class Employee {
             $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
             $days = $data->days;
             foreach ($days as $day) {
-                $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                // validate input if freeday isn't set
+                if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                    $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                } else {
+                    return false;
+                }
                 if (!$status) {
                     return false;
                 }

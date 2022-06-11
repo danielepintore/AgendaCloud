@@ -19,7 +19,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         die(0);
     }
-    if (isset($_GET['id']) && is_numeric($_GET['id']) && !empty($_GET['id'])) {
+    if (isset($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] >= 0 && !empty($_GET['id'])) {
         // create a service object
         try {
             $workTime = \Admin\Employee::deleteCustomWorkTime($db, $_GET['id']);
