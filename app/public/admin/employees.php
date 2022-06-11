@@ -38,10 +38,14 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     <link href='../css/fontawesome.css' rel='stylesheet'>
     <link href='../css/admin/employees.css' rel='stylesheet'>
     <link rel="stylesheet" type="text/css" href="../css/loading.min.css"/>
+    <link href='../css/dataTables.bootstrap5.min.css' rel='stylesheet'>
+    <link href='../css/dataTablesStyle.css' rel='stylesheet'>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery.validate.min.js"></script>
     <script src="../js/additional-methods.min.js"></script>
+    <script src="../js/jquery.dataTables.min.js"></script>
+    <script src="../js/dataTables.bootstrap5.min.js"></script>
     <script src="../js/buttonLoader.js"></script>
     <script src="../js/admin/employees.js"></script>
 </head>
@@ -293,7 +297,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                                 </button>
                             </li>
                         </ul>
-                        <div class="tab-content" id="myTabContent">
+                        <div class="tab-content">
                             <div class="tab-pane fade show active" id="defaultWorkTimes" role="tabpanel"
                                  aria-labelledby="defaultWorkTimes">
                                 <div id="defaultWorkTimesTable" class="mb-2"></div>
@@ -303,8 +307,8 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             </div>
                             <div class="tab-pane fade" id="customWorkTimes" role="tabpanel"
                                  aria-labelledby="customWorkTimes">
-                                <div id="customWorkTimesTable" class="mb-2"></div>
-                                <button id="showCustomWorkingTimeModal" type="button" class="btn btn-success w-100 mt-2"><i
+                                <div id="customWorkTimesTable" class="mb-2 mt-2"></div>
+                                <button id="showModalCustomWorkingTimeBtn" type="button" class="btn btn-success w-100 mt-2"><i
                                             class="fa-solid fa-plus"></i> Aggiungi orari
                                 </button>
                             </div>

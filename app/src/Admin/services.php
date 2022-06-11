@@ -268,10 +268,118 @@ class Services {
         }
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function deleteHoliday(Database $db, $holidayId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "DELETE FROM GiornoChiusuraServizio WHERE GiornoChiusuraServizio.id = ?";
         $status = $db->query($sql, "i", $holidayId);
+        if ($status && $db->getAffectedRows() == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function getServiceWorkingTimes(Database $db, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT idOrariServizio, GiornoSettimana, TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro, TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariServizio WHERE (Servizio_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
+        $status = $db->query($sql, "i", $serviceId);
+        if ($status) {
+            $result = $db->getResult();
+            $standardTime = [];
+            $customTime = [];
+            foreach ($result as $r) {
+                if ($r['InizioPausa'] == null) {
+                    $r['InizioPausa'] = "";
+                }
+                if ($r['FinePausa'] == null) {
+                    $r['FinePausa'] = "";
+                }
+                if ($r['IsCustom'] == 0) {
+                    $standardTime[] = ["day" => $r['GiornoSettimana'], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                } else {
+                    if ($r['StartDate'] == null) {
+                        $r['StartDate'] = "";
+                    }
+                    if ($r['EndDate'] == null) {
+                        $r['EndDate'] = "";
+                    }
+                    $customTime[] = ["timeId" => $r["idOrariServizio"], "startDate" => $r["StartDate"], "endDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
+                }
+            }
+            return ["standard" => $standardTime, "custom" => $customTime];
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function updateWorkingTimes(Database $db, $data){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        if ($data->timeType === "custom") {
+            $sql = 'INSERT INTO OrariServizio (idOrariServizio, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Servizio_id, isCustom, StartDate, EndDate) VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
+            if ($data->freeDay) {
+                $data->startTime = "00:00";
+                $data->endTime = "00:00";
+                $data->startBreak = "00:00";
+                $data->endBreak = "24:00";
+            }
+            $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
+            $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
+            $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
+            $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
+            // validate input if freeday isn't set
+            if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+            } else {
+                return false;
+            }
+        } else {
+            $sql = 'UPDATE OrariServizio SET InizioLavoro = ?, FineLavoro = ?, InizioPausa = ?, FinePausa = ? WHERE(Servizio_id = ? AND GiornoSettimana = ?)';
+            if ($data->freeDay) {
+                $data->startTime = "00:00";
+                $data->endTime = "00:00";
+                $data->startBreak = "00:00";
+                $data->endBreak = "24:00";
+            }
+            $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
+            $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
+            $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
+            $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
+            $days = $data->days;
+            foreach ($days as $day) {
+                // validate input if freeday isn't set
+                if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                    $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                } else {
+                    return false;
+                }
+                if (!$status) {
+                    return false;
+                }
+            }
+        }
+        if ($status) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function deleteCustomWorkTime(Database $db, $id){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "DELETE FROM OrariServizio WHERE (idOrariServizio = ? AND isCustom = 1)";
+        $status = $db->query($sql, "i", $id);
         if ($status && $db->getAffectedRows() == 1) {
             return true;
         } else {

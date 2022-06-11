@@ -31,6 +31,75 @@ $.fn.extend({
         });
     }
 });
+$.validator.addMethod("time", function(value, element) {
+    if (value === ""){
+        return this.optional(element) || false;
+    }
+    if (!(/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value))) {
+        return false;
+    }
+    return true;
+}, "Inserisci un orario corretto");
+
+$.validator.addMethod("timeGreaterThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
+        let isGreater = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isGreater = true;
+                continue;
+            }
+            isGreater = new Date("2000T" + value) > new Date("2000T" + $(params[i]).val());
+            if (!isGreater){
+                return isGreater;
+            }
+        }
+        return isGreater;
+    } else {
+        return this.optional(element);
+    }
+});
+
+$.validator.addMethod("timeLessThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
+        let isLess = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isLess = true;
+                continue;
+            }
+            isLess = new Date("2000T" + value) < new Date("2000T" + $(params[i]).val());
+            if (!isLess){
+                return isLess;
+            }
+        }
+        return isLess;
+    } else {
+        return this.optional(element);
+    }
+});
+
+$.validator.addMethod("dateEqualOrGreaterThan", function(value, element, params) {
+    if (value === "") { return this.optional(element) }
+    if (!/Invalid|NaN/.test(new Date(value + "T00:00:00.000Z"))) {
+        let isGreater = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === ""){
+                isGreater = true;
+                continue;
+            }
+            isGreater = new Date(value + "T00:00:00.000Z") >= new Date($(params[i]).val() + "T00:00:00.000Z");
+            if (!isGreater){
+                return isGreater;
+            }
+        }
+        return isGreater;
+    } else {
+        return this.optional(element);
+    }
+});
 
 /**
  * Gets the list of employees with a specific field that says if he/she can be added or removed, also it allows to
@@ -181,9 +250,9 @@ function getServicesList() {
                     }
                     $('#servicesList').append('<a href="#" class="list-group-item list-group-item-action flex-column align-items-start"> ' +
                         '<div class="d-flex w-100 justify-content-between"> ' +
-                        '<div><span class="name mb-1 me-1">' + element.name + '</span><small class="status">(' + element.isActive + ')</small></div>' +
-                        '<div class="pointer"><small>' + element.startTime + '-' + element.endTime + '</small>' +
+                        '<div><span class="name mb-1 me-1">' + element.name + '</span><small class="status">(' + element.isActive + ')</small></div><div class="pointer">' +
                         '<i class="fa-solid fa-pen edit-service ms-2" value="' + element.id + '"></i>' +
+                        '<i class="fa-solid fa-clock working-times-service ms-2" value="' + element.id + '"></i>' +
                         '<i class="fa-solid fa-user-group view-employees ms-2" value="' + element.id + '"></i>' +
                         '<i class="fa-solid fa-calendar-day holiday-calendar ms-2" value="' + element.id + '"></i>' +
                         '<i class="fa-solid fa-trash delete-service ms-2" value="' + element.id + '"></i></div>' +
@@ -234,6 +303,17 @@ function getServicesList() {
                     // open modal to confirm
                     $("#viewHolidaysModal").modal("show");
                 });
+                /**
+                 * WorkingTime modal
+                 */
+                $(".working-times-service").on("click", function () {
+                    let serviceId = $(this).attr("value");
+                    generateServiceWorkTimesTable(serviceId);
+                    $("#showModalEditServiceWorkingTimeBtn").attr('value', serviceId);
+                    $("#showModalCustomAddServiceWorkingTimeBtn").attr('value', serviceId);
+                    // open modal to confirm
+                    $("#workingTimesServiceModal").modal("show");
+                });
             } else if (data.length === 0) {
                 // display no appointments message
                 $('#servicesList').append('');
@@ -252,6 +332,97 @@ function getServicesList() {
             $('#servicesList').append('<div class="card-body">' +
                 '<p class="card-text noServices">C\'è stato un errore, per favore riprova</p>' +
                 '</div>');
+        });
+}
+
+function generateServiceWorkTimesTable(serviceId) {
+    $.get('/admin/api/service/get_working_times.php', {serviceId: serviceId})
+        .done(function (data) {
+            // populate standard worktimes table
+            let table = $('#defaultServiceWorkTimesTable');
+            table.empty();
+            if (!data.error && data["standard"].length > 0) {
+                // There aren't errors
+                // Generate the table
+                const days = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+                // generate the default worktime table
+                let tbody;
+                let counter = 0;
+                table.append('<table class="table text-center"><thead><tr>' +
+                    '<th scope="col">Giorno</th>' +
+                    '<th scope="col">Ore lavorative</th>' +
+                    '<th scope="col">Pausa pranzo</th>' +
+                    '</tr></thead><tbody></tbody></table>');
+                tbody = table.find("tbody");
+                days.forEach(day => {
+                    let dayInfo = data["standard"][counter];
+                    tbody.append('<tr>' +
+                        '<td>' + day + '</td>' +
+                        '<td><span class="badge bg-secondary">' + dayInfo.workStartTime + ' - ' + dayInfo.workEndTime + '</span></td>' +
+                        '<td><span class="badge bg-secondary">' + dayInfo.breakStartTime + ' - ' + dayInfo.breakEndTime + '</span></td>' +
+                        '</tr>');
+                    counter++;
+                });
+            }
+
+            // populate custom worktimes table
+            table = $('#customServiceWorkTimesTable');
+            table.empty();
+            if (!data.error && data["custom"].length > 0) {
+                // There aren't errors
+                // generate the custom worktime table
+                let tbody;
+                let counter = 0;
+                table.append('<table class="table text-center hover" id="customServiceWorkTimeDataTable"><thead><tr>' +
+                    '<th scope="col">Data inizio</th>' +
+                    '<th scope="col">Data fine</th>' +
+                    '<th scope="col">Ore lavorative</th>' +
+                    '<th scope="col">Pausa pranzo</th>' +
+                    '<th scope="col">Azione</th>' +
+                    '</tr></thead><tbody></tbody></table>');
+                tbody = table.find("tbody");
+                data["custom"].forEach(customTime => {
+                    tbody.append('<tr>' +
+                        '<td>' + String(customTime.startDate) + '</td>' +
+                        '<td>' + String(customTime.endDate) + '</td>' +
+                        '<td><span class="badge bg-secondary">' + String(customTime.workStartTime) + ' - ' + String(customTime.workEndTime) + '</span></td>' +
+                        '<td><span class="badge bg-secondary">' + String(customTime.breakStartTime) + ' - ' + String(customTime.breakEndTime) + '</span></td>' +
+                        '<td><button type="button" value="' + customTime.timeId + '" class="deleteCustomServiceWorkTimeBtn btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
+                        '</tr>');
+                    counter++;
+                });
+                $(".deleteCustomServiceWorkTimeBtn").on('click', function (){
+                    $.get("/admin/api/service/delete_custom_worktime.php", {id: $(this).attr('value')})
+                        .done(function (data) {
+                            if (!data.error) {
+                                // Non c'è stato un errore
+                                // Reload appointments
+                                generateServiceWorkTimesTable($("#showModalEditServiceWorkingTimeBtn").attr("value"));
+                            } else {
+                                // c'è stato nessun errore non fare nulla
+                            }
+                        })
+                        .fail(function () {
+                            // non fare nulla in modo tale da permettere all'utente di riprovare
+                        });
+                });
+                $("#customServiceWorkTimeDataTable").DataTable({
+                    language: {
+                        url: "/datatables/lang/ita.json"
+                    },
+                    columnDefs: [
+                        {
+                            targets: "_all",
+                            className: 'dt-center'
+                        }
+                    ],
+                    "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"] ]
+                });
+            }
+
+        })
+        .fail(function () {
+
         });
 }
 
@@ -620,6 +791,212 @@ $(function () {
             $("#holidayEndTime").prop('disabled', false);
             $("#errorholidayStartTime").removeClass('d-none');
             $("#errorholidayEndTime").removeClass('d-none');
+        }
+    });
+
+    $("#showModalEditServiceWorkingTimeBtn").on("click", function () {
+        $("#editServiceWorkingTimeButton").attr('value', $(this).attr('value'));
+        $("#workingTimesServiceModal").modal("hide");
+        // open edit modal
+        $("#editServiceWorkTimesModal").modal("show");
+    });
+
+    $("#showModalCustomAddServiceWorkingTimeBtn").on("click", function () {
+        $("#addCustomServiceWorkingTimeButton").attr('value', $(this).attr('value'));
+        $("#workingTimesServiceModal").modal("hide");
+        // open edit modal
+        $("#addCustomServiceWorkTimesModal").modal("show");
+    });
+
+    $(".day-selector").on("click", function () {
+        $(this).toggleClass("active");
+        if (!$("#workTimeServiceAlert").hasClass('d-none')){
+            $("#workTimeServiceAlert").addClass('d-none');
+        }
+    });
+
+    $("#close-day-checkbox").on("click", function () {
+        let inputFields = $(this).parent().parent().find('input[type="time"]');
+        if ($(this).prop('checked')) {
+            inputFields.prop('disabled', true);
+            inputFields.val('');
+        } else {
+            inputFields.prop('disabled', false);
+        }
+    });
+
+    $("#close-day-custom-checkbox").on("click", function () {
+        let inputFields = $(this).parent().parent().find('input[type="time"]');
+        if ($(this).prop('checked')) {
+            inputFields.prop('disabled', true);
+            inputFields.val('');
+        } else {
+            inputFields.prop('disabled', false);
+        }
+    });
+
+    $("#editServiceWorkingTimeButton").on("click", function () {
+        let buttonLoader = new ButtonLoader("#editServiceWorkingTimeButton", true);
+        let daysSelected = $(".day-container .day-selector.active").map(function () {
+            return parseInt($(this).attr('value'));
+        }).get();
+        $("#updateServiceWorkTimeForm").validate({
+            rules: {
+                serviceStartTime: {required: true, time: true},
+                serviceEndTime: {required: true, time: true, timeGreaterThan: ["#workTime-serviceStartTime"]},
+                serviceStartBreak: {required: function () {
+                        return $("#workTime-serviceEndBreak").val() != ""
+                    }, time: true, timeGreaterThan: ["#workTime-serviceStartTime"], timeLessThan: ["#workTime-serviceEndTime", "#workTime-serviceEndBreak"]},
+                serviceEndBreak: {required: function () {
+                        return $("#workTime-serviceStartBreak").val() != ""
+                    }, time: true, timeGreaterThan: ["#workTime-serviceStartBreak"], timeLessThan: ["#workTime-serviceEndTime"]},
+                closeDayCheckbox: {required: false},
+            },
+            messages: {
+                serviceStartTime: "Inserisci un'ora valida",
+                serviceEndTime: "Inserisci un'ora valida",
+                serviceStartBreak: "Inserisci un'ora valida",
+                serviceEndBreak: "Inserisci un'ora valida",
+            }
+        });
+        if (daysSelected.length === 0){
+            $("#workTimeServiceAlert").removeClass('d-none');
+        }
+
+        if ($("#updateServiceWorkTimeForm").valid() && daysSelected.length > 0){
+            let jsonObject = new Object();
+            jsonObject.timeType = "standard";
+            jsonObject.userId = $("#editServiceWorkingTimeButton").val();
+            jsonObject.days = daysSelected;
+            jsonObject.freeDay = $("#close-day-checkbox").prop('checked');
+            jsonObject.startTime = $("#workTime-serviceStartTime").val();
+            jsonObject.endTime = $("#workTime-serviceEndTime").val();
+            jsonObject.startBreak = $("#workTime-serviceStartBreak").val();
+            jsonObject.endBreak = $("#workTime-serviceEndBreak").val();
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/service/update_working_time.php", {
+                    data: JSON.stringify(jsonObject),
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Informazioni modificate");
+                            $("#successModalMessage").html("L'orario di lavoro del servizio è stato modificato");
+                            // show success modal
+                            $("#editServiceWorkTimesModal").modal("hide");
+                            $("#successModal").modal("show");
+                            // clean all the fields
+                            $(".day-container .day-selector.active").removeClass('active');
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Informazioni non modificate");
+                            $("#errorModalMessage").html("L'orario di lavoro del servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#editServiceWorkTimesModal").modal("hide");
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
+                    // set error modal data
+                    $("#errorModalTitle").html("Informazioni non modificate");
+                    $("#errorModalMessage").html("L'orario di lavoro del servizio non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    $("#editServiceWorkTimesModal").modal("hide");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
+            });
+        }
+    });
+
+    $("#addCustomServiceWorkingTimeButton").on("click", function () {
+        let buttonLoader = new ButtonLoader("#addCustomServiceWorkingTimeButton", true);
+        $("#addCustomServiceWorkTimeForm").validate({
+            rules: {
+                startServiceCustomDay: {required: true, date: true},
+                endServiceCustomDay: {required: true, date: true, dateEqualOrGreaterThan: ["#workTime-startServiceCustomDay"]},
+                serviceCustomStartTime: {time: true},
+                serviceCustomEndTime: {time: true, timeGreaterThan: ["#workTime-customServiceStartTime"]},
+                serviceCustomStartBreak: {required: function () {
+                        return $("#workTime-customEndBreak").val() != ""
+                    } ,time: true, timeGreaterThan: ["#workTime-customServiceStartTime"], timeLessThan: ["#workTime-customServiceEndTime", "#workTime-customServiceEndBreak"]},
+                serviceCustomEndBreak: {required: function () {
+                        return $("#workTime-customStartBreak").val() != ""
+                    }, time: true, timeGreaterThan: ["#workTime-customServiceStartBreak"], timeLessThan: ["#workTime-customServiceEndTime"]},
+                closeDayCustomCheckbox: {required: false},
+            },
+            messages: {
+                startServiceCustomDay: "Inserisci una data valida",
+                endServiceCustomDay: "Inserisci una data valida",
+                serviceCustomStartTime: "Inserisci un'ora valida",
+                serviceCustomEndTime: "Inserisci un'ora valida",
+                serviceCustomStartBreak: "Inserisci un'ora valida",
+                serviceCustomEndBreak: "Inserisci un'ora valida"
+            }
+        });
+        let startDate = new Date($("#workTime-startServiceCustomDay").val() + "T00:00:00.000Z");
+        let today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+        if ($("#addCustomServiceWorkTimeForm").valid() && startDate >= today){
+            let jsonObject = new Object();
+            jsonObject.timeType = "custom";
+            jsonObject.userId = $("#addCustomServiceWorkingTimeButton").val();
+            jsonObject.startDay = $("#workTime-startServiceCustomDay").val();
+            jsonObject.endDay = $("#workTime-endServiceCustomDay").val();
+            jsonObject.freeDay = $("#close-day-custom-checkbox").prop('checked');
+            jsonObject.startTime = $("#workTime-customServiceStartTime").val();
+            jsonObject.endTime = $("#workTime-customServiceEndTime").val();
+            jsonObject.startBreak = $("#workTime-customServiceStartBreak").val();
+            jsonObject.endBreak = $("#workTime-customServiceEndBreak").val();
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/service/update_working_time.php", {
+                    data: JSON.stringify(jsonObject),
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Informazioni aggiunte");
+                            $("#successModalMessage").html("L'orario di lavoro del servizio è stato aggiunto");
+                            // show success modal
+                            $("#addCustomServiceWorkTimesModal").modal("hide");
+                            $("#successModal").modal("show");
+                            // clean all the fields
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Informazioni non aggiunte");
+                            $("#errorModalMessage").html("L'orario di lavoro del servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#addCustomServiceWorkTimesModal").modal("hide");
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
+                    // set error modal data
+                    $("#errorModalTitle").html("Informazioni non aggiunte");
+                    $("#errorModalMessage").html("L'orario di lavoro del servizio non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    $("#addCustomServiceWorkTimesModal").modal("hide");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
+            });
+        }
+    });
+    $("#workTime-startServiceCustomDay").on('change', function () {
+        let startDate = new Date($("#workTime-startServiceCustomDay").val() + "T00:00:00.000Z");
+        let today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+        if (!$("#customServiceWorkTimeAlert").hasClass('d-none') && startDate >= today){
+            $("#customServiceWorkTimeAlert").addClass('d-none');
+        }
+        if ($("#customServiceWorkTimeAlert").hasClass('d-none') && startDate < today){
+            $("#customServiceWorkTimeAlert").removeClass('d-none');
         }
     });
 })

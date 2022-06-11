@@ -1,0 +1,14 @@
+.page-link {
+    color: #6c757d;
+}
+.page-link:hover{
+    color: #6c757d;
+}
+.page-link:focus{
+    color: #6c757d;
+    box-shadow: 0 0 0 0
+}
+.page-item.active .page-link {
+    background-color: #198754 !important;
+    border: 1px solid #198754;
+}

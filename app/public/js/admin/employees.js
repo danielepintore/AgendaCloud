@@ -174,7 +174,7 @@ function getEmployeesList() {
                     let employeeId = $(this).attr("value");
                     generateWorkTimesTables(employeeId);
                     $("#showModalEditWorkingTimeBtn").attr('value', employeeId);
-                    $("#showCustomWorkingTimeModal").attr('value', employeeId);
+                    $("#showModalCustomWorkingTimeBtn").attr('value', employeeId);
                     // open modal to confirm
                     $("#workTimesModal").modal("show");
                 });
@@ -240,7 +240,7 @@ function generateWorkTimesTables(employeeId) {
                 // generate the custom worktime table
                 let tbody;
                 let counter = 0;
-                table.append('<table class="table text-center"><thead><tr>' +
+                table.append('<table class="table text-center hover" id="customWorkTimeDataTable"><thead><tr>' +
                     '<th scope="col">Data inizio</th>' +
                     '<th scope="col">Data fine</th>' +
                     '<th scope="col">Ore lavorative</th>' +
@@ -254,11 +254,11 @@ function generateWorkTimesTables(employeeId) {
                         '<td>' + String(customTime.endDate) + '</td>' +
                         '<td><span class="badge bg-secondary">' + String(customTime.workStartTime) + ' - ' + String(customTime.workEndTime) + '</span></td>' +
                         '<td><span class="badge bg-secondary">' + String(customTime.breakStartTime) + ' - ' + String(customTime.breakEndTime) + '</span></td>' +
-                        '<td><button type="button" value="' + customTime.timeId + '" class="deleteCustomTimeBtn btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
+                        '<td><button type="button" value="' + customTime.timeId + '" class="deleteCustomWorkTimeBtn btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
                         '</tr>');
                     counter++;
                 });
-                $(".deleteCustomTimeBtn").on('click', function (){
+                $(".deleteCustomWorkTimeBtn").on('click', function (){
                     $.get("/admin/api/employee/delete_custom_worktime.php", {id: $(this).attr('value')})
                         .done(function (data) {
                             if (!data.error) {
@@ -272,6 +272,18 @@ function generateWorkTimesTables(employeeId) {
                         .fail(function () {
                             // non fare nulla in modo tale da permettere all'utente di riprovare
                         });
+                });
+                $("#customWorkTimeDataTable").DataTable({
+                    language: {
+                        url: "/datatables/lang/ita.json"
+                    },
+                    columnDefs: [
+                        {
+                            targets: "_all",
+                            className: 'dt-center'
+                        }
+                    ],
+                    "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"] ]
                 });
             }
 
@@ -617,7 +629,7 @@ $(function () {
         $("#editWorkTimesModal").modal("show");
     });
 
-    $("#showCustomWorkingTimeModal").on("click", function () {
+    $("#showModalCustomWorkingTimeBtn").on("click", function () {
         $("#addCustomWorkingTimeButton").attr('value', $(this).attr('value'));
         $("#workTimesModal").modal("hide");
         // open edit modal
@@ -779,7 +791,6 @@ $(function () {
                             $("#addCustomWorkTimesModal").modal("hide");
                             $("#successModal").modal("show");
                             // clean all the fields
-                            $(".day-container .day-selector.active").removeClass('active');
                         } else {
                             // set error modal data
                             $("#errorModalTitle").html("Informazioni non aggiunte");
@@ -813,5 +824,5 @@ $(function () {
         if ($("#customWorkTimeAlert").hasClass('d-none') && startDate < today){
             $("#customWorkTimeAlert").removeClass('d-none');
         }
-    })
+    });
 })

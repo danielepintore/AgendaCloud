@@ -73,11 +73,20 @@ function modules(done) {
     //JQuery validator
     var jqueryValidate = gulp.src('./node_modules/jquery-validation/dist/*.min.js')
         .pipe(gulp.dest(paths.scripts.dest));
+    // Datatables js
+    var datatables = gulp.src('./node_modules/datatables.net/js/jquery.dataTables.min.js')
+        .pipe(gulp.dest(paths.scripts.dest));
+    // Datatables bootstrap js
+    var datatablesBootStrapJS = gulp.src('./node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js')
+        .pipe(gulp.dest(paths.scripts.dest));
+    // Datatables bootstrap css
+    var datatablesCss = gulp.src('./node_modules/datatables.net-bs5/css/dataTables.bootstrap5.css')
+        .pipe(gulp.dest(paths.styles.dest));
     //Composer files
     var composerFile = gulp.src('composer.json')
         .pipe(gulp.dest('build/build'));
     done();
-    return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composerFile);
+    return merge(bootstrapJS, bootstrapCSS, fontAwesomeCSS, fontAwesomeFonts, jqueryValidate, jquery, loadingio, composerFile, datatables, datatablesBootStrapJS, datatablesCss);
 }
 
 export function minifyImages() {
@@ -153,8 +162,10 @@ function copyPhpSources(done) {
     var configDir = gulp.src('config/**/*.php')
         .pipe(gulp.dest('build/build/config/'));
 
+    var datatablesConfig = gulp.src('public/datatables/**/*.json')
+        .pipe(gulp.dest('build/build/public/datatables/'));
      done();
-    return merge(srcDir, publicDir, resourcesDir, configDir);
+    return merge(srcDir, publicDir, resourcesDir, configDir, datatablesConfig);
 }
 
 function copyDockerFiles(){
