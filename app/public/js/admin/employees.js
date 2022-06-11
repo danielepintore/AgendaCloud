@@ -7,6 +7,16 @@ $.validator.addMethod("strong_password", function (value, element) {
     return true;
 });
 
+$.validator.addMethod("time", function(value, element) {
+    if (value === ""){
+        return this.optional(element) || false;
+    }
+    if (!(/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value))) {
+        return false;
+    }
+    return true;
+}, "Inserisci un orario corretto");
+
 function populateEditModal(employeeId) {
     // clean all the fields
     $("#name-edit").val("");
@@ -103,56 +113,8 @@ function getEmployeesList() {
                 $(".working-times").on("click", function () {
                     let employeeId = $(this).attr("value");
                     generateWorkTimesTables(employeeId);
-                    $("#showModalEditWorkingTimeBtn").on("click", function () {
-                        $("#editWorkingTimeButton").attr('value', employeeId);
-                        $(".day-selector").on("click", function () {
-                            $(this).toggleClass("active");
-                        });
-                        $("#free-day-checkbox").on("click", function (){
-                            let inputFields = $(this).parent().parent().find('input[type="time"]');
-                            if ($(this).prop('checked')){
-                                inputFields.prop('disabled', true);
-                                inputFields.val('');
-                            } else {
-                                inputFields.prop('disabled', false);
-                                inputFields.val('08:00');
-                            }
-                        });
-                        $("#editWorkingTimeButton").on("click", function () {
-                            let buttonLoader = new ButtonLoader("#editWorkingTimeButton", true);
-                            buttonLoader.makeRequest(function (){
-                               // Todo implement the request
-
-                            });
-                        });
-                        $("#workTimesModal").modal("hide");
-                        // open edit modal
-                        $("#editWorkTimesModal").modal("show");
-                    });
-
-                    $("#showCustomWorkingTimeModal").on("click", function (){
-                        $("#free-day-custom-checkbox").on("click", function (){
-                            let inputFields = $(this).parent().parent().find('input[type="time"]');
-                            if ($(this).prop('checked')){
-                                inputFields.prop('disabled', true);
-                                inputFields.val('');
-                            } else {
-                                inputFields.prop('disabled', false);
-                                inputFields.val('08:00');
-                            }
-                        });
-
-                        $("#addCustomWorkingTimeButton").on("click", function () {
-                           let buttonLoader = new ButtonLoader("#addCustomWorkingTimeButton", true);
-                           buttonLoader.makeRequest(function () {
-                              // todo add callback here
-                           });
-                        });
-                        $("#workTimesModal").modal("hide");
-                        // open edit modal
-                        $("#addCustomWorkTimesModal").modal("show");
-                    });
-
+                    $("#showModalEditWorkingTimeBtn").attr('value', employeeId);
+                    $("#showCustomWorkingTimeModal").attr('value', employeeId);
                     // open modal to confirm
                     $("#workTimesModal").modal("show");
                 });
@@ -230,11 +192,26 @@ function generateWorkTimesTables(employeeId) {
                     tbody.append('<tr>' +
                         '<td>' + String(customTime.startDate) + '</td>' +
                         '<td>' + String(customTime.endDate) + '</td>' +
-                        '<td><span class="badge bg-secondary">' + String(customTime.workStartTime)  + ' - ' + String(customTime.workEndTime) + '</span></td>' +
+                        '<td><span class="badge bg-secondary">' + String(customTime.workStartTime) + ' - ' + String(customTime.workEndTime) + '</span></td>' +
                         '<td><span class="badge bg-secondary">' + String(customTime.breakStartTime) + ' - ' + String(customTime.breakEndTime) + '</span></td>' +
-                        '<td><button type="button" value="' + customTime.timeId +'" class="employeeBtnAdd btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
+                        '<td><button type="button" value="' + customTime.timeId + '" class="deleteCustomTimeBtn btn btn-outline-danger btn-sm"><i class="fa-solid fa-xmark"></i></button></td>' +
                         '</tr>');
                     counter++;
+                });
+                $(".deleteCustomTimeBtn").on('click', function (){
+                    $.get("/admin/api/employee/delete_custom_worktime.php", {id: $(this).attr('value')})
+                        .done(function (data) {
+                            if (!data.error) {
+                                // Non c'è stato un errore
+                                // Reload appointments
+                                generateWorkTimesTables($("#showModalEditWorkingTimeBtn").attr("value"));
+                            } else {
+                                // c'è stato nessun errore non fare nulla
+                            }
+                        })
+                        .fail(function () {
+                            // non fare nulla in modo tale da permettere all'utente di riprovare
+                        });
                 });
             }
 
@@ -566,6 +543,204 @@ $(function () {
                     // set error modal data
                     $("#errorModalTitle").html("Giorno di ferie non aggiunto");
                     $("#errorModalMessage").html("Il giorno di ferie non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
+            });
+        }
+    });
+
+    $("#showModalEditWorkingTimeBtn").on("click", function () {
+        $("#editWorkingTimeButton").attr('value', $(this).attr('value'));
+        $("#workTimesModal").modal("hide");
+        // open edit modal
+        $("#editWorkTimesModal").modal("show");
+    });
+
+    $("#showCustomWorkingTimeModal").on("click", function () {
+        $("#addCustomWorkingTimeButton").attr('value', $(this).attr('value'));
+        $("#workTimesModal").modal("hide");
+        // open edit modal
+        $("#addCustomWorkTimesModal").modal("show");
+    });
+
+    $(".day-selector").on("click", function () {
+        $(this).toggleClass("active");
+        if (!$("#workTimeAlert").hasClass('d-none')){
+            $("#workTimeAlert").addClass('d-none');
+        }
+    });
+
+    $("#free-day-checkbox").on("click", function () {
+        let inputFields = $(this).parent().parent().find('input[type="time"]');
+        if ($(this).prop('checked')) {
+            inputFields.prop('disabled', true);
+            inputFields.val('');
+        } else {
+            inputFields.prop('disabled', false);
+        }
+    });
+
+    $("#free-day-custom-checkbox").on("click", function () {
+        let inputFields = $(this).parent().parent().find('input[type="time"]');
+        if ($(this).prop('checked')) {
+            inputFields.prop('disabled', true);
+            inputFields.val('');
+        } else {
+            inputFields.prop('disabled', false);
+        }
+    });
+
+    $("#editWorkingTimeButton").on("click", function () {
+        let buttonLoader = new ButtonLoader("#editWorkingTimeButton", true);
+        let daysSelected = $(".day-container .day-selector.active").map(function () {
+            return parseInt($(this).attr('value'));
+        }).get();
+        $("#updateWorkTimeForm").validate({
+            rules: {
+                startTime: {required: true, time: true},
+                endTime: {required: true, time: true},
+                startBreak: {required:function () {
+                        return $("#workTime-endBreak").val() != ""
+                    }, time: true},
+                endBreak: {required: function () {
+                        return $("#workTime-startBreak").val() != ""
+                    }, time: true},
+                freeDayCheckbox: {required: false},
+            },
+            messages: {
+                startTime: "Inserisci una data valida",
+                endTime: "Inserisci una data valida",
+            }
+        });
+        if (daysSelected.length === 0){
+            $("#workTimeAlert").removeClass('d-none');
+        }
+        if ($("#updateWorkTimeForm").valid() && daysSelected.length > 0){
+            let jsonObject = new Object();
+            jsonObject.timeType = "standard";
+            jsonObject.userId = $("#editWorkingTimeButton").val();
+            jsonObject.days = daysSelected;
+            jsonObject.freeDay = $("#free-day-checkbox").prop('checked');
+            jsonObject.startTime = $("#workTime-startTime").val();
+            jsonObject.endTime = $("#workTime-endTime").val();
+            jsonObject.startBreak = $("#workTime-startBreak").val();
+            jsonObject.endBreak = $("#workTime-endBreak").val();
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/employee/update_working_time.php", {
+                    data: JSON.stringify(jsonObject),
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Informazioni modificate");
+                            $("#successModalMessage").html("L'orario di lavoro del dipendente è stato modificato");
+                            // show success modal
+                            $("#editWorkTimesModal").modal("hide");
+                            $("#successModal").modal("show");
+                            // clean all the fields
+                            $(".day-container .day-selector.active").removeClass('active');
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Informazioni non modificate");
+                            $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#editWorkTimesModal").modal("hide");
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
+                    // set error modal data
+                    $("#errorModalTitle").html("Informazioni non modificate");
+                    $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato modificato, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    $("#editWorkTimesModal").modal("hide");
+                    // show confirmation modal
+                    $("#errorModal").modal("show");
+                });
+            });
+        }
+    });
+
+    $("#addCustomWorkingTimeButton").on("click", function () {
+        let buttonLoader = new ButtonLoader("#addCustomWorkingTimeButton", true);
+        $("#addCustomWorkTimeForm").validate({
+            rules: {
+                startCustomDay: {required: true, date: true},
+                endCustomDay: {required: true, date: true},
+                customStartTime: {time: true},
+                customEndTime: {time: true},
+                customStartBreak: {required: function () {
+                        return $("#workTime-customEndBreak").val() != ""
+                    } ,time: true},
+                customEndBreak: {required: function () {
+                        return $("#workTime-customStartBreak").val() != ""
+                    }, time: true},
+                freeDayCheckbox: {required: false},
+            },
+            messages: {
+                startCustomDay: "Inserisci una data valida",
+                endCustomDay: "Inserisci una data valida",
+                customStartBreak: "Inserisci una data valida",
+                customEndBreak: "Inserisci una data valida"
+            }
+        });
+        let startDate = new Date($("#workTime-startCustomDay").val());
+        startDate.setHours(0);
+        startDate.setMinutes(0);
+        startDate.setSeconds(0);
+        startDate.setMilliseconds(0);
+        let endDate = new Date($("#workTime-endCustomDay").val());
+        endDate.setHours(0);
+        endDate.setMinutes(0);
+        endDate.setSeconds(0);
+        endDate.setMilliseconds(0);
+        let today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        today.setMilliseconds(0);
+        if ($("#addCustomWorkTimeForm").valid() && startDate >= today && startDate <= endDate){
+            let jsonObject = new Object();
+            jsonObject.timeType = "custom";
+            jsonObject.userId = $("#addCustomWorkingTimeButton").val();
+            jsonObject.startDay = $("#workTime-startCustomDay").val();
+            jsonObject.endDay = $("#workTime-endCustomDay").val();
+            jsonObject.freeDay = $("#free-day-custom-checkbox").prop('checked');
+            jsonObject.startTime = $("#workTime-customStartTime").val();
+            jsonObject.endTime = $("#workTime-customEndTime").val();
+            jsonObject.startBreak = $("#workTime-customStartBreak").val();
+            jsonObject.endBreak = $("#workTime-customEndBreak").val();
+            console.log(JSON.stringify(jsonObject));
+            buttonLoader.makeRequest(function () {
+                $.post("/admin/api/employee/update_working_time.php", {
+                    data: JSON.stringify(jsonObject),
+                })
+                    .done(function (data) {
+                        buttonLoader.hideLoadingAnimation();
+                        if (!data.error) {
+                            // set success modal data
+                            $("#successModalTitle").html("Informazioni aggiunte");
+                            $("#successModalMessage").html("L'orario di lavoro del dipendente è stato aggiunto");
+                            // show success modal
+                            $("#addCustomWorkTimesModal").modal("hide");
+                            $("#successModal").modal("show");
+                            // clean all the fields
+                            $(".day-container .day-selector.active").removeClass('active');
+                        } else {
+                            // set error modal data
+                            $("#errorModalTitle").html("Informazioni non aggiunte");
+                            $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                            // show confirmation modal
+                            $("#addCustomWorkTimesModal").modal("hide");
+                            $("#errorModal").modal("show");
+                        }
+                    }).fail(function () {
+                    buttonLoader.hideLoadingAnimation();
+                    // set error modal data
+                    $("#errorModalTitle").html("Informazioni non aggiunte");
+                    $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                    $("#addCustomWorkTimesModal").modal("hide");
                     // show confirmation modal
                     $("#errorModal").modal("show");
                 });

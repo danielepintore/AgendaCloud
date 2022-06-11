@@ -4,6 +4,7 @@ namespace Admin;
 
 use Database;
 use DatabaseException;
+use PHPMailer\PHPMailer\Exception;
 
 class Employee {
     /**
@@ -113,7 +114,7 @@ class Employee {
         $status = $db->query($sql, "i", $employeeId);
         $result = $db->getResult();
         if ($status && $db->getAffectedRows() == 1) {
-            if ($result[0]['isActive']){
+            if ($result[0]['isActive']) {
                 return true;
             } else {
                 return false;
@@ -159,6 +160,9 @@ class Employee {
         }
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function deleteHoliday(Database $db, $holidayId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "DELETE FROM GiornoLiberoDipendente WHERE GiornoLiberoDipendente.id = ?";
@@ -170,6 +174,9 @@ class Employee {
         }
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getEmployeeWorkingTimes(Database $db, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT idOrariDipendente, GiornoSettimana, TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro, TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariDipendente WHERE (Dipendente_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
@@ -179,19 +186,86 @@ class Employee {
             $standardTime = [];
             $customTime = [];
             foreach ($result as $r) {
-                if ($r['InizioPausa'] == null){$r['InizioPausa'] = "";}
-                if ($r['FinePausa'] == null){$r['FinePausa'] = "";}
-                if ($r['IsCustom'] == 0){
+                if ($r['InizioPausa'] == null) {
+                    $r['InizioPausa'] = "";
+                }
+                if ($r['FinePausa'] == null) {
+                    $r['FinePausa'] = "";
+                }
+                if ($r['IsCustom'] == 0) {
                     $standardTime[] = ["day" => $r['GiornoSettimana'], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
                 } else {
-                    if ($r['StartDate'] == null){$r['StartDate'] = "";}
-                    if ($r['EndDate'] == null){$r['EndDate'] = "";}
+                    if ($r['StartDate'] == null) {
+                        $r['StartDate'] = "";
+                    }
+                    if ($r['EndDate'] == null) {
+                        $r['EndDate'] = "";
+                    }
                     $customTime[] = ["timeId" => $r["idOrariDipendente"], "startDate" => $r["StartDate"], "endDate" => $r["EndDate"], "workStartTime" => $r["InizioLavoro"], "workEndTime" => $r['FineLavoro'], "breakStartTime" => $r['InizioPausa'], "breakEndTime" => $r['FinePausa']];
                 }
             }
             return ["standard" => $standardTime, "custom" => $customTime];
         } else {
             return [];
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function updateWorkingTimes(Database $db, $data) {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        if ($data->timeType === "custom") {
+            $sql = 'INSERT INTO OrariDipendente (idOrariDipendente, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Dipendente_id, isCustom, StartDate, EndDate) VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
+            if ($data->freeDay) {
+                $data->startTime = "00:00";
+                $data->endTime = "00:00";
+                $data->startBreak = "00:00";
+                $data->endBreak = "24:00";
+            }
+            $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
+            $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
+            $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
+            $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
+            $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+        } else {
+            $sql = 'UPDATE OrariDipendente SET InizioLavoro = ?, FineLavoro = ?, InizioPausa = ?, FinePausa = ? WHERE(Dipendente_id = ? AND GiornoSettimana = ?)';
+            if ($data->freeDay) {
+                $data->startTime = "00:00";
+                $data->endTime = "00:00";
+                $data->startBreak = "00:00";
+                $data->endBreak = "24:00";
+            }
+            $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
+            $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
+            $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
+            $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
+            $days = $data->days;
+            foreach ($days as $day) {
+                $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                if (!$status) {
+                    return false;
+                }
+            }
+        }
+        if ($status) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function deleteCustomWorkTime(Database $db, $id){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "DELETE FROM OrariDipendente WHERE (idOrariDipendente = ? AND isCustom = 1)";
+        $status = $db->query($sql, "i", $id);
+        if ($status && $db->getAffectedRows() == 1) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

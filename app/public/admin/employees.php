@@ -304,7 +304,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             <div class="tab-pane fade" id="customWorkTimes" role="tabpanel"
                                  aria-labelledby="customWorkTimes">
                                 <div id="customWorkTimesTable" class="mb-2"></div>
-                                <button id="showCustomWorkingTimeModal" type="button" class="btn btn-success w-100"><i
+                                <button id="showCustomWorkingTimeModal" type="button" class="btn btn-success w-100 mt-2"><i
                                             class="fa-solid fa-plus"></i> Aggiungi orari
                                 </button>
                             </div>
@@ -328,31 +328,35 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-body">
                     <h6>Scegli un giorno:</h6>
                     <div class="day-container">
-                        <div class="day-selector first-day">Lun</div>
-                        <div class="day-selector">Mar</div>
-                        <div class="day-selector">Mer</div>
-                        <div class="day-selector">Gio</div>
-                        <div class="day-selector">Ven</div>
-                        <div class="day-selector">Sab</div>
-                        <div class="day-selector last-day">Dom</div>
+                        <div class="day-selector first-day" value="0">Lun</div>
+                        <div class="day-selector" value="1">Mar</div>
+                        <div class="day-selector" value="2">Mer</div>
+                        <div class="day-selector" value="3">Gio</div>
+                        <div class="day-selector" value="4">Ven</div>
+                        <div class="day-selector" value="5">Sab</div>
+                        <div class="day-selector last-day" value="6">Dom</div>
                     </div>
-                    <h6>Orario inizio lavoro:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
-                    <h6>Orario fine lavoro:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
-                    <h6>Orario inizio pausa:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
-                    <h6>Orario fine pausa:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="free-day-checkbox">
-                        <label class="form-check-label">
-                            Giorno libero
-                        </label>
+                    <form id="updateWorkTimeForm">
+                        <h6>Orario inizio lavoro:</h6>
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime">
+                        <h6>Orario fine lavoro:</h6>
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-endTime" name="endTime">
+                        <h6>Orario inizio pausa:</h6>
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-startBreak" name="startBreak">
+                        <h6>Orario fine pausa:</h6>
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-endBreak" name="endBreak">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="free-day-checkbox" name="freeDayCheckbox">
+                            <label class="form-check-label">
+                                Giorno libero
+                            </label>
+                        </div>
+                    </form>
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeAlert" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <div>
+                            Devi selezionare dei giorni dalla barra qui sopra!
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -374,27 +378,26 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <h6>Scegli un giorno:</h6>
-                    <input type="date" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
+                    <form id="addCustomWorkTimeForm">
+                    <h6>Data inizio:</h6>
+                    <input type="date" class="form-control mb-2" id="workTime-startCustomDay" name="startCustomDay">
+                    <h6>Data fine:</h6>
+                    <input type="date" class="form-control mb-2" id="workTime-endCustomDay" name="endCustomDay">
                     <h6>Orario inizio lavoro:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
+                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-customStartTime" name="customStartTime">
                     <h6>Orario fine lavoro:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
+                    <input type="time" value="17:00" class="form-control mb-2" id="workTime-customEndTime" name="customEndTime">
                     <h6>Orario inizio pausa:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
+                    <input type="time" value="13:00" class="form-control mb-2" id="workTime-customStartBreak" name="customStartBreak">
                     <h6>Orario fine pausa:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime"
-                           data-error="#errorStartTime">
+                    <input type="time" value="15:00" class="form-control mb-2" id="workTime-customEndBreak" name="customEndBreak">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="free-day-custom-checkbox">
+                        <input class="form-check-input" type="checkbox" value="" id="free-day-custom-checkbox" name="freeDayCustomCheckbox">
                         <label class="form-check-label">
                             Giorno libero
                         </label>
                     </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success" id="addCustomWorkingTimeButton"><i

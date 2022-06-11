@@ -44,6 +44,7 @@ ADD notification when an appointment is deleted
 -----------------------------------------------------------------
 
 TO DO:
+migrate time to unix timestamp
 Change docs for watchtower
 Implementare servizi di gruppo con calcolo dinamico del prezzo
 Aggiungi pausa pranzo per servizi in modo da evitare di creare due servizi per mattina e pomeriggio

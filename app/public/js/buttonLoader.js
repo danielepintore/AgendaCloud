@@ -16,7 +16,6 @@ class ButtonLoader {
     }
 
     showLoadingAnimation(){
-        console.log(this.#loadingSpan);
         this.#loadingSpan.removeClass("d-none");
         if (this.#hasIcon){
             this.#icon.addClass("d-none");
