@@ -21,7 +21,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     }
     try {
         if (isset($_GET['employeeId']) && is_numeric($_GET['employeeId']) && !empty($_GET['employeeId'])) {
-            $workingTimes = \Admin\Employee::getEmployeeWorkingTimes($db, $_GET['employeeId']);
+            $workingTimes = \Admin\Employee::getWorkingTimes($db, $_GET['employeeId']);
             // se non ci sono stati errori fornisci la risposta
             if (count($workingTimes) == 0) {
                 print(json_encode(array()));

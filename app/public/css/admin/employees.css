@@ -26,7 +26,7 @@
 .list-group-item{
     cursor: default;
 }
-.delete-user, .edit-user, .holiday-user, .working-times{
+.delete-user, .edit-user, .working-times{
     cursor: pointer;
 }
 .loading-circle {

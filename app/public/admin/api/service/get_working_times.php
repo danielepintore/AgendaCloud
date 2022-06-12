@@ -21,7 +21,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     }
     try {
         if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && !empty($_GET['serviceId'])) {
-            $workingTimes = \Admin\Services::getServiceWorkingTimes($db, $_GET['serviceId']);
+            $workingTimes = \Admin\Services::getWorkingTimes($db, $_GET['serviceId']);
             // se non ci sono stati errori fornisci la risposta
             if (count($workingTimes) == 0) {
                 print(json_encode(array()));

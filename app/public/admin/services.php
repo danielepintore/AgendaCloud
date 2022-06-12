@@ -95,7 +95,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             <p id="errorStartTime"></p>
                             <label for="service-endTime" class="form-label">Orario chiusura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="service-endTime"
+                                <input type="time" value="18:00" class="form-control" id="service-endTime"
                                        name="endTime" data-error="#errorEndTime">
                             </div>
                             <p id="errorEndTime"></p>
@@ -164,18 +164,6 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                         </div>
                         <p id="errorDuration-edit"></p>
                         <div class="mb-2">
-                            <label for="service-startTime-edit" class="form-label">Orario apertura:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-startTime-edit"
-                                       name="startTime" data-error="#errorStartTime-edit">
-                            </div>
-                            <p id="errorStartTime-edit"></p>
-                            <label for="service-endTime-edit" class="form-label">Orario chiusura:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-endTime-edit"
-                                       name="endTime" data-error="#errorEndTime-edit">
-                            </div>
-                            <p id="errorEndTime-edit"></p>
                             <div class="input-group mb-2">
                                 <input type="number" value="" placeholder="Costo" class="form-control"
                                        id="service-cost-edit" name="cost" data-error="#errorCost-edit">
@@ -302,90 +290,6 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
         </div>
     </div>
 
-    <div class="modal fade" id="viewHolidaysModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi dei giorni di chiusura per il servizio</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="searchDateForm">
-                        <div class="input-group mb-2">
-                            <input type="date" placeholder="Giorno" max="2099-12-31" class="form-control"
-                                   id="daySearchHoliday" data-error="#infoHolidayService">
-                        </div>
-                    </form>
-                    <p id="infoHolidayService""></p>
-                    <table class="table d-none text-center" id="serviceHolidayTable">
-                        <thead>
-                        <th scope="col">Giorno</th>
-                        <th scope="col">Ora inizio</th>
-                        <th scope="col">Ora fine</th>
-                        <th scope="col">Azione</th>
-                        </thead>
-                        <tbody id="serviceHolidayTableBody">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-success" id="addHolidayButton" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-plus"></i> Aggiungi un giorno
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="addHolidayModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi una nuova giornata</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addHolidayForm">
-                        <div class="mb-2">
-                            <label for="holidayDate" class="form-label">Data:</label>
-                            <input type="date" placeholder="Data" class="form-control" id="holidayDate"
-                                   name="holidayDate"
-                                   data-error="#errorHolidayDate">
-                        </div>
-                        <p id="errorHolidayDate"></p>
-                        <div class="mb-2">
-                            <label for="holidayStartTime" class="form-label">Orario inizio:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="08:00" class="form-control" id="holidayStartTime"
-                                       name="holidayStartTime" data-error="#errorholidayStartTime">
-                            </div>
-                            <p id="errorholidayStartTime"></p>
-                            <label for="holidayEndTime" class="form-label">Orario fine:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="holidayEndTime"
-                                       name="holidayEndTime" data-error="#errorholidayEndTime">
-                            </div>
-                            <p id="errorholidayEndTime"></p>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="holidayFullDayCheckBox">
-                            <label class="form-check-label" for="service-active">
-                                Tutto il giorno
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
-                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="modal fade" id="workingTimesServiceModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -444,13 +348,13 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-body">
                     <h6>Scegli un giorno:</h6>
                     <div class="day-container">
-                        <div class="day-selector first-day" value="0">Lun</div>
-                        <div class="day-selector" value="1">Mar</div>
-                        <div class="day-selector" value="2">Mer</div>
-                        <div class="day-selector" value="3">Gio</div>
-                        <div class="day-selector" value="4">Ven</div>
-                        <div class="day-selector" value="5">Sab</div>
-                        <div class="day-selector last-day" value="6">Dom</div>
+                        <div class="day-selector first-day" value="1">Lun</div>
+                        <div class="day-selector" value="2">Mar</div>
+                        <div class="day-selector" value="3">Mer</div>
+                        <div class="day-selector" value="4">Gio</div>
+                        <div class="day-selector" value="5">Ven</div>
+                        <div class="day-selector" value="6">Sab</div>
+                        <div class="day-selector last-day" value="7">Dom</div>
                     </div>
                     <form id="updateServiceWorkTimeForm">
                         <h6>Orario inizio lavoro:</h6>

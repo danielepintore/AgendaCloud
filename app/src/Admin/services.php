@@ -16,28 +16,16 @@ class Services {
     public static function getEmployeeService(Database $db, $isAdmin, $employeeId): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
-            $sql = "SELECT id, Nome, Durata, OraInizio, OraFine, Costo FROM Servizio WHERE(IsActive = TRUE)";
-            $status = $db->query($sql);
-            if ($status) {
-                //Success
-                $result = $db->getResult();
-                $response = [];
-                foreach ($result as $r) {
-                    $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'],
-                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Costo' => $r['Costo']);
-                }
-                return $response;
-            }
+            return Service::getActiveServices($db);
         } else {
-            $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.OraInizio, Servizio.OraFine, Servizio.Costo FROM Servizio, Offre WHERE (Offre.Dipendente_id = ? AND Offre.Servizio_id = Servizio.id)";
+            $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id AND Dipendente.id = ?) GROUP BY Servizio.id";
             $status = $db->query($sql, "i", $employeeId);
             if ($status) {
                 //Success
                 $result = $db->getResult();
                 $response = [];
                 foreach ($result as $r) {
-                    $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'],
-                        'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Costo' => $r['Costo']);
+                    $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']);
                 }
                 return $response;
             }
@@ -50,17 +38,25 @@ class Services {
      * @throws DatabaseException
      * Add a service to the database
      */
+    //TODO add and implements starttime and endtime
     public static function addServices(Database $db, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, $isActive, $description = "") {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'INSERT INTO Servizio (id, Nome, Durata, OraInizio, OraFine, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?) ';
+        $sql = 'INSERT INTO Servizio (id, Nome, Durata, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, NULL, ?, ?)';
         if ($isActive) {
             $isActive = 1;
         } else {
             $isActive = 0;
         }
-        $status = $db->query($sql, "sissiisii", $name, $duration, $startTime, $endTime, $cost, $waitTime, $description, $isActive, $bookableUntil);
+        $status = $db->query($sql, "siiisii", $name, $duration, $cost, $waitTime, $description, $isActive, $bookableUntil);
         if ($status) {
-            //Success
+            //Success, proceed with adding the working times
+            $serviceId = $db->getInsertId();
+            $sql = "INSERT INTO OrariServizio (idOrariServizio, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Servizio_id, isCustom, StartDate, EndDate) VALUES (NULL, 1, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 2, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 3, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 4, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 5, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 6, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 7, ?, ?, ?, ?, ?, 0, NULL, NULL)";
+            $status = $db->query($sql, "ssississississississssi", $startTime, $endTime, $serviceId, $startTime, $endTime, $serviceId, $startTime, $endTime, $serviceId, $startTime, $endTime, $serviceId, $startTime, $endTime, $serviceId, $startTime, $endTime, $serviceId, "00:00", "00:00", "00:00", "23:59", $serviceId,);
+            if (!$status) {
+                self::deleteService($db, $serviceId);
+                return false;
+            }
             return true;
         }
         return false;
@@ -72,15 +68,15 @@ class Services {
      * @return array
      * @throws DatabaseException
      * Gets the list of services for the admin services list page
-     * It's retrive from the database all service info, including the number of active employee that are associated to
+     * It retrieves from the database all service info, including the number of active employee that are associated to
      * the service
      */
     public static function getServiceList(Database $db, $id = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($id == null) {
-            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio';
+            $sql = 'SELECT id, Nome, Durata, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio';
         } else {
-            $sql = 'SELECT id, Nome, Durata, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio WHERE Servizio.id = ?';
+            $sql = 'SELECT id, Nome, Durata, Costo, TempoPausa, Descrizione, IsActive, BookableUntil, (SELECT COUNT(*) FROM Offre, Dipendente WHERE (Offre.Servizio_id=Servizio.id AND Dipendente.IsActive = TRUE AND Offre.Dipendente_id = Dipendente.id)) AS NumDipendenti FROM Servizio WHERE Servizio.id = ?';
         }
         if ($id != null) {
             $status = $db->query($sql, "i", $id);
@@ -92,9 +88,9 @@ class Services {
             $services = [];
             $result = $db->getResult();
             foreach ($result as $r) {
-                $services[] = array("id" => $r['id'], "name" => $r['Nome'], "duration" => $r['Durata'], "startTime" => $r['OraInizio'],
-                    "endTime" => $r['OraFine'], "cost" => $r['Costo'], "waitTime" => $r['TempoPausa'], "description" => $r['Descrizione'],
-                    "isActive" => $r['IsActive'], "bookableUntil" => $r['BookableUntil'], "employeesNumber" => $r['NumDipendenti']);
+                $services[] = array("id" => $r['id'], "name" => $r['Nome'], "duration" => $r['Durata'], "cost" => $r['Costo'],
+                    "waitTime" => $r['TempoPausa'], "description" => $r['Descrizione'], "isActive" => $r['IsActive'],
+                    "bookableUntil" => $r['BookableUntil'], "employeesNumber" => $r['NumDipendenti']);
             }
             return $services;
         }
@@ -129,15 +125,14 @@ class Services {
      */
     public static function updateService(Database $db, Service $service) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'UPDATE Servizio SET Nome = ?, Durata = ?, OraInizio = ?, OraFine = ?, Costo = ?, TempoPausa = ?, Descrizione = ?, IsActive = ?, BookableUntil = ? WHERE id = ?';
+        $sql = 'UPDATE Servizio SET Nome = ?, Durata = ?, Costo = ?, TempoPausa = ?, Descrizione = ?, IsActive = ?, BookableUntil = ? WHERE id = ?';
         if ($service->getIsActive()) {
             $isActive = 1;
         } else {
             $isActive = 0;
         }
-        $status = $db->query($sql, "sissiisiii", $service->getName(), $service->getDuration(), $service->getStartTime(),
-            $service->getEndTime(), $service->getCost(), $service->getWaitTime(), $service->getDescription(), $isActive,
-            $service->getBookableUntil(), $service->getServiceId());
+        $status = $db->query($sql, "siiisiii", $service->getName(), $service->getDuration(), $service->getCost(),
+            $service->getWaitTime(), $service->getDescription(), $isActive, $service->getBookableUntil(), $service->getServiceId());
         if ($status) {
             //Success
             return true;
@@ -235,57 +230,8 @@ class Services {
 
     /**
      * @throws DatabaseException
-     * Gets an array containing all holidays for a specifc service with a limit of 10 entries per query
      */
-    public static function searchHolidays(Database $db, $serviceId, $date) {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT id, DATE_FORMAT(Data, "%e/%m/%Y") AS Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoChiusuraServizio WHERE (Servizio_id = ? AND Data LIKE ? AND Data >= CURDATE()) LIMIT 10';
-        $status = $db->query($sql, "is", $serviceId, "%$date%");
-        if ($status) {
-            $result = $db->getResult();
-            $holidays = [];
-            foreach ($result as $r) {
-                $holidays[] = ["id" => $r['id'], "date" => $r["Data"], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
-            }
-            return $holidays;
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     * Add a holiday to a service
-     */
-    public static function addHoliday(Database $db, $serviceId, $date, $startTime, $endTime) {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "INSERT INTO GiornoChiusuraServizio (Data, OraInizio, OraFine, Servizio_id) VALUES (?, ?, ?, ?)";
-        $status = $db->query($sql, "sssi", $date, $startTime, $endTime, $serviceId);
-        if ($status && $db->getAffectedRows() == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     */
-    public static function deleteHoliday(Database $db, $holidayId){
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "DELETE FROM GiornoChiusuraServizio WHERE GiornoChiusuraServizio.id = ?";
-        $status = $db->query($sql, "i", $holidayId);
-        if ($status && $db->getAffectedRows() == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     */
-    public static function getServiceWorkingTimes(Database $db, $serviceId){
+    public static function getWorkingTimes(Database $db, $serviceId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT idOrariServizio, GiornoSettimana, TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro, TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariServizio WHERE (Servizio_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
         $status = $db->query($sql, "i", $serviceId);
@@ -321,23 +267,29 @@ class Services {
     /**
      * @throws DatabaseException
      */
-    public static function updateWorkingTimes(Database $db, $data){
+    public static function updateWorkingTimes(Database $db, $data) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $status = false;
         if ($data->timeType === "custom") {
             $sql = 'INSERT INTO OrariServizio (idOrariServizio, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Servizio_id, isCustom, StartDate, EndDate) VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
             if ($data->freeDay) {
                 $data->startTime = "00:00";
                 $data->endTime = "00:00";
                 $data->startBreak = "00:00";
-                $data->endBreak = "24:00";
+                $data->endBreak = "23:59";
             }
             $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
             $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
             $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
             $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
             // validate input if freeday isn't set
-            if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+            if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime && $data->startDay <= $data->endDay) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime && $data->startDay <= $data->endDay)) {
                 $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+                if ($status && $db->getAffectedRows() == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -347,7 +299,7 @@ class Services {
                 $data->startTime = "00:00";
                 $data->endTime = "00:00";
                 $data->startBreak = "00:00";
-                $data->endBreak = "24:00";
+                $data->endBreak = "23:59";
             }
             $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
             $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
@@ -356,27 +308,27 @@ class Services {
             $days = $data->days;
             foreach ($days as $day) {
                 // validate input if freeday isn't set
-                if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)) {
                     $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                    if (!$status) {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
-                if (!$status) {
-                    return false;
-                }
             }
-        }
-        if ($status) {
-            return true;
-        } else {
-            return false;
+            if ($status) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
     /**
      * @throws DatabaseException
      */
-    public static function deleteCustomWorkTime(Database $db, $id){
+    public static function deleteCustomWorkTime(Database $db, $id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "DELETE FROM OrariServizio WHERE (idOrariServizio = ? AND isCustom = 1)";
         $status = $db->query($sql, "i", $id);
@@ -385,5 +337,74 @@ class Services {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param Database $db
+     * @return void
+     * Gets the currents worktimes for a service given a day of the week and the service identifier
+     */
+    public static function getDayWorkingTimes(Database $db, $day, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariServizio WHERE(isCustom = 0 AND GiornoSettimana = ? AND Servizio_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ii", $day, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioLavoro']) || is_null($r['FineLavoro'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioLavoro'], 'endTime' => $r['FineLavoro']);
+        }
+        return [];
+    }
+
+    public static function getDayCustomWorkingTimes(Database $db, $date, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariServizio WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Servizio_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ssi", $date, $date, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioLavoro']) || is_null($r['FineLavoro'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioLavoro'], 'endTime' => $r['FineLavoro']);
+        }
+        return [];
+    }
+
+    public static function getDayHolidayTimes(Database $db, $day, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariServizio WHERE(isCustom = 0 AND GiornoSettimana = ? AND Servizio_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ii", $day, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioPausa']) || is_null($r['FinePausa'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
+        }
+        return [];
+    }
+
+    public static function getDayCustomHolidayTimes(Database $db, $date, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariServizio WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Servizio_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ssi", $date, $date, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioPausa']) || is_null($r['FinePausa'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
+        }
+        return [];
     }
 }

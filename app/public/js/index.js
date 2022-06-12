@@ -68,15 +68,7 @@ function loadServices() {
         // disabilito la lista degli orari
         $('#lista-orari').prop('disabled', true);
     })
-    /*
-    // change duration paragraph
-    $('#tipoServizio').on('change', function(){
-        $.get("api/get_services.php", {service: $(this).val()})
-        .done(function(data){
-            $('#durataServizio').html('Durata: ' + data.Durata + ' minuti');
-          });
-    });   ,
-     */
+
     $("#prenota_btn").on("click", function () {
         $("#form_dati_personali").validate({
             rules: {

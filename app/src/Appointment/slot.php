@@ -19,12 +19,14 @@ class Slot {
     public static function getSlots(Database $db, $serviceId, $employeeId, $dateStr, $isUserAuthenticated = false) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         DateCheck::isValidDate($dateStr, $isUserAuthenticated);
-        //check if the date is a holiday
-        $holidayInfo = DateCheck::getHolidayInfo($db, $dateStr, $serviceId, $employeeId);
+        $weekDay = (new DateTime($dateStr))->format('N');
+        $workingTimes = workingTimes::getWorkingTimes($db, $weekDay, $dateStr, $serviceId, $employeeId);
+        // get holiday start and end time
+        $holidayInfo = workingTimes::getHolidayTimes($db, $weekDay, $dateStr, $serviceId, $employeeId);
         // check if the employee is active
         if (\Admin\Employee::isActive($db, $employeeId)) {
             // get service data from the database
-            $sql = "SELECT Durata, OraInizio, OraFine, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
+            $sql = "SELECT Durata, TempoPausa, BookableUntil FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
             $status = $db->query($sql, "i", $serviceId);
             if ($status) {
                 //Success
@@ -52,6 +54,7 @@ class Slot {
                         if($isUserAuthenticated){
                             $service_info["BookableUntil"] = 0;
                         }
+
                         // generazione slots liberi
                         $total_interval_time = $service_info["Durata"] + $service_info["TempoPausa"];
                         try {
@@ -62,8 +65,8 @@ class Slot {
                         } catch (Exception $e) {
                             throw DataException::wrongIntervalString();
                         }
-                        $date = DateTime::createFromFormat("Y-m-d G:i:s", $dateStr . " " . $service_info["OraInizio"]);
-                        $endDate = DateTime::createFromFormat("Y-m-d G:i:s", $dateStr . " " . $service_info["OraFine"]);
+                        $date = DateTime::createFromFormat("Y-m-d G:i", $dateStr . " " . $workingTimes["startTime"]);
+                        $endDate = DateTime::createFromFormat("Y-m-d G:i", $dateStr . " " . $workingTimes["endTime"]);
                         $now = new DateTime();
                         $generated_slots = array();
                         do {
@@ -79,6 +82,7 @@ class Slot {
                                 if ($interval->getStartTime() < $o["start_time"] && $interval->getEndTime() <= $o["start_time"] ||
                                     $interval->getStartTime() > $o["start_time"] && $interval->getStartTime() >= $o["end_time"]) {
                                     // lo slot potrebbe essere libero
+                                    //todo rimuovere la terza condizione ($interval->getStartTime() > $o["start_time"])
                                 } else {
                                     // lo slot non è libero
                                     $isFree = false;
@@ -90,6 +94,7 @@ class Slot {
                                 // we need to check if the end time of a slot is bigger than the actual service end time
                                 if ($interval->getEndTime() <= $endDate->format('H:i')) {
                                     // we can add the slot
+                                    // todo check if we are removing the wait time
                                     // before adding to the generated slot we remove the wait time because it shouldn't be visible by the client
                                     $generated_slots[] = $interval->getArray();
                                 }
@@ -101,6 +106,7 @@ class Slot {
                             $slotsWithHolidays = [];
                             foreach ($holidayInfo as $holiday) {
                                 foreach ($generated_slots as $slot) {
+                                    // add only the slots that arent included in the holiday timeframe
                                     if ($slot["start_time"] <= $holiday['startTime'] && $slot['end_time'] <= $holiday['startTime']) {
                                         $slotsWithHolidays[] = $slot;
                                     } elseif ($slot["start_time"] >= $holiday['endTime']) {

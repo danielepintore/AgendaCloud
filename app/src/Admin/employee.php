@@ -52,7 +52,16 @@ class Employee {
         $password = password_hash($password, PASSWORD_DEFAULT);
         $status = $db->query($sql, "sssssii", $name, $surname, $role, $username, $password, $admin, $isActive);
         if ($status) {
-            //Success
+            //Success, proceed with adding the working times
+            $employeeId = $db->getInsertId();
+            $startTime = "08:00";
+            $endTime = "18:00";
+            $sql = "INSERT INTO OrariDipendente (idOrariDipendente, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Dipendente_id, isCustom, StartDate, EndDate) VALUES (NULL, 1, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 2, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 3, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 4, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 5, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 6, ?, ?, NULL, NULL, ?, 0, NULL, NULL), (NULL, 7, ?, ?, ?, ?, ?, 0, NULL, NULL)";
+            $status = $db->query($sql, "ssississississississssi", $startTime, $endTime, $employeeId, $startTime, $endTime, $employeeId, $startTime, $endTime, $employeeId, $startTime, $endTime, $employeeId, $startTime, $endTime, $employeeId, $startTime, $endTime, $employeeId, "00:00", "00:00", "00:00", "23:59", $employeeId,);
+            if (!$status) {
+                self::deleteEmployee($db, $employeeId, -1);
+                return false;
+            }
             return true;
         }
         return false;
@@ -126,58 +135,8 @@ class Employee {
 
     /**
      * @throws DatabaseException
-     * Gets the holidays for an employee, it also performs a search based on date parameter.
-     * It outputs formatted data
      */
-    public static function searchHolidays(Database $db, $userId, $date) {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT id, DATE_FORMAT(Data, "%e/%m/%Y") AS Data, TIME_FORMAT(OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(OraFine, "%H:%i") AS OraFine FROM GiornoLiberoDipendente WHERE (Dipendente_id = ? AND Data LIKE ? AND Data >= CURDATE()) LIMIT 10';
-        $status = $db->query($sql, "is", $userId, "%$date%");
-        if ($status) {
-            $result = $db->getResult();
-            $holidays = [];
-            foreach ($result as $r) {
-                $holidays[] = ["id" => $r['id'], "date" => $r["Data"], "startTime" => $r['OraInizio'], "endTime" => $r['OraFine']];
-            }
-            return $holidays;
-        } else {
-            return [];
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     * Add a holiday to a service
-     */
-    public static function addHoliday(Database $db, $employeeId, $date, $startTime, $endTime) {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "INSERT INTO GiornoLiberoDipendente (Data, OraInizio, OraFine, Dipendente_id) VALUES (?, ?, ?, ?)";
-        $status = $db->query($sql, "sssi", $date, $startTime, $endTime, $employeeId);
-        if ($status && $db->getAffectedRows() == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     */
-    public static function deleteHoliday(Database $db, $holidayId) {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "DELETE FROM GiornoLiberoDipendente WHERE GiornoLiberoDipendente.id = ?";
-        $status = $db->query($sql, "i", $holidayId);
-        if ($status && $db->getAffectedRows() == 1) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * @throws DatabaseException
-     */
-    public static function getEmployeeWorkingTimes(Database $db, $employeeId) {
+    public static function getWorkingTimes(Database $db, $employeeId) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT idOrariDipendente, GiornoSettimana, TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro, TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa, IsCustom, DATE_FORMAT(StartDate, "%e/%m/%Y") AS StartDate, DATE_FORMAT(EndDate, "%e/%m/%Y") AS EndDate FROM OrariDipendente WHERE (Dipendente_id = ? AND (EndDate >= CURRENT_DATE() OR EndDate IS NULL))';
         $status = $db->query($sql, "i", $employeeId);
@@ -221,15 +180,20 @@ class Employee {
                 $data->startTime = "00:00";
                 $data->endTime = "00:00";
                 $data->startBreak = "00:00";
-                $data->endBreak = "24:00";
+                $data->endBreak = "23:59";
             }
             $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
             $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
             $data->startBreak = ($data->startBreak === "") ? null : $data->startBreak;
             $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
             // validate input if freeday isn't set
-            if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+            if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime && $data->startDay <= $data->endDay) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime && $data->startDay <= $data->endDay)) {
                 $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+                if ($status && $db->getAffectedRows() == 1) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
@@ -239,7 +203,7 @@ class Employee {
                 $data->startTime = "00:00";
                 $data->endTime = "00:00";
                 $data->startBreak = "00:00";
-                $data->endBreak = "24:00";
+                $data->endBreak = "23:59";
             }
             $data->startTime = ($data->startTime === "") ? "08:00" : $data->startTime;
             $data->endTime = ($data->endTime === "") ? "17:00" : $data->endTime;
@@ -248,14 +212,15 @@ class Employee {
             $days = $data->days;
             foreach ($days as $day) {
                 // validate input if freeday isn't set
-                if ($data->freeDay || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)){
+                if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)) {
                     $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                    if (!$status) {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
-                if (!$status) {
-                    return false;
-                }
+
             }
         }
         if ($status) {
@@ -268,7 +233,7 @@ class Employee {
     /**
      * @throws DatabaseException
      */
-    public static function deleteCustomWorkTime(Database $db, $id){
+    public static function deleteCustomWorkTime(Database $db, $id) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "DELETE FROM OrariDipendente WHERE (idOrariDipendente = ? AND isCustom = 1)";
         $status = $db->query($sql, "i", $id);
@@ -277,5 +242,74 @@ class Employee {
         } else {
             return false;
         }
+    }
+
+    /**
+     * @param Database $db
+     * @return void
+     * Gets the currents worktimes for an employee given a day of the week and it's identifier
+     */
+    public static function getDayWorkingTimes(Database $db, $day, $employeeId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariDipendente WHERE(isCustom = 0 AND GiornoSettimana = ? AND Dipendente_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ii", $day, $employeeId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioLavoro']) || is_null($r['FineLavoro'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioLavoro'], 'endTime' => $r['FineLavoro']);
+        }
+        return [];
+    }
+
+    public static function getDayCustomWorkingTimes(Database $db, $date, $employeeId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariDipendente WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Dipendente_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ssi", $date, $date, $employeeId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioLavoro']) || is_null($r['FineLavoro'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioLavoro'], 'endTime' => $r['FineLavoro']);
+        }
+        return [];
+    }
+
+    public static function getDayHolidayTimes(Database $db, $day, $employeeId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariDipendente WHERE(isCustom = 0 AND GiornoSettimana = ? AND Dipendente_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ii", $day, $employeeId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioPausa']) || is_null($r['FinePausa'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
+        }
+        return [];
+    }
+
+    public static function getDayCustomHolidayTimes(Database $db, $date, $employeeId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariDipendente WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Dipendente_id = ?) LIMIT 1';
+        $status = $db->query($sql, "ssi", $date, $date, $employeeId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() == 1) {
+            //Success
+            $r = $result[0];
+            if (is_null($r['InizioPausa']) || is_null($r['FinePausa'])) {
+                return ['startTime' => "00:00", 'endTime' => "00:00"];
+            }
+            return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
+        }
+        return [];
     }
 }

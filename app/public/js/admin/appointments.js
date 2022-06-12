@@ -32,22 +32,22 @@ function loadServices() {
                 $('#lista_dipendenti').empty()
                 if (!data.error && data.length > 0) {
                     data.forEach(element => {
-                        $('#lista_dipendenti').append('<option value="' + element.id + '">' + element.Nominativo + '</option>')
+                        $('#lista_dipendenti').append('<option value="' + element.id + '">' + element.Nominativo + '</option>');
                     });
-                    getSelectedServiceInfo(serviceId)
+                    getSelectedServiceInfo(serviceId);
                     $('#lista_dipendenti').prop('disabled', false);
-                    removeBlur("#scelta_dipendente")
-                    removeBlur("#bookings-calendar")
-                    removeBlur("#info-servizio")
-                    removeBlur("#scelta_metodo_pagamento")
+                    removeBlur("#scelta_dipendente");
+                    removeBlur("#bookings-calendar");
+                    removeBlur("#info-servizio");
+                    removeBlur("#scelta_metodo_pagamento");
                 } else {
-                    addBlur("#scelta_dipendente")
-                    addBlur("#bookings-calendar")
-                    addBlur("#orari")
-                    addBlur("#prenota_btn")
-                    addBlur("#dati_personali")
-                    addBlur("#info-servizio")
-                    addBlur("#scelta_metodo_pagamento")
+                    addBlur("#scelta_dipendente");
+                    addBlur("#bookings-calendar");
+                    addBlur("#orari");
+                    addBlur("#prenota_btn");
+                    addBlur("#dati_personali");
+                    addBlur("#info-servizio");
+                    addBlur("#scelta_metodo_pagamento");
                 }
             })
             .fail(function () {
@@ -66,15 +66,7 @@ function loadServices() {
         // disabilito la lista degli orari
         $('#lista-orari').prop('disabled', true);
     })
-    /*
-    // change duration paragraph
-    $('#tipoServizio').on('change', function(){
-        $.get("api/get_services.php", {service: $(this).val()})
-        .done(function(data){
-            $('#durataServizio').html('Durata: ' + data.Durata + ' minuti');
-          });
-    });   ,
-     */
+
     $("#prenota_btn").on("click", function () {
         $("#form_dati_personali").validate({
             rules: {
