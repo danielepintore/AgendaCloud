@@ -80,7 +80,7 @@ function modules(done) {
     var datatablesBootStrapJS = gulp.src('./node_modules/datatables.net-bs5/js/dataTables.bootstrap5.min.js')
         .pipe(gulp.dest(paths.scripts.dest));
     // Datatables bootstrap css
-    var datatablesCss = gulp.src('./node_modules/datatables.net-bs5/css/dataTables.bootstrap5.css')
+    var datatablesCss = gulp.src('./node_modules/datatables.net-bs5/css/dataTables.bootstrap5.min.css')
         .pipe(gulp.dest(paths.styles.dest));
     //Composer files
     var composerFile = gulp.src('composer.json')
