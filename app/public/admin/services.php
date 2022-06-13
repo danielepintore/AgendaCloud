@@ -435,6 +435,26 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
         </div>
     </div>
 
+    <div class="modal fade" id="conflictWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="conflictWorkTimesModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="conflictWorkTimesModalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-success" id="confirmOvverideServiceWorkTimesBtn">
+                        <span class="ld ld-ring ld-cycle loading-circle d-none"></span> Si
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="successModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

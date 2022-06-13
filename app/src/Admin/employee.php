@@ -172,9 +172,14 @@ class Employee {
     /**
      * @throws DatabaseException
      */
-    public static function updateWorkingTimes(Database $db, $data) {
+    public static function addWorkingTimes(Database $db, $data) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $status = false;
         if ($data->timeType === "custom") {
+            // check if there are collisions
+            if (self::checkCollisionsInWorkTimes($db, $data->startDay, $data->endDay, $data->userId)){
+                return ["warning" => "conflict"];
+            }
             $sql = 'INSERT INTO OrariDipendente (idOrariDipendente, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Dipendente_id, isCustom, StartDate, EndDate) VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
             if ($data->freeDay) {
                 $data->startTime = "00:00";
@@ -265,6 +270,9 @@ class Employee {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayCustomWorkingTimes(Database $db, $date, $employeeId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariDipendente WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Dipendente_id = ?) LIMIT 1';
@@ -281,6 +289,9 @@ class Employee {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayHolidayTimes(Database $db, $day, $employeeId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariDipendente WHERE(isCustom = 0 AND GiornoSettimana = ? AND Dipendente_id = ?) LIMIT 1';
@@ -297,6 +308,9 @@ class Employee {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayCustomHolidayTimes(Database $db, $date, $employeeId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariDipendente WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Dipendente_id = ?) LIMIT 1';
@@ -311,5 +325,34 @@ class Employee {
             return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
         }
         return [];
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function checkCollisionsInWorkTimes(Database $db, $startDate, $endDate, $employeeId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "SELECT idOrariDipendente FROM OrariDipendente WHERE (isCustom = 1 AND NOT ((? < StartDate AND ? < StartDate) OR (? > EndDate AND ? >= ?)) AND ? <= ? AND Dipendente_id = ?) LIMIT 5";
+        $status = $db->query($sql, "sssssssi", $startDate, $endDate, $startDate, $endDate, $startDate, $startDate, $endDate, $employeeId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() > 0) {
+            //Success
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function overrideCustomWorkTimes(Database $db, $data){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "DELETE FROM OrariDipendente WHERE (isCustom = 1 AND NOT ((? < StartDate AND ? < StartDate) OR (? > EndDate AND ? >= ?)) AND ? <= ? AND Dipendente_id = ?)";
+        $status = $db->query($sql, "sssssssi", $data->startDay, $data->endDay, $data->startDay, $data->endDay, $data->startDay, $data->startDay, $data->endDay, $data->userId);
+        if ($status && $db->getAffectedRows() > 0) {
+            //Success
+            return self::addWorkingTimes($db, $data);
+        }
+        return false;
     }
 }

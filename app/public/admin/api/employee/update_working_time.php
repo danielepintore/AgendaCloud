@@ -23,12 +23,30 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         // create a service object
         try {
             $data = json_decode($_POST['data']);
-            $update = \Admin\Employee::updateWorkingTimes($db, $data);
-            // se non ci sono stati errori fornisci la risposta
-            if ($update) {
-                print(json_encode(array("error" => false)));
+            if (!empty($data->timeType) && is_string($data->timeType) && !empty($data->startTime) && is_string($data->startTime) &&
+            !empty($data->endTime) && is_string($data->endTime) && !empty($data->startBreak) && is_string($data->startBreak) &&
+            !empty($data->endBreak) && is_string($data->endBreak) && !empty($data->startDay) && is_string($data->startDay) &&
+            !empty($data->endDay) && is_string($data->endDay) && !empty($data->userId) && is_string($data->userId) && is_bool($data->freeDay)){
+                if (isset($_POST["method"]) && !is_null($_POST["method"]) && is_string($_POST["method"]) && $_POST["method"] == "OVERRIDE"){
+                    $update = \Admin\Employee::overrideCustomWorkTimes($db, $data);
+                } else {
+                    $update = \Admin\Employee::addWorkingTimes($db, $data);
+                }
+                // se non ci sono stati errori fornisci la risposta
+                if (!empty($update["warning"]) && $update["warning"] === "conflict"){
+                    print(json_encode(array("warning" => "conflict")));
+                } elseif ($update) {
+                    print(json_encode(array("error" => false)));
+                } else {
+                    print(json_encode(array("error" => true)));
+                }
             } else {
-                print(json_encode(array("error" => true)));
+                if (DEBUG){
+                    print("Something isn't setted up");
+                } else {
+                    print(json_encode(array("error" => true)));
+                    die(0);
+                }
             }
         } catch (DatabaseException|Exception $e) {
             if (DEBUG) {

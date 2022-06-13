@@ -224,7 +224,8 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             <div class="tab-pane fade" id="customWorkTimes" role="tabpanel"
                                  aria-labelledby="customWorkTimes">
                                 <div id="customWorkTimesTable" class="mb-2 mt-2"></div>
-                                <button id="showModalCustomWorkingTimeBtn" type="button" class="btn btn-success w-100 mt-2"><i
+                                <button id="showModalCustomWorkingTimeBtn" type="button"
+                                        class="btn btn-success w-100 mt-2"><i
                                             class="fa-solid fa-plus"></i> Aggiungi orari
                                 </button>
                             </div>
@@ -258,21 +259,26 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     </div>
                     <form id="updateWorkTimeForm">
                         <h6>Orario inizio lavoro:</h6>
-                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime" name="startTime">
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-startTime"
+                               name="startTime">
                         <h6>Orario fine lavoro:</h6>
                         <input type="time" value="17:00" class="form-control mb-2" id="workTime-endTime" name="endTime">
                         <h6>Orario inizio pausa:</h6>
-                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-startBreak" name="startBreak">
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-startBreak"
+                               name="startBreak">
                         <h6>Orario fine pausa:</h6>
-                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-endBreak" name="endBreak">
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-endBreak"
+                               name="endBreak">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="free-day-checkbox" name="freeDayCheckbox">
+                            <input class="form-check-input" type="checkbox" value="" id="free-day-checkbox"
+                                   name="freeDayCheckbox">
                             <label class="form-check-label">
                                 Giorno libero
                             </label>
                         </div>
                     </form>
-                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeAlert" role="alert">
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeAlert"
+                         role="alert">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         <div>
                             Devi selezionare dei giorni dalla barra qui sopra!
@@ -299,26 +305,32 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 </div>
                 <div class="modal-body">
                     <form id="addCustomWorkTimeForm">
-                    <h6>Data inizio:</h6>
-                    <input type="date" class="form-control mb-2" id="workTime-startCustomDay" name="startCustomDay">
-                    <h6>Data fine:</h6>
-                    <input type="date" class="form-control mb-2" id="workTime-endCustomDay" name="endCustomDay">
-                    <h6>Orario inizio lavoro:</h6>
-                    <input type="time" value="08:00" class="form-control mb-2" id="workTime-customStartTime" name="customStartTime">
-                    <h6>Orario fine lavoro:</h6>
-                    <input type="time" value="17:00" class="form-control mb-2" id="workTime-customEndTime" name="customEndTime">
-                    <h6>Orario inizio pausa:</h6>
-                    <input type="time" value="13:00" class="form-control mb-2" id="workTime-customStartBreak" name="customStartBreak">
-                    <h6>Orario fine pausa:</h6>
-                    <input type="time" value="15:00" class="form-control mb-2" id="workTime-customEndBreak" name="customEndBreak">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="free-day-custom-checkbox" name="freeDayCustomCheckbox">
-                        <label class="form-check-label">
-                            Giorno libero
-                        </label>
-                    </div>
+                        <h6>Data inizio:</h6>
+                        <input type="date" class="form-control mb-2" id="workTime-startCustomDay" name="startCustomDay">
+                        <h6>Data fine:</h6>
+                        <input type="date" class="form-control mb-2" id="workTime-endCustomDay" name="endCustomDay">
+                        <h6>Orario inizio lavoro:</h6>
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-customStartTime"
+                               name="customStartTime">
+                        <h6>Orario fine lavoro:</h6>
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-customEndTime"
+                               name="customEndTime">
+                        <h6>Orario inizio pausa:</h6>
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-customStartBreak"
+                               name="customStartBreak">
+                        <h6>Orario fine pausa:</h6>
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-customEndBreak"
+                               name="customEndBreak">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="free-day-custom-checkbox"
+                                   name="freeDayCustomCheckbox">
+                            <label class="form-check-label">
+                                Giorno libero
+                            </label>
+                        </div>
                     </form>
-                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="customWorkTimeAlert" role="alert">
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="customWorkTimeAlert"
+                         role="alert">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         <div>
                             Devi selezionare un giorno che non sia già passato!
@@ -329,6 +341,26 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     <button type="button" class="btn btn-success" id="addCustomWorkingTimeButton"><i
                                 class="fa-solid fa-plus"></i><span
                                 class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="conflictWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="conflictWorkTimesModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="conflictWorkTimesModalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-success" id="confirmOvverideEmployeeWorkTimesBtn">
+                        <span class="ld ld-ring ld-cycle loading-circle d-none"></span> Si
                     </button>
                 </div>
             </div>

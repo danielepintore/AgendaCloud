@@ -1,3 +1,4 @@
+let lastCustomWorkTimeRequest;
 // donetyping method that triggers every time the user stop to type in a textbox
 $.fn.extend({
     donetyping: function (callback, timeout) {
@@ -686,7 +687,7 @@ $(function () {
         if ($("#updateServiceWorkTimeForm").valid() && daysSelected.length > 0){
             let jsonObject = new Object();
             jsonObject.timeType = "standard";
-            jsonObject.userId = $("#editServiceWorkingTimeButton").val();
+            jsonObject.serviceId = $("#editServiceWorkingTimeButton").val();
             jsonObject.days = daysSelected;
             jsonObject.freeDay = $("#close-day-checkbox").prop('checked');
             jsonObject.startTime = $("#workTime-serviceStartTime").val();
@@ -763,7 +764,7 @@ $(function () {
         if ($("#addCustomServiceWorkTimeForm").valid() && startDate >= today){
             let jsonObject = new Object();
             jsonObject.timeType = "custom";
-            jsonObject.userId = $("#addCustomServiceWorkingTimeButton").val();
+            jsonObject.serviceId = $("#addCustomServiceWorkingTimeButton").val();
             jsonObject.startDay = $("#workTime-startServiceCustomDay").val();
             jsonObject.endDay = $("#workTime-endServiceCustomDay").val();
             jsonObject.freeDay = $("#close-day-custom-checkbox").prop('checked');
@@ -777,7 +778,15 @@ $(function () {
                 })
                     .done(function (data) {
                         buttonLoader.hideLoadingAnimation();
-                        if (!data.error) {
+                        if (data.warning === "conflict"){
+                            lastCustomWorkTimeRequest = jsonObject;
+                            // show success modal to ask if the user wants to overwrite the current rule
+                            $("#conflictWorkTimesModalTitle").html("È stato rilevato un conflitto");
+                            $("#conflictWorkTimesModalMessage").html("La giornata da te inserita crea un conflitto con quelle già presenti nel sistema, vuoi cancellare le altre ed inserire questa?");
+                            // show success modal
+                            $("#addCustomServiceWorkTimesModal").modal("hide");
+                            $("#conflictWorkTimesModal").modal("show");
+                        } else if (!data.error) {
                             // set success modal data
                             $("#successModalTitle").html("Informazioni aggiunte");
                             $("#successModalMessage").html("L'orario di lavoro del servizio è stato aggiunto");
@@ -818,5 +827,41 @@ $(function () {
         if ($("#customServiceWorkTimeAlert").hasClass('d-none') && startDate < today){
             $("#customServiceWorkTimeAlert").removeClass('d-none');
         }
+    });
+    $("#confirmOvverideServiceWorkTimesBtn").on('click', function () {
+        let buttonLoader = new ButtonLoader("#confirmOvverideServiceWorkTimesBtn", true);
+        buttonLoader.makeRequest(function () {
+            $.post("/admin/api/service/update_working_time.php", {
+                data: JSON.stringify(lastCustomWorkTimeRequest),
+                method: "OVERRIDE",
+            })
+                .done(function (data) {
+                    buttonLoader.hideLoadingAnimation();
+                    if (!data.error) {
+                        // set success modal data
+                        $("#successModalTitle").html("Informazioni aggiunte");
+                        $("#successModalMessage").html("L'orario di lavoro del dipendente è stato aggiunto");
+                        // show success modal
+                        $("#conflictWorkTimesModal").modal("hide");
+                        $("#successModal").modal("show");
+                        // clean all the fields
+                    } else {
+                        // set error modal data
+                        $("#errorModalTitle").html("Informazioni non aggiunte");
+                        $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                        // show confirmation modal
+                        $("#conflictWorkTimesModal").modal("hide");
+                        $("#errorModal").modal("show");
+                    }
+                }).fail(function () {
+                buttonLoader.hideLoadingAnimation();
+                // set error modal data
+                $("#errorModalTitle").html("Informazioni non aggiunte");
+                $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                $("#conflictWorkTimesModal").modal("hide");
+                // show confirmation modal
+                $("#errorModal").modal("show");
+            });
+        });
     });
 })

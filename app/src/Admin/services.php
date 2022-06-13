@@ -267,10 +267,14 @@ class Services {
     /**
      * @throws DatabaseException
      */
-    public static function updateWorkingTimes(Database $db, $data) {
+    public static function addWorkingTimes(Database $db, $data) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $status = false;
         if ($data->timeType === "custom") {
+            // check if there are collisions
+            if (self::checkCollisionsInWorkTimes($db, $data->startDay, $data->endDay, $data->serviceId)){
+                return ["warning" => "conflict"];
+            }
             $sql = 'INSERT INTO OrariServizio (idOrariServizio, GiornoSettimana, InizioLavoro, FineLavoro, InizioPausa, FinePausa, Servizio_id, isCustom, StartDate, EndDate) VALUES (NULL, NULL, ?, ?, ?, ?, ?, ?, ?, ?)';
             if ($data->freeDay) {
                 $data->startTime = "00:00";
@@ -284,7 +288,7 @@ class Services {
             $data->endBreak = ($data->endBreak === "") ? null : $data->endBreak;
             // validate input if freeday isn't set
             if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime && $data->startDay <= $data->endDay) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime && $data->startDay <= $data->endDay)) {
-                $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, 1, $data->startDay, $data->endDay);
+                $status = $db->query($sql, "ssssiiss", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->serviceId, 1, $data->startDay, $data->endDay);
                 if ($status && $db->getAffectedRows() == 1) {
                     return true;
                 } else {
@@ -309,7 +313,7 @@ class Services {
             foreach ($days as $day) {
                 // validate input if freeday isn't set
                 if ($data->freeDay || (is_null($data->startBreak) && is_null($data->endBreak) && $data->endTime > $data->startTime) || ($data->endTime > $data->startTime && $data->startBreak > $data->startTime && $data->startBreak < $data->endBreak && $data->endBreak > $data->startBreak && $data->endBreak < $data->endTime)) {
-                    $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->userId, $day);
+                    $status = $db->query($sql, "ssssii", $data->startTime, $data->endTime, $data->startBreak, $data->endBreak, $data->serviceId, $day);
                     if (!$status) {
                         return false;
                     }
@@ -343,6 +347,7 @@ class Services {
      * @param Database $db
      * @return void
      * Gets the currents worktimes for a service given a day of the week and the service identifier
+     * @throws DatabaseException
      */
     public static function getDayWorkingTimes(Database $db, $day, $serviceId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
@@ -360,6 +365,9 @@ class Services {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayCustomWorkingTimes(Database $db, $date, $serviceId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioLavoro, "%H:%i") AS InizioLavoro, TIME_FORMAT(FineLavoro, "%H:%i") AS FineLavoro FROM OrariServizio WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Servizio_id = ?) LIMIT 1';
@@ -376,6 +384,9 @@ class Services {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayHolidayTimes(Database $db, $day, $serviceId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariServizio WHERE(isCustom = 0 AND GiornoSettimana = ? AND Servizio_id = ?) LIMIT 1';
@@ -392,6 +403,9 @@ class Services {
         return [];
     }
 
+    /**
+     * @throws DatabaseException
+     */
     public static function getDayCustomHolidayTimes(Database $db, $date, $serviceId){
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT TIME_FORMAT(InizioPausa, "%H:%i") AS InizioPausa, TIME_FORMAT(FinePausa, "%H:%i") AS FinePausa FROM OrariServizio WHERE(isCustom = 1 AND StartDate <= ? AND EndDate >= ? AND Servizio_id = ?) LIMIT 1';
@@ -406,5 +420,34 @@ class Services {
             return array('startTime' => $r['InizioPausa'], 'endTime' => $r['FinePausa']);
         }
         return [];
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function checkCollisionsInWorkTimes(Database $db, $startDate, $endDate, $serviceId){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "SELECT idOrariServizio FROM OrariServizio WHERE (isCustom = 1 AND NOT ((? < StartDate AND ? < StartDate) OR (? > EndDate AND ? >= ?)) AND ? <= ? AND Servizio_id = ?) LIMIT 5";
+        $status = $db->query($sql, "sssssssi", $startDate, $endDate, $startDate, $endDate, $startDate, $startDate, $endDate, $serviceId);
+        $result = $db->getResult();
+        if ($status && $db->getAffectedRows() > 0) {
+            //Success
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @throws DatabaseException
+     */
+    public static function overrideCustomWorkTimes(Database $db, $data){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "DELETE FROM OrariServizio WHERE (isCustom = 1 AND NOT ((? < StartDate AND ? < StartDate) OR (? > EndDate AND ? >= ?)) AND ? <= ? AND Servizio_id = ?)";
+        $status = $db->query($sql, "sssssssi", $data->startDay, $data->endDay, $data->startDay, $data->endDay, $data->startDay, $data->startDay, $data->endDay, $data->serviceId);
+        if ($status && $db->getAffectedRows() > 0) {
+            //Success
+            return self::addWorkingTimes($db, $data);
+        }
+        return false;
     }
 }

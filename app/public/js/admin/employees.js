@@ -1,3 +1,4 @@
+let lastCustomWorkTimeRequest;
 $.validator.addMethod("strong_password", function (value, element) {
     // password must contain at least one uppercase letter, one lowercase and one number
     // the minimum length must be 8 and the maximum length 20
@@ -606,7 +607,15 @@ $(function () {
                 })
                     .done(function (data) {
                         buttonLoader.hideLoadingAnimation();
-                        if (!data.error) {
+                        if (data.warning === "conflict"){
+                            lastCustomWorkTimeRequest = jsonObject;
+                            // show success modal to ask if the user wants to overwrite the current rule
+                            $("#conflictWorkTimesModalTitle").html("È stato rilevato un conflitto");
+                            $("#conflictWorkTimesModalMessage").html("La giornata da te inserita crea un conflitto con quelle già presenti nel sistema, vuoi cancellare le altre ed inserire questa?");
+                            // show success modal
+                            $("#addCustomWorkTimesModal").modal("hide");
+                            $("#conflictWorkTimesModal").modal("show");
+                        } else if (!data.error) {
                             // set success modal data
                             $("#successModalTitle").html("Informazioni aggiunte");
                             $("#successModalMessage").html("L'orario di lavoro del dipendente è stato aggiunto");
@@ -647,5 +656,41 @@ $(function () {
         if ($("#customWorkTimeAlert").hasClass('d-none') && startDate < today){
             $("#customWorkTimeAlert").removeClass('d-none');
         }
+    });
+    $("#confirmOvverideEmployeeWorkTimesBtn").on('click', function () {
+        let buttonLoader = new ButtonLoader("#confirmOvverideEmployeeWorkTimesBtn", true);
+        buttonLoader.makeRequest(function () {
+            $.post("/admin/api/employee/update_working_time.php", {
+                data: JSON.stringify(lastCustomWorkTimeRequest),
+                method: "OVERRIDE",
+            })
+                .done(function (data) {
+                    buttonLoader.hideLoadingAnimation();
+                    if (!data.error) {
+                        // set success modal data
+                        $("#successModalTitle").html("Informazioni aggiunte");
+                        $("#successModalMessage").html("L'orario di lavoro del dipendente è stato aggiunto");
+                        // show success modal
+                        $("#conflictWorkTimesModal").modal("hide");
+                        $("#successModal").modal("show");
+                        // clean all the fields
+                    } else {
+                        // set error modal data
+                        $("#errorModalTitle").html("Informazioni non aggiunte");
+                        $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                        // show confirmation modal
+                        $("#conflictWorkTimesModal").modal("hide");
+                        $("#errorModal").modal("show");
+                    }
+                }).fail(function () {
+                buttonLoader.hideLoadingAnimation();
+                // set error modal data
+                $("#errorModalTitle").html("Informazioni non aggiunte");
+                $("#errorModalMessage").html("L'orario di lavoro del dipendente non è stato aggiunto, per favore riprova, se l'errore persiste contatta l'assistenza");
+                $("#conflictWorkTimesModal").modal("hide");
+                // show confirmation modal
+                $("#errorModal").modal("show");
+            });
+        });
     });
 })

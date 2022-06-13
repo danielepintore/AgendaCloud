@@ -42,10 +42,11 @@ don't let admin enable credit card if all settings arent setted up
 Allow admin and employee to ignore bookable until time
 ADD notification when an appointment is deleted
 Aggiungi pausa pranzo per servizi in modo da evitare di creare due servizi per mattina e pomeriggio
+Rimuovere la possibilità di inserire custom worktimes in conflitto tra di loro (ES con la stessa data o in un range con una data già messa)
 -----------------------------------------------------------------
 
 TO DO:
-Rimuovere la possibilità di inserire custom worktimes in conflitto tra di loro (ES con la stessa data o in un range con una data già messa)
+Aggiungere tab vacanze
 Add is admin check to all admin pages / api via user class because if we remove an user the admin access it will be keeped granted till the next login
 Aggiungere la possibilità di cancellare i servizi con appuntamenti gia presi
 migrate time to unix timestamp
