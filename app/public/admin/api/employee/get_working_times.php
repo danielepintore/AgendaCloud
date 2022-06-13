@@ -19,28 +19,27 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         die(0);
     }
-    if (isset($_GET['holidayId']) && is_numeric($_GET['holidayId']) && !empty($_GET['holidayId'])) {
-        // create a service object
-        try {
-            $status = \Admin\Employee::deleteHoliday($db, $_GET['holidayId']);
+    try {
+        if (isset($_GET['employeeId']) && is_numeric($_GET['employeeId']) && !empty($_GET['employeeId'])) {
+            $workingTimes = \Admin\Employee::getWorkingTimes($db, $_GET['employeeId']);
             // se non ci sono stati errori fornisci la risposta
-            if ($status) {
-                print(json_encode(array("error" => false)));
+            if (count($workingTimes) == 0) {
+                print(json_encode(array()));
             } else {
-                print(json_encode(array("error" => true)));
+                print(json_encode($workingTimes));
             }
-        } catch (DatabaseException|Exception $e) {
+        } else {
             if (DEBUG) {
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                print("Something isn't setted up");
                 die(0);
             } else {
                 print(json_encode(array("error" => true)));
                 die(0);
             }
         }
-    } else {
+    } catch (DatabaseException|Exception $e) {
         if (DEBUG) {
-            print("Something isn't setted up");
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
             die(0);
         } else {
             print(json_encode(array("error" => true)));

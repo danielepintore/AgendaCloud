@@ -19,14 +19,12 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         die(0);
     }
-    if (isset($_GET['serviceId']) && !empty($_GET['serviceId']) && is_numeric($_GET['serviceId']) &&
-        isset($_GET['date']) && !empty($_GET['date']) && isset($_GET['startTime']) && !empty($_GET['startTime']) &&
-        isset($_GET['endTime']) && !empty($_GET['endTime'])) {
+    if (isset($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] >= 0 && !empty($_GET['id'])) {
         // create a service object
         try {
-            $status = \Admin\Services::addHoliday($db, $_GET['serviceId'], $_GET['date'],  $_GET['startTime'], $_GET['endTime']);
+            $workTime = \Admin\Employee::deleteCustomWorkTime($db, $_GET['id']);
             // se non ci sono stati errori fornisci la risposta
-            if ($status) {
+            if ($workTime) {
                 print(json_encode(array("error" => false)));
             } else {
                 print(json_encode(array("error" => true)));
@@ -41,8 +39,13 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             }
         }
     } else {
-        print(json_encode(array("error" => true)));
-        die(0);
+        if (DEBUG) {
+            print("Something isn't setted up");
+            die(0);
+        } else {
+            print(json_encode(array("error" => true)));
+            die(0);
+        }
     }
 } else {
     // user isn't logged

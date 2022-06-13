@@ -19,30 +19,28 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         die(0);
     }
-    try {
-        if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && !empty($_GET['serviceId'])) {
-            if ($_GET['date'] == null){
-                $_GET['date'] = "";
-            }
-            $holidays = \Admin\Services::searchHolidays($db, $_GET['serviceId'], $_GET['date']);
+    if (isset($_GET['id']) && is_numeric($_GET['id']) && $_GET['id'] >= 0 && !empty($_GET['id'])) {
+        // create a service object
+        try {
+            $workTime = \Admin\Services::deleteCustomWorkTime($db, $_GET['id']);
             // se non ci sono stati errori fornisci la risposta
-            if (count($holidays) == 0) {
-                print(json_encode(array()));
+            if ($workTime) {
+                print(json_encode(array("error" => false)));
             } else {
-                print(json_encode($holidays));
+                print(json_encode(array("error" => true)));
             }
-        } else {
+        } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
-                print("Something isn't setted up");
+                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
                 die(0);
             } else {
                 print(json_encode(array("error" => true)));
                 die(0);
             }
         }
-    } catch (DatabaseException|Exception $e) {
+    } else {
         if (DEBUG) {
-            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            print("Something isn't setted up");
             die(0);
         } else {
             print(json_encode(array("error" => true)));

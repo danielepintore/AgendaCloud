@@ -26,7 +26,7 @@
 .list-group-item{
     cursor: default;
 }
-.edit-service, .view-employees, .delete-service, .holiday-calendar{
+.edit-service, .view-employees, .delete-service, .working-times-service{
     cursor: pointer;
 }
 .employeeBtnRemove, .employeeBtnAdd{
@@ -40,4 +40,38 @@
 }
 .noServices{
     font-size: 1.15rem;
+}
+.day-container{
+    display: flex;
+    width: fit-content;
+    margin-bottom: .5rem;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: #dddddd;
+    border-radius: .5rem;
+
+}
+.day-selector{
+    padding: .3rem;
+    cursor: pointer;
+    transition: .3s;
+}
+.day-selector.active{
+    background-color: #198754;
+    color: white;
+}
+.day-selector.first-day{
+    border-left: none;
+    padding: .3rem;
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
+}
+.day-selector.last-day{
+    border-right: none;
+    padding: .3rem;
+    border-top-right-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+}
+#customServiceWorkTimesTable{
+    overflow-x: auto;
 }

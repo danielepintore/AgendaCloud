@@ -5,7 +5,7 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
@@ -37,11 +37,17 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     <link href='../css/dashboard.css' rel='stylesheet' type='text/css'>
     <link href='../css/admin/services.css' rel='stylesheet' type='text/css'>
     <link href='../css/fontawesome.css' rel='stylesheet'>
+    <link href='../css/loading.min.css' rel='stylesheet'>
+    <link href='../css/dataTables.bootstrap5.min.css' rel='stylesheet'>
+    <link href='../css/dataTablesStyle.css' rel='stylesheet'>
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/jquery.validate.min.js"></script>
     <script src="../js/additional-methods.min.js"></script>
-    <script type="text/javascript" src="../js/admin/services.js"></script>
+    <script src="../js/jquery.dataTables.min.js"></script>
+    <script src="../js/dataTables.bootstrap5.min.js"></script>
+    <script src="../js/buttonLoader.js"></script>
+    <script src="../js/admin/services.js"></script>
 </head>
 <body>
 <div class="container">
@@ -89,7 +95,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                             <p id="errorStartTime"></p>
                             <label for="service-endTime" class="form-label">Orario chiusura:</label>
                             <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="service-endTime"
+                                <input type="time" value="18:00" class="form-control" id="service-endTime"
                                        name="endTime" data-error="#errorEndTime">
                             </div>
                             <p id="errorEndTime"></p>
@@ -130,7 +136,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="confirmAddServiceBtn"><span
-                                id="loadingCircleAddService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
                     </button>
                 </div>
             </div>
@@ -158,18 +164,6 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                         </div>
                         <p id="errorDuration-edit"></p>
                         <div class="mb-2">
-                            <label for="service-startTime-edit" class="form-label">Orario apertura:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-startTime-edit"
-                                       name="startTime" data-error="#errorStartTime-edit">
-                            </div>
-                            <p id="errorStartTime-edit"></p>
-                            <label for="service-endTime-edit" class="form-label">Orario chiusura:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="" class="form-control" id="service-endTime-edit"
-                                       name="endTime" data-error="#errorEndTime-edit">
-                            </div>
-                            <p id="errorEndTime-edit"></p>
                             <div class="input-group mb-2">
                                 <input type="number" value="" placeholder="Costo" class="form-control"
                                        id="service-cost-edit" name="cost" data-error="#errorCost-edit">
@@ -208,7 +202,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                     <button type="button" class="btn btn-success" id="editServiceBtn"><span
-                                id="loadingCircleEditService" class="ld ld-ring ld-cycle loading-circe d-none"></span>Modifica
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Modifica
                     </button>
                 </div>
             </div>
@@ -235,7 +229,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="confirmAddServiceBtn" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Chiudi
                     </button>
                     <button type="button" class="btn btn-success" id="editEmployeesBtn" data-bs-dismiss="modal"><i
@@ -296,84 +290,165 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         </div>
     </div>
 
-    <div class="modal fade" id="viewHolidaysModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="workingTimesServiceModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi dei giorni di chiusura per il servizio</h5>
+                    <h5 class="modal-title">Imposta gli orari di lavoro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="searchDateForm">
-                        <div class="input-group mb-2">
-                            <input type="date" placeholder="Giorno" max="2099-12-31" class="form-control"
-                                   id="daySearchHoliday" data-error="#infoHolidayService">
+                <div class="modal-body" style="">
+                    <div id="serviceWorkTimesTab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#defaultServiceWorkTimes"
+                                        type="button" role="tab" aria-controls="Orari standard" aria-selected="true">
+                                    Orari standard
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab"
+                                        data-bs-target="#customServiceWorkTimes" type="button" role="tab"
+                                        aria-controls="Orari speciali" aria-selected="false">Orari speciali
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="defaultServiceWorkTimes" role="tabpanel"
+                                 aria-labelledby="defaultServiceWorkTimes">
+                                <div id="defaultServiceWorkTimesTable" class="mb-2"></div>
+                                <button id="showModalEditServiceWorkingTimeBtn" type="button" class="btn btn-success w-100"><i
+                                            class="fa-solid fa-pen"></i> Modifica orari
+                                </button>
+                            </div>
+                            <div class="tab-pane fade" id="customServiceWorkTimes" role="tabpanel"
+                                 aria-labelledby="customServiceWorkTimes">
+                                <div id="customServiceWorkTimesTable" class="mb-2 mt-2"></div>
+                                <button id="showModalCustomAddServiceWorkingTimeBtn" type="button" class="btn btn-success w-100 mt-2"><i
+                                            class="fa-solid fa-plus"></i> Aggiungi orari
+                                </button>
+                            </div>
                         </div>
-                    </form>
-                    <p id="infoHolidayService""></p>
-                    <table class="table d-none text-center" id="serviceHolidayTable">
-                        <thead>
-                        <th scope="col">Giorno</th>
-                        <th scope="col">Ora inizio</th>
-                        <th scope="col">Ora fine</th>
-                        <th scope="col">Azione</th>
-                        </thead>
-                        <tbody id="serviceHolidayTableBody">
-                        </tbody>
-                    </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
-                    <button type="button" class="btn btn-success" id="addHolidayButton" data-bs-dismiss="modal"><i
-                                class="fa-solid fa-plus"></i> Aggiungi un giorno
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editServiceWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica gli orari di lavoro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Scegli un giorno:</h6>
+                    <div class="day-container">
+                        <div class="day-selector first-day" value="1">Lun</div>
+                        <div class="day-selector" value="2">Mar</div>
+                        <div class="day-selector" value="3">Mer</div>
+                        <div class="day-selector" value="4">Gio</div>
+                        <div class="day-selector" value="5">Ven</div>
+                        <div class="day-selector" value="6">Sab</div>
+                        <div class="day-selector last-day" value="7">Dom</div>
+                    </div>
+                    <form id="updateServiceWorkTimeForm">
+                        <h6>Orario inizio lavoro:</h6>
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-serviceStartTime" name="serviceStartTime">
+                        <h6>Orario fine lavoro:</h6>
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-serviceEndTime" name="serviceEndTime">
+                        <h6>Orario inizio pausa:</h6>
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-serviceStartBreak" name="serviceStartBreak">
+                        <h6>Orario fine pausa:</h6>
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-serviceEndBreak" name="serviceEndBreak">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="close-day-checkbox" name="closeDayCheckbox">
+                            <label class="form-check-label">
+                                Giorno di chiusura
+                            </label>
+                        </div>
+                    </form>
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeServiceAlert" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <div>
+                            Devi selezionare dei giorni dalla barra qui sopra!
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                    <button type="button" class="btn btn-success" id="editServiceWorkingTimeButton"><i
+                                class="fa-solid fa-pen"></i><span
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Modifica
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="addHolidayModal" tabindex="-1">
+    <div class="modal fade" id="addCustomServiceWorkTimesModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Aggiungi una nuova giornata</h5>
+                    <h5 class="modal-title">Aggiungi un orario di lavoro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addHolidayForm">
-                        <div class="mb-2">
-                            <label for="holidayDate" class="form-label">Data:</label>
-                            <input type="date" placeholder="Data" class="form-control" id="holidayDate"
-                                   name="holidayDate"
-                                   data-error="#errorHolidayDate">
-                        </div>
-                        <p id="errorHolidayDate"></p>
-                        <div class="mb-2">
-                            <label for="holidayStartTime" class="form-label">Orario inizio:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="08:00" class="form-control" id="holidayStartTime"
-                                       name="holidayStartTime" data-error="#errorholidayStartTime">
-                            </div>
-                            <p id="errorholidayStartTime"></p>
-                            <label for="holidayEndTime" class="form-label">Orario fine:</label>
-                            <div class="input-group mb-2">
-                                <input type="time" value="12:00" class="form-control" id="holidayEndTime"
-                                       name="holidayEndTime" data-error="#errorholidayEndTime">
-                            </div>
-                            <p id="errorholidayEndTime"></p>
-                        </div>
+                    <form id="addCustomServiceWorkTimeForm">
+                        <h6>Data inizio:</h6>
+                        <input type="date" class="form-control mb-2" id="workTime-startServiceCustomDay" name="startServiceCustomDay">
+                        <h6>Data fine:</h6>
+                        <input type="date" class="form-control mb-2" id="workTime-endServiceCustomDay" name="endServiceCustomDay">
+                        <h6>Orario inizio lavoro:</h6>
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-customServiceStartTime" name="serviceCustomStartTime">
+                        <h6>Orario fine lavoro:</h6>
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-customServiceEndTime" name="serviceCustomEndTime">
+                        <h6>Orario inizio pausa:</h6>
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-customServiceStartBreak" name="serviceCustomStartBreak">
+                        <h6>Orario fine pausa:</h6>
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-customServiceEndBreak" name="serviceCustomEndBreak">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="holidayFullDayCheckBox">
-                            <label class="form-check-label" for="service-active">
-                                Tutto il giorno
+                            <input class="form-check-input" type="checkbox" value="" id="close-day-custom-checkbox" name="closeDayCustomCheckbox">
+                            <label class="form-check-label">
+                                Giorno libero
                             </label>
                         </div>
                     </form>
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="customServiceWorkTimeAlert" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                        <div>
+                            Devi selezionare un giorno che non sia già passato!
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                    <button type="button" class="btn btn-success" id="confirmAddHolidayButton"><span
-                                id="loadingCircleAddHoliday" class="ld ld-ring ld-cycle loading-circe d-none"></span>Aggiungi
+                    <button type="button" class="btn btn-success" id="addCustomServiceWorkingTimeButton"><i
+                                class="fa-solid fa-plus"></i><span
+                                class="ld ld-ring ld-cycle loading-circle d-none"></span> Aggiungi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="conflictWorkTimesModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="conflictWorkTimesModalTitle"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="conflictWorkTimesModalMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-success" id="confirmOvverideServiceWorkTimesBtn">
+                        <span class="ld ld-ring ld-cycle loading-circle d-none"></span> Si
                     </button>
                 </div>
             </div>

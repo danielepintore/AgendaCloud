@@ -4,8 +4,6 @@ class Service {
     private $serviceId;
     private $name;
     private $duration;
-    private $startTime;
-    private $endTime;
     private $waitTime;
     private $cost;
     private $description;
@@ -19,8 +17,6 @@ class Service {
      * @param $serviceId
      * @param $name
      * @param $duration
-     * @param $startTime
-     * @param $endTime
      * @param $waitTime
      * @param $cost
      * @param $description
@@ -51,12 +47,10 @@ class Service {
         $this->setServiceInfo();
     }
 
-    public function __construct11($db, $serviceId, $name, $duration, $startTime, $endTime, $waitTime, $cost, $description, $bookableUntil, $isActive) {
+    public function __construct9($db, $serviceId, $name, $duration, $waitTime, $cost, $description, $bookableUntil, $isActive) {
         $this->serviceId = $serviceId;
         $this->name = $name;
         $this->duration = $duration;
-        $this->startTime = $startTime;
-        $this->endTime = $endTime;
         $this->waitTime = $waitTime;
         $this->cost = $cost;
         $this->description = $description;
@@ -85,20 +79,6 @@ class Service {
      */
     public function getDuration() {
         return $this->duration;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStartTime() {
-        return $this->startTime;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEndTime() {
-        return $this->endTime;
     }
 
     /**
@@ -183,8 +163,6 @@ class Service {
             $response = $result[0];
             $this->name = $response['Nome'];
             $this->duration = $response['Durata'];
-            $this->startTime = $response['OraInizio'];
-            $this->endTime = $response['OraFine'];
             $this->cost = $response['Costo'];
             $this->waitTime = $response['TempoPausa'];
             $this->description = $response['Descrizione'];
@@ -195,8 +173,6 @@ class Service {
             // query failed
             $this->name = null;
             $this->duration = null;
-            $this->startTime = null;
-            $this->endTime = null;
             $this->cost = null;
             $this->waitTime = null;
             $this->description = null;
@@ -212,8 +188,7 @@ class Service {
      */
     public function getServiceInfo(): array {
         if ($this->success) {
-            return array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
-                "OraInizio" => $this->startTime, "OraFine" => $this->endTime, "Costo" => $this->cost);
+            return array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration, "Costo" => $this->cost);
         } else {
             throw ServiceException::failedToGetServiceData();
         }
@@ -226,15 +201,14 @@ class Service {
      */
     public static function getActiveServices(Database $db): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.OraInizio, Servizio.OraFine, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
+        $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
         $status = $db->query($sql);
         if ($status) {
             //Success
             $result = $db->getResult();
             $response = [];
             foreach ($result as $r) {
-                $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'],
-                    'OraInizio' => $r['OraInizio'], 'OraFine' => $r['OraFine'], 'Costo' => $r['Costo']);
+                $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']);
             }
             return $response;
         }
