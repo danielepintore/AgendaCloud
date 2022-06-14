@@ -43,7 +43,12 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     if (!empty($appointment->email)){
                         MailClient::addMailToQueue($db,"La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
                     }
+                    die(0);
                 } catch (Exception $e) {
+                    if (DEBUG){
+                        print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+                        die(0);
+                    }
                     $config = Config::getConfig();
                     $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode();
                     $phpMailer = new MailClient();
