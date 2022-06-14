@@ -90,7 +90,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>Vuoi cancellare la prenotazione?</p>
+                <p>Vuoi cancellare la prenotazione?<br>(Ricordati che se il cliente ha pagato con la carta di credito devi emettere un riborso da <a href="https://stripe.com">Stripe</a>)</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
