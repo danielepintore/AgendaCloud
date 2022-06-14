@@ -4,7 +4,7 @@ use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
@@ -19,48 +19,64 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         }
         die(0);
     }
-    if (isset($_POST['data']) && JSONUtility::validateJSON($_POST['data'])){
+    if (isset($_POST['data']) && JSONUtility::validateJSON($_POST['data'])) {
         // create a service object
         try {
             $data = json_decode($_POST['data']);
-            if (!empty($data->timeType) && is_string($data->timeType) && !empty($data->startTime) && is_string($data->startTime) &&
-                !empty($data->endTime) && is_string($data->endTime) && !empty($data->startBreak) && is_string($data->startBreak) &&
-                !empty($data->endBreak) && is_string($data->endBreak) && !empty($data->startDay) && is_string($data->startDay) &&
-                !empty($data->endDay) && is_string($data->endDay) && !empty($data->serviceId) && is_string($data->serviceId) && is_bool($data->freeDay)){
-                if (isset($_POST["method"]) && !is_null($_POST["method"]) && is_string($_POST["method"]) && $_POST["method"] == "OVERRIDE"){
-                    $update = \Admin\Services::overrideCustomWorkTimes($db, $data);
-                } else {
-                    $update = \Admin\Services::addWorkingTimes($db, $data);
-                }
-                // se non ci sono stati errori fornisci la risposta
-                if (!empty($update["warning"]) && $update["warning"] === "conflict"){
-                    print(json_encode(array("warning" => "conflict")));
-                } elseif ($update) {
-                    print(json_encode(array("error" => false)));
-                } else {
-                    print(json_encode(array("error" => true)));
+            if ($data->timeType === "custom") {
+                if (!(!empty($data->timeType) && is_string($data->timeType) && isset($data->startTime) && is_string($data->startTime) &&
+                    isset($data->endTime) && is_string($data->endTime) && isset($data->startBreak) && is_string($data->startBreak) &&
+                    isset($data->endBreak) && is_string($data->endBreak) && !empty($data->startDay) && is_string($data->startDay) &&
+                    !empty($data->endDay) && is_string($data->endDay) && !empty($data->serviceId) && is_string($data->serviceId) && is_bool($data->freeDay))) {
+                    if (DEBUG) {
+                        print("Something isn't setted up");
+                        die(0);
+                    } else {
+                        print(json_encode(array("error" => true)));
+                        die(0);
+                    }
                 }
             } else {
-                if (DEBUG){
-                    print("Something isn't setted up");
-                } else {
-                    print(json_encode(array("error" => true)));
-                    die(0);
+                if (!(!empty($data->timeType) && is_string($data->timeType) && isset($data->startTime) && is_string($data->startTime) &&
+                    isset($data->endTime) && is_string($data->endTime) && isset($data->startBreak) && is_string($data->startBreak) &&
+                    isset($data->endBreak) && is_string($data->endBreak) && !empty($data->serviceId) && is_string($data->serviceId) && is_bool($data->freeDay))) {
+                    if (DEBUG) {
+                        print("Something isn't setted up");
+                        die(0);
+                    } else {
+                        print(json_encode(array("error" => true)));
+                        die(0);
+                    }
                 }
             }
-        } catch (DatabaseException|Exception $e) {
-            if (DEBUG) {
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
-                die(0);
+            if (isset($_POST["method"]) && !is_null($_POST["method"]) && is_string($_POST["method"]) && $_POST["method"] == "OVERRIDE") {
+                $update = \Admin\Services::overrideCustomWorkTimes($db, $data);
+            } else {
+                $update = \Admin\Services::addWorkingTimes($db, $data);
+            }
+            // se non ci sono stati errori fornisci la risposta
+            if (!empty($update["warning"]) && $update["warning"] === "conflict") {
+                print(json_encode(array("warning" => "conflict")));
+            } elseif ($update) {
+                print(json_encode(array("error" => false)));
             } else {
                 print(json_encode(array("error" => true)));
-                die(0);
             }
         }
-    } else {
-        print(json_encode(array("error" => true)));
-        die(0);
+catch
+    (DatabaseException | Exception $e) {
+        if (DEBUG) {
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            die(0);
+        } else {
+            print(json_encode(array("error" => true)));
+            die(0);
+        }
     }
+    } else {
+    print(json_encode(array("error" => true)));
+    die(0);
+}
 } else {
     // user isn't logged
     // display error
