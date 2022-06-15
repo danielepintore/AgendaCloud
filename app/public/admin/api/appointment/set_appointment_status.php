@@ -34,10 +34,10 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 try {
                     $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $_GET['appointmentId']);
                     if ($_GET['action'] == "confirm") {
-                        $body = MailClient::getConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-                        $altBody = MailClient::getAltConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                        $body = MailClient::getConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                        $altBody = MailClient::getAltConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                     } else {
-                        $body = MailClient::getRejectOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                        $body = MailClient::getRejectAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                         $altBody = MailClient::getAltRejectOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                     }
                     if (!empty($appointment->email)){

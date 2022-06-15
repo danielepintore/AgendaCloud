@@ -37,8 +37,8 @@ if ($event->type == 'checkout.session.completed') {
         // get appointment info
         $appointment = \Admin\Appointment::fetchAppointmentInfoBySessionID($db, $session->id);
         // send email to the customer
-        $body = MailClient::getConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-        $altBody = MailClient::getAltConfirmOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+        $body = MailClient::getConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+        $altBody = MailClient::getAltConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
         MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $session->customer_details->email, $appointment->name);
     } catch (DatabaseException | Exception $e) {
         // send email to supervisor if there are any problems

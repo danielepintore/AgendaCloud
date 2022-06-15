@@ -4,22 +4,14 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 
 class MailClient {
-    private $senderAddress;
-    private $username;
-    private $password;
-    private $smtpHostname;
-    private $smtpPort;
-    private $phpMailer;
-    private $active;
+    private string $senderAddress;
+    private string $username;
+    private string $password;
+    private string $smtpHostname;
+    private int $smtpPort;
+    private mixed $phpMailer;
+    private bool $active;
 
-
-    /**
-     * @param $senderAddress
-     * @param $username
-     * @param $password
-     * @param $smtpHostname
-     * @param $smtpPort
-     */
 
     public function __construct() {
         $config = Config::getConfig();
@@ -36,6 +28,10 @@ class MailClient {
         }
     }
 
+    /**
+     * @return PHPMailer|null
+     * Initialize the PHPMailer object if there are some problems it returns null
+     */
     private function startPhpMailer() {
         //Create an instance; passing `true` enables exceptions
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
@@ -44,17 +40,18 @@ class MailClient {
         try {
             //Server settings
             if (DEBUG) {
-                $phpMailer->SMTPDebug = SMTP::DEBUG_SERVER;                      //Enable verbose debug output
+                $phpMailer->SMTPDebug = SMTP::DEBUG_SERVER;             //Enable verbose debug output
             } else {
                 $phpMailer->SMTPDebug = SMTP::DEBUG_OFF;
             }
-            $phpMailer->isSMTP();                                            //Send using SMTP
-            $phpMailer->Host = $this->smtpHostname;                    //Set the SMTP server to send through
-            $phpMailer->SMTPAuth = true;                                   //Enable SMTP authentication
+            $phpMailer->isSMTP();                                       //Send using SMTP
+            $phpMailer->Host = $this->smtpHostname;                     //Set the SMTP server to send through
+            $phpMailer->SMTPAuth = true;                                //Enable SMTP authentication
             $phpMailer->Username = $this->username;                     //SMTP username
-            $phpMailer->Password = $this->password;                               //SMTP password
-            $phpMailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;            //Enable TLS encryption
-            $phpMailer->Port = $this->smtpPort;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+            $phpMailer->Password = $this->password;                     //SMTP password
+            $phpMailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;    //Enable TLS encryption
+            $phpMailer->Port = $this->smtpPort;                         //TCP port to connect to; use 587 if you have
+                                                                        // set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
             $phpMailer->setFrom($this->senderAddress, $config->company->name);
@@ -67,65 +64,75 @@ class MailClient {
         }
     }
 
-    /*
-     * Send email function wrapper return true if the email is sented otherwise it starts an exception
-     */
     /**
      * @throws \PHPMailer\PHPMailer\Exception
      * @throws MailException
+     * Send the email, return true on success, otherwise starts an exception
      */
-    public function sendEmail($subject, $body, $altBody, $toAddress, $toName = null) {
+    public function sendEmail($subject, $body, $altBody, $toAddress, $toName = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $config = Config::getConfig();
-        if ($this->active) {
-            try {
-                if (empty($toName)) {
-                    $this->phpMailer->addAddress($toAddress);     //Add a recipient
-                } else {
-                    $this->phpMailer->addAddress($toAddress, $toName);     //Add a recipient
-                }
-                $this->phpMailer->addReplyTo($config->mail->company, $config->company->name);
-
-                //Content
-                $this->phpMailer->isHTML(true);                                  //Set email format to HTML
-                $this->phpMailer->Subject = $subject;
-                $this->phpMailer->Body = $body;                               // Html body
-                $this->phpMailer->AltBody = $altBody;                            //This is the body in plain text for non-HTML mail clients
-
-                $this->phpMailer->send();
-                return true;
-            } catch (Exception $e) {
-                throw MailException::failedToSend();
+        if (!$this->active) {
+            throw MailException::failedToSend();
+        }
+        try {
+            if (empty($toName)) {
+                $this->phpMailer->addAddress($toAddress);              //Add a recipient without name
+            } else {
+                $this->phpMailer->addAddress($toAddress, $toName);     //Add a recipient with name
             }
-        } else {
+            // Add the reply to address
+            $this->phpMailer->addReplyTo($config->mail->company, $config->company->name);
+            // Mail content
+            $this->phpMailer->isHTML(true);                      //Set email format to HTML
+            $this->phpMailer->Subject = $subject;
+            $this->phpMailer->Body = $body;                             // Html body
+            $this->phpMailer->AltBody = $altBody;                       //This is the body in plain text for non-HTML mail clients
+            $this->phpMailer->send();
+            return true;
+        } catch (Exception $e) {
             throw MailException::failedToSend();
         }
     }
 
     /**
+     * @param Database $db
+     * @param $subject
+     * @param $body
+     * @param $altBody
+     * @param $toAddress
+     * @param $toName
+     * @return bool
      * @throws DatabaseException
+     * Adds the email to the queue, in the database
+     * Returns true if success otherwise it'll start an eception
      */
-    public static function addMailToQueue(Database $db, $subject, $body, $altBody, $toAddress, $toName = null) {
+    public static function addMailToQueue(Database $db, $subject, $body, $altBody, $toAddress, $toName = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if (empty($toName)){
             $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination) VALUES (NULL, ?, ?, ?, ?)';
-        } else {
-            $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination, receiverName) VALUES (NULL, ?, ?, ?, ?, ?)';
-        }
-        if (empty($toName)) {
             $status = $db->query($sql, "ssss", $subject, $body, $altBody, $toAddress);
         } else {
+            $sql = 'INSERT INTO EmailQueue(id, subject, body, altBody, destination, receiverName) VALUES (NULL, ?, ?, ?, ?, ?)';
             $status = $db->query($sql, "sssss", $subject, $body, $altBody, $toAddress, $toName);
         }
         if ($status) {
-            //Success
+            // Success
             return true;
         } else {
             throw DatabaseException::queryExecutionFailed();
         }
     }
 
-    public static function getConfirmOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the html body for the confirm appointment email
+     */
+    public static function getConfirmAppointmentMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $config = Config::getConfig();
         $body = '
         <!DOCTYPE html>
@@ -277,12 +284,28 @@ class MailClient {
         return sprintf($body, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
 
-    public static function getAltConfirmOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the alt version of the confirmation appointment email, useful for older mail client that doesn't support HTML
+     */
+    public static function getAltConfirmAppointmentMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $altBody = "%s, grazie per la prenotazione. Vogliamo avvisarti che la tua prenotazione per il %s dalle %s alle %s è stata confermata";
         return sprintf($altBody, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
 
-    public static function getRejectOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the html body for the reject appointment email
+     */
+    public static function getRejectAppointmentMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $body = '
         <!DOCTYPE html>
         <html>
@@ -430,12 +453,28 @@ class MailClient {
         return sprintf($body, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
 
-    public static function getAltRejectOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the alt version of the reject appointment email, useful for older mail client that doesn't support HTML
+     */
+    public static function getAltRejectOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $altBody = "%s, la tua prenotazione è stata rifiutata. Vogliamo avvisarti che la tua prenotazione per il %s dalle %s alle %s è stata rifiutata. Rispondi a questa mail per ottenere altre informazioni";
         return sprintf($altBody, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
 
-    public static function getDeleteOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the html body for delete appointment email
+     */
+    public static function getDeleteOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $body = '
         <!DOCTYPE html>
         <html>
@@ -583,7 +622,15 @@ class MailClient {
         return sprintf($body, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
 
-    public static function getAltDeleteOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime) {
+    /**
+     * @param $name
+     * @param $dateBooking
+     * @param $bookingStartTime
+     * @param $bookingEndTime
+     * @return string
+     * Gets the alt version of delete appointment email, useful for older mail client that doesn't support HTML
+     */
+    public static function getAltDeleteOrderMail($name, $dateBooking, $bookingStartTime, $bookingEndTime): string {
         $altBody = "%s, la tua prenotazione è stata cancellata. Vogliamo avvisarti che la tua prenotazione per il %s dalle %s alle %s è stata cancellata. Rispondi a questa mail per ottenere altre informazioni";
         return sprintf($altBody, $name, $dateBooking, $bookingStartTime, $bookingEndTime);
     }
