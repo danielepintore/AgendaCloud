@@ -21,6 +21,9 @@ class workingTimes {
         if (!empty($customServiceWorkTimes)){
             $serviceWorkTimes = $customServiceWorkTimes;
         }
+        if (empty($serviceWorkTimes) || empty($employeeWorkTimes)) {
+            return ['startTime' => "00:00", 'endTime' => "00:00"];
+        }
         if ($serviceWorkTimes["startTime"] >= $employeeWorkTimes["endTime"] || $employeeWorkTimes["startTime"] >= $serviceWorkTimes["endTime"]){
             $startTime = "00:00";
             $endTime = "00:00";
@@ -54,6 +57,9 @@ class workingTimes {
         }
         if (!empty($customServiceHolidayTimes)){
             $serviceHolidayTimes = $customServiceHolidayTimes;
+        }
+        if (empty($serviceHolidayTimes) || empty($employeeHolidayTimes)) {
+            return ['startTime' => "00:00", 'endTime' => "00:00"];
         }
         if ($serviceHolidayTimes["startTime"] >= $employeeHolidayTimes["endTime"] || $employeeHolidayTimes["startTime"] >= $serviceHolidayTimes["endTime"]){
             $startTime = "00:00";
