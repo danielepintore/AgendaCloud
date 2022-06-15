@@ -4,7 +4,7 @@ class DateCheck {
     /**
      * @param $date
      * @return bool
-     * @throws DataException
+     * @throws DateException
      */
     public static function isValidDate($date, $isUserAuthenticated = false) {
         $config = Config::getConfig();
@@ -20,19 +20,19 @@ class DateCheck {
                 return true;
             }
         } catch (Exception $e) {
-            throw DataException::invalidData();
+            throw DateException::invalidData();
         }
 
         try {
             $maxDateInterval = new DateInterval("P" . $config->calendar->max_future_day . "D");
         } catch (Exception $e) {
-            throw DataException::wrongIntervalString();
+            throw DateException::wrongIntervalString();
         }
         if ($date <= $maxDate->add($maxDateInterval) && $date >= $now) {
             // the date shouldn't be in the past and cant'b be bigger than maxdate
             return true;
         } else {
-            throw DataException::invalidData();
+            throw DateException::invalidData();
         }
     }
 
@@ -40,7 +40,7 @@ class DateCheck {
         try {
             $date = new DateTime($date);
         } catch (Exception $e) {
-            throw DataException::invalidData();
+            throw DateException::invalidData();
         }
         $now = new DateTime();
         $date->setTime(0, 0, 0);

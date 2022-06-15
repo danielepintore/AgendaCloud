@@ -1,6 +1,10 @@
 <?php
 
-class DataException extends Exception {
+/**
+ * This classes contains all the exceptions related to the dates
+ */
+class DateException extends Exception {
+
     public static function invalidData() {
         return new static('The selected date is invalid');
     }

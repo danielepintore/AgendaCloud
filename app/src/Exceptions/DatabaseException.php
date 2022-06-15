@@ -1,6 +1,10 @@
 <?php
 
+/**
+ * This classes contains all the exceptions related to the database
+ */
 class DatabaseException extends Exception {
+
     public static function connectionFailed() {
         return new static('The connection to the database is failed');
     }

@@ -9,7 +9,7 @@ use MailClient;
 class Appointment {
     /**
      * @throws DatabaseException
-     * @throws \DataException
+     * @throws \DateException
      */
     public static function getAppointments(Database $db, $isAdmin, $date, $employeeId = null) {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');

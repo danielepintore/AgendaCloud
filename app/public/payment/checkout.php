@@ -18,7 +18,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     // the first thing to do is to check if the date is valid
     try {
         DateCheck::isValidDate($_POST['date']);
-    } catch (DataException | Exception $e) {
+    } catch (DateException | Exception $e) {
         if (DEBUG){
             print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
         } else {

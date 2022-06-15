@@ -23,7 +23,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         // the first thing to do is to check if the date is valid
         try {
             DateCheck::isValidDate($_POST['date'], $user->isActive());
-        } catch (DataException|Exception $e) {
+        } catch (DateException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
             } else {
@@ -69,7 +69,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         // the first thing to do is to check if the date is valid
         try {
             DateCheck::isValidDate($_POST['date'], $user->isActive());
-        } catch (DataException|Exception $e) {
+        } catch (DateException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
             } else {

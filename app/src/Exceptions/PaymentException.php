@@ -1,6 +1,10 @@
 <?php
 
+/**
+ * This classes contains all the exceptions related to the payments
+ */
 class PaymentException extends Exception {
+
     public static function failedToCreateStripeClient() {
         return new static("Failed the initialization of the stripe client check the api key");
     }

@@ -9,7 +9,7 @@ class Slot {
      * @param $employeeId
      * @param $dateStr
      * @return array
-     * @throws DataException
+     * @throws DateException
      * @throws DatabaseException
      * @throws ServiceException
      * @throws EmployeeException
@@ -47,7 +47,7 @@ class Slot {
                                 $endDate = new DateTime($r["OraFine"]);
                                 $orari[] = array("start_time" => $startDate->format('H:i'), "end_time" => $endDate->format('H:i'));
                             } catch (Exception $e) {
-                                throw DataException::wrongStartOrEndTime();
+                                throw DateException::wrongStartOrEndTime();
                             }
                         }
                         // if the user is authenticated we can disable the BookableUntil time interval
@@ -63,7 +63,7 @@ class Slot {
                             $waitInterval = new DateInterval("PT" . $service_info["TempoPausa"] . "M");
                             $bookableUntilInterval = new DateInterval("PT" . $service_info["BookableUntil"] . "M");
                         } catch (Exception $e) {
-                            throw DataException::wrongIntervalString();
+                            throw DateException::wrongIntervalString();
                         }
                         $date = DateTime::createFromFormat("Y-m-d G:i", $dateStr . " " . $workingTimes["startTime"]);
                         $endDate = DateTime::createFromFormat("Y-m-d G:i", $dateStr . " " . $workingTimes["endTime"]);
