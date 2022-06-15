@@ -14,11 +14,11 @@ if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId']) && isset($_GET['
         }
     } catch (DatabaseException|SlotException|EmployeeException|ServiceException|Exception $e) {
         if (DEBUG){
-            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            Debug::printException($e);
         } else {
             print(json_encode(array("error" => true)));
-            die(0);
         }
+        die(0);
     }
 } else {
     if (DEBUG){

@@ -34,7 +34,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         $service = new Service($db,$_POST['serviceId']);
     } catch (DatabaseException | Exception $e) {
         if (DEBUG){
-            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+            Debug::printException($e);
         } else {
             header("HTTP/1.1 303 See Other");
             header("Location: /error.php");
@@ -139,11 +139,12 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             }
         } catch (Exception $e){
             if (DEBUG){
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                Debug::printException($e);
             } else {
                 header("HTTP/1.1 303 See Other");
                 header("Location: /error.php");
             }
+            die(0);
         }
 
         // now we need to make the appointment as booked
@@ -157,7 +158,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             die(0);
         } catch (DatabaseException | SlotException | Exception $e) {
             if (DEBUG){
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                Debug::printException($e);
             } else {
                 header("HTTP/1.1 303 See Other");
                 header("Location: /error.php");

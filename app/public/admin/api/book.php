@@ -41,7 +41,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             $service = new Service($db, $_POST['serviceId']);
         } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                Debug::printException($e);
             } else {
                 print(json_encode(array("error" => true)));
             }
@@ -86,7 +86,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             $service = new Service($db, $_POST['serviceId']);
         } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
+                Debug::printException($e);
             } else {
                 print(json_encode(array("error" => true)));
             }

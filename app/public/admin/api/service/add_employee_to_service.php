@@ -32,12 +32,11 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             }
         } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
-                print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());;
-                die(0);
+                Debug::printException($e);
             } else {
                 print(json_encode(array("error" => true)));
-                die(0);
             }
+            die(0);
         }
     } else {
         print(json_encode(array("error" => true)));
