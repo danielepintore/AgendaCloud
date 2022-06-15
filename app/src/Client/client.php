@@ -1,18 +1,25 @@
 <?php
 
+/**
+ * Client class, contains all the information about a client
+ */
 class Client {
-    private $name;
-    private $surname;
-    private $email;
-    private $phone;
+    private string $name;
+    private string $surname;
+    private string $email;
+    private string $phone;
 
     /**
      * @param $name
      * @param $surname
      * @param $email
      * @param $phone
+     * @throws ClientException
      */
     public function __construct($name, $surname, $email, $phone) {
+        if (is_null($name) || is_null($surname) || is_null($email) || is_null($phone)){
+            throw ClientException::invalidClientData();
+        }
         $this->name = $name;
         $this->surname = $surname;
         $this->email = $email;
@@ -20,30 +27,30 @@ class Client {
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getName() {
+    public function getName(): string {
         return $this->name;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSurname() {
+    public function getSurname(): string {
         return $this->surname;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getEmail() {
+    public function getEmail(): string {
         return $this->email;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPhone() {
+    public function getPhone(): string {
         return $this->phone;
     }
 }
