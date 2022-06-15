@@ -1,7 +1,15 @@
 <?php
 
+/**
+ * Manages the configuration of the agendacloud instance
+ */
 class Config {
-    public static function getConfig() {
+
+    /**
+     * @return object
+     * Returns the configuration object
+     */
+    public static function getConfig(): object {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $dotenv = Dotenv\Dotenv::createImmutable(realpath(dirname(__FILE__, 3)));
         $dotenv->load();
