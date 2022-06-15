@@ -1,19 +1,54 @@
 <?php
 
+/**
+ * This class is used to create the service object and handles all types of service data
+ * Includes also some methods to fetch data from the database, specifically it allows to get all active services
+ * and get the list of employees associated to the service.
+ * This class is mainly used in the client interface but is also used in administrators pages
+ */
+
 class Service {
-    private $serviceId;
-    private $name;
-    private $duration;
-    private $waitTime;
-    private $cost;
-    private $description;
-    private $imageUrl;
-    private $success;
-    private $bookableUntil;
-    private $isActive;
-    private $db;
+    private int $serviceId;
+    private string $name;
+    private int $duration;
+    private int $waitTime;
+    private int $cost;
+    private string $description;
+    private string $imageUrl;
+    private int $bookableUntil;
+    private bool $isActive;
+    private Database $db;
+    private bool $initialized;
 
     /**
+     * This is the main constructor and allows to have multiple constructors in the class, it chooses based on the
+     * number of argument the correct constructor
+     */
+    public function __construct() {
+        $arguments = func_get_args();
+        $numberOfArguments = func_num_args();
+
+        if (method_exists($this, $function = '__construct' . $numberOfArguments)) {
+            call_user_func_array(array($this, $function), $arguments);
+        }
+    }
+
+    /**
+     * @param Database $db
+     * @param $serviceId
+     * @return void
+     * This constructor gets all information of the service from the database using its serviceId
+     * @throws DatabaseException
+     */
+    public function __construct2(Database $db, $serviceId): void {
+        $this->db = $db;
+        $this->serviceId = $serviceId;
+        $this->initialized = true;
+        $this->setServiceInfo();
+    }
+
+    /**
+     * @param $db
      * @param $serviceId
      * @param $name
      * @param $duration
@@ -22,32 +57,12 @@ class Service {
      * @param $description
      * @param $bookableUntil
      * @param $isActive
-     * @param $db
+     * @return void
+     * This constructor initializes the service object using the data provided by the programmer
      */
-
-    public function __construct()
-    {
-        $arguments = func_get_args();
-        $numberOfArguments = func_num_args();
-
-        if (method_exists($this, $function = '__construct'.$numberOfArguments)) {
-            call_user_func_array(array($this, $function), $arguments);
-        }
-    }
-
-    /**
-     * @param Database $db
-     * @param $serviceId
-     * @throws DatabaseException
-     */
-    public function __construct2(Database $db, $serviceId) {
+    public function __construct9($db, $serviceId, $name, $duration, $waitTime, $cost, $description, $bookableUntil,
+                                 $isActive): void {
         $this->db = $db;
-        $this->serviceId = $serviceId;
-        $this->success = true;
-        $this->setServiceInfo();
-    }
-
-    public function __construct9($db, $serviceId, $name, $duration, $waitTime, $cost, $description, $bookableUntil, $isActive) {
         $this->serviceId = $serviceId;
         $this->name = $name;
         $this->duration = $duration;
@@ -56,101 +71,140 @@ class Service {
         $this->description = $description;
         $this->bookableUntil = $bookableUntil;
         $this->isActive = $isActive;
-        $this->db = $db;
+        $this->initialized = true;
     }
 
 
     /**
-     * @return mixed
+     * @return int
+     * @throws ServiceException
      */
-    public function getServiceId() {
+    public function getServiceId(): int {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->serviceId;
     }
 
     /**
-     * @return mixed
+     * @return string
+     * @throws ServiceException
      */
-    public function getName() {
+    public function getName(): string {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->name;
     }
 
     /**
-     * @return mixed
+     * @return int
+     * @throws ServiceException
      */
-    public function getDuration() {
+    public function getDuration(): int {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->duration;
     }
 
     /**
-     * @return mixed
+     * @return int
+     * @throws ServiceException
      */
-    public function getWaitTime() {
+    public function getWaitTime(): int {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->waitTime;
     }
 
     /**
-     * @return mixed
+     * @return int
+     * @throws ServiceException
      */
-    public function getCost() {
+    public function getCost(): int {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->cost;
     }
 
     /**
-     * @return mixed
+     * @return string
+     * @throws ServiceException
      */
-    public function getDescription() {
+    public function getDescription(): string {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->description;
     }
 
     /**
-     * @return mixed
+     * @return string
+     * @throws ServiceException
      */
-    public function getImageUrl() {
+    public function getImageUrl(): string {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->imageUrl;
     }
 
     /**
-     * @return mixed
+     * @return int
+     * @throws ServiceException
      */
-    public function getBookableUntil() {
+    public function getBookableUntil(): int {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->bookableUntil;
     }
 
     /**
-     * @return mixed
+     * @return bool
+     * @throws ServiceException
      */
-    public function getIsActive() {
+    public function getIsActive(): bool {
+        if (!$this->initialized){
+            throw ServiceException::failedToGetServiceData();
+        }
         return $this->isActive;
     }
 
 
-
     /**
-     * @throws ServiceException
+     * @return array
+     * If the service is initialized correctly returns a list of ACTIVE employees associated to the service
      * @throws DatabaseException
+     * @throws ServiceException
      */
     function get_employees(): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        if ($this->success) {
-            $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ? AND Dipendente.isActive = TRUE)';
-            $status = $this->db->query($sql, "i", $this->serviceId);
-            if ($status) {
-                //Success
-                $result = $this->db->getResult();
-                $response = [];
-                foreach ($result as $r) {
-                    $response[] = $r;
-                }
-                return $response;
-            }
-        } else {
+        if (!$this->initialized) {
             throw ServiceException::failedToGetServiceData();
         }
-        return [];
+        $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ? AND Dipendente.isActive = TRUE)';
+        $status = $this->db->query($sql, "i", $this->serviceId);
+        if (!$status) {
+            return [];
+        }
+        $result = $this->db->getResult();
+        $response = [];
+        foreach ($result as $r) {
+            $response[] = $r;
+        }
+        return $response;
     }
 
     /**
      * @return void
+     * @return void
+     * If we initialize the service by its serviceId this function will get all the service data from the database
+     * WARNING the service MUST be ACTIVE
+     * Its sets initialized to true if everything is ok
      * @throws DatabaseException
      */
     private function setServiceInfo(): void {
@@ -158,37 +212,43 @@ class Service {
         $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
         $status = $this->db->query($sql, "i", $this->serviceId);
         if ($status) {
-            //Success
-            $result = $this->db->getResult();
-            $response = $result[0];
-            $this->name = $response['Nome'];
-            $this->duration = $response['Durata'];
-            $this->cost = $response['Costo'];
-            $this->waitTime = $response['TempoPausa'];
-            $this->description = $response['Descrizione'];
-            $this->imageUrl = $response['ImmagineUrl'];
-            $this->bookableUntil = $response['BookableUntil'];
-            $this->isActive = $response['IsActive'];
+            // query succeeded
+            $service = ($this->db->getResult())[0];
+            $this->name = $service['Nome'];
+            $this->duration = $service['Durata'];
+            $this->cost = $service['Costo'];
+            $this->waitTime = $service['TempoPausa'];
+            $this->description = $service['Descrizione'];
+            $this->imageUrl = $service['ImmagineUrl'];
+            $this->bookableUntil = $service['BookableUntil'];
+            $this->isActive = $service['IsActive'];
         } else {
             // query failed
-            $this->name = null;
-            $this->duration = null;
-            $this->cost = null;
-            $this->waitTime = null;
-            $this->description = null;
-            $this->imageUrl = null;
-            $this->bookableUntil = null;
-            $this->success = false;
+            $this->name = "";
+            $this->duration = 0;
+            $this->cost = 0;
+            $this->waitTime = 0;
+            $this->description = "";
+            $this->imageUrl = "";
+            $this->bookableUntil = 0;
+            $this->initialized = false;
         }
     }
 
     /**
-     * @return array
+     * Returns an array containing basic information of the initialized service
      * @throws ServiceException
+     * @return array{
+     *          id: int,
+     *          Nome: string,
+     *          Durata: int,
+     *          Costo: int
+     *     }
      */
     public function getServiceInfo(): array {
-        if ($this->success) {
-            return array("id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration, "Costo" => $this->cost);
+        if ($this->initialized) {
+            return ["id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
+                "Costo" => $this->cost];
         } else {
             throw ServiceException::failedToGetServiceData();
         }
@@ -197,21 +257,26 @@ class Service {
 
     /**
      * @throws DatabaseException
-     * Gets the active services where there is at least one active employee
+     * @return array{
+     *          id: int,
+     *          Nome: string,
+     *          Durata: int,
+     *          Costo: int
+     *     }
+     * Gets the list of active services where there is at least one active employee
      */
     public static function getActiveServices(Database $db): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
         $status = $db->query($sql);
-        if ($status) {
-            //Success
-            $result = $db->getResult();
-            $response = [];
-            foreach ($result as $r) {
-                $response[] = array('id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']);
-            }
-            return $response;
+        if (!$status) {
+            return [];
         }
-        return [];
+        $result = $db->getResult();
+        $response = [];
+        foreach ($result as $r) {
+            $response[] = ['id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']];
+        }
+        return $response;
     }
 }
