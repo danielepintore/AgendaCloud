@@ -147,7 +147,7 @@ function loadServices() {
 }
 
 function getSelectedServiceInfo(serviceId) {
-    $.get("/api/get_services.php", {serviceId: serviceId})
+    $.get("/api/get_service_info.php", {serviceId: serviceId})
         .done(function (data) {
             if (!data.error) {
                 // set durata
