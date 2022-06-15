@@ -12,6 +12,15 @@ class Debug {
      * Prints the exception on the page
      */
     public static function printException(Exception $e): void {
-        print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+        print(self::getDebugMessage($e));
+    }
+
+    /**
+     * @param Exception $e
+     * @return string
+     * Returns the debug message
+     */
+    public static function getDebugMessage(Exception $e): string {
+        return ($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
     }
 }
