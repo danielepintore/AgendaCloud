@@ -1,21 +1,29 @@
 <?php
 
+/*
+ * This class manages Stripe sessions
+ */
+
 class Session {
-    private $secretApiKey;
+    private string $secretApiKey;
 
     /**
      * @param $secretApiKey
      */
     public function __construct($secretApiKey) {
+        if (empty($secretApiKey)){
+            throw PaymentException::failedToCreateStripeClient();
+        }
         $this->secretApiKey = $secretApiKey;
     }
 
     /**
      * @param $sessionIds
-     * @return void
      * @throws PaymentException
+     * @return void
+     * Invalidate an array of sessionIds
      */
-    public function invalidateSessions($sessionIds) {
+    public function invalidateSessions($sessionIds): void {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         try {
             $stripe = new \Stripe\StripeClient(
@@ -41,8 +49,9 @@ class Session {
      * @param $sessionId
      * @return mixed
      * @throws PaymentException
+     * Retrieve customer data from a session id
      */
-    public function getCustomerData($sessionId) {
+    public function getCustomerData($sessionId): mixed {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         try {
             $stripe = new \Stripe\StripeClient(
@@ -59,10 +68,9 @@ class Session {
             throw PaymentException::failedToRetrieveSession();
         }
         try {
-            $customer = $stripe->customers->retrieve(
+            return $stripe->customers->retrieve(
                 $session->customer
             );
-            return $customer;
         } catch (Exception $e){
             throw PaymentException::failedToRetrieveCustomerData();
         }
