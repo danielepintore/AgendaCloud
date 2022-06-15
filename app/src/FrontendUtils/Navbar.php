@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * This class handles the navbar generation across the web interdace
+ */
 class Navbar {
 
     /*
@@ -18,7 +21,15 @@ class Navbar {
      * </div>
      */
 
-    public static function printNavBar($user, $selectedItem, $isDropDown = false, $dropDownIndex = 0) { ?>
+    /**
+     * @param $user
+     * @param $selectedItem
+     * @param $isDropDown
+     * @param $dropDownIndex
+     * @return void
+     * Prints the navbar to the page
+     */
+    public static function printNavBar($user, $selectedItem, $isDropDown = false, $dropDownIndex = 0): void { ?>
         <nav class="navbar navbar-expand-lg navbar-light bg-white mb-2">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">AgendaCloud</a>
