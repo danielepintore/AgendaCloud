@@ -33,7 +33,7 @@ if ($event->type == 'checkout.session.completed') {
     $db = new Database();
     try {
         // mark order as paid
-        Order::markAsPaid($db, $session->id);
+        Appointment::markAsPaid($db, $session->id);
         // get appointment info
         $appointment = \Admin\Appointment::fetchAppointmentInfoBySessionID($db, $session->id);
         // send email to the customer
