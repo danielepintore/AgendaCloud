@@ -23,8 +23,9 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
         isset($_POST['serviceDuration']) && is_numeric($_POST['serviceDuration']) && !empty($_POST['serviceDuration']) &&
         isset($_POST['serviceStartTime']) && !empty($_POST['serviceStartTime']) && isset($_POST['serviceEndTime']) &&
         !empty($_POST['serviceEndTime']) && isset($_POST['serviceCost']) && is_numeric($_POST['serviceCost']) &&
-        isset($_POST['serviceWaitTime']) && is_numeric($_POST['serviceWaitTime']) && isset($_POST['bookableUntil']) &&
-        is_numeric($_POST['bookableUntil']) && isset($_POST['serviceActive'])) {
+        $_POST['serviceCost'] > 0 && isset($_POST['serviceWaitTime']) && is_numeric($_POST['serviceWaitTime']) &&
+        $_POST['serviceWaitTime'] >= 0 && isset($_POST['bookableUntil']) && is_numeric($_POST['bookableUntil']) &&
+        $_POST['bookableUntil'] >= 0 && isset($_POST['serviceActive'])) {
         // create a service object
         try {
             if (isset($_POST['serviceDescription'])) {
