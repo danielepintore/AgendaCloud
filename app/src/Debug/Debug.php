@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This class is an helper class used to manage debug functions
+ * This class is a helper class used to manage debug functions
  */
 
 class Debug {
