@@ -13,11 +13,18 @@ if (isset($_GET['serviceId']) && is_numeric($_GET['serviceId'])) {
                 print(json_encode($services));
             }
     } catch (DatabaseException | ServiceException | Exception $e){
-        print(json_encode(array("error" => true)));
+        if (DEBUG) {
+            print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
+        } else {
+            print(json_encode(array("error" => true)));
+        }
         die(0);
     }
-
 } else {
-    print(json_encode(array("error" => true)));
+    if (DEBUG) {
+        print("Something isn't setted up");
+    } else {
+        print(json_encode(array("error" => true)));
+    }
     die(0);
 }
