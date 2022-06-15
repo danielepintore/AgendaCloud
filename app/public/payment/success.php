@@ -8,7 +8,10 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
         $customer = $session->getCustomerData($_GET["sessionId"]);
         $method = CREDIT_CARD;
     } catch (PaymentException | Exception $e) {
-        $method = 2;
+        if (DEBUG){
+            Debug::printException($e);
+        }
+        $method = CASH;
     }
 } elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == CASH) {
     $method = CASH;
