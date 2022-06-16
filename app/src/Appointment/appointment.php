@@ -161,4 +161,36 @@ class Appointment {
             throw DatabaseException::updateOrderStatus();
         }
     }
+
+    /**
+     * @param Database $db
+     * @param $employeeId
+     * @param $dateStr
+     * @return array
+     * @throws DatabaseException
+     * @throws DateException
+     * Get all booked appointment slots for a specific employee
+     */
+    public static function getBookedAppointment(Database $db, $employeeId, $dateStr){
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        // Get already booked slots for the service in the specified date
+        $sql = "SELECT Appuntamento.OraInizio AS OraInizio, Appuntamento.OraFine AS OraFine FROM Appuntamento WHERE Appuntamento.Data = ? AND Appuntamento.Dipendente_id = ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ? AND Appuntamento.Stato != ?";
+        $status = $db->query($sql, "siiii", $dateStr, $employeeId, PAYMENT_EXPIRED, REJECTED_BY_USER, CANCELED);
+        if (!$status) {
+            throw DatabaseException::confirmStatusIsFalse();
+        }
+        // Query succeed
+        $result = $db->getResult();
+        $bookedSlots = [];
+        foreach ($result as $r) {
+            try {
+                $startDate = new DateTime($r["OraInizio"]);
+                $endDate = new DateTime($r["OraFine"]);
+                $bookedSlots[] = array("start_time" => $startDate->format('H:i'), "end_time" => $endDate->format('H:i'));
+            } catch (Exception $e) {
+                throw DateException::wrongStartOrEndTime();
+            }
+        }
+        return $bookedSlots;
+    }
 }
