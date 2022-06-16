@@ -38,7 +38,7 @@ class Service {
      * @param $serviceId
      * @return void
      * This constructor gets all information of the service from the database using its serviceId
-     * @throws DatabaseException
+     * @throws DatabaseException|ServiceException
      */
     public function __construct2(Database $db, $serviceId): void {
         $this->db = $db;
@@ -74,6 +74,104 @@ class Service {
         $this->initialized = true;
     }
 
+    /**
+     * @return array
+     * If the service is initialized correctly returns a list of ACTIVE employees associated to the service
+     * @throws DatabaseException
+     * @throws ServiceException
+     */
+    function get_employees(): array {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        if (!$this->initialized) {
+            throw ServiceException::failedToGetServiceData();
+        }
+        $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ? AND Dipendente.isActive = TRUE)';
+        $status = $this->db->query($sql, "i", $this->serviceId);
+        if (!$status) {
+            return [];
+        }
+        $result = $this->db->getResult();
+        $response = [];
+        foreach ($result as $r) {
+            $response[] = $r;
+        }
+        return $response;
+    }
+
+    /**
+     * @return void
+     * @throws DatabaseException|ServiceException
+     * If we initialize the service by its serviceId this function will get all the service data from the database
+     * WARNING the service MUST be ACTIVE
+     * Its sets initialized to true if everything is ok
+     */
+    private function setServiceInfo(): void {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
+        $status = $this->db->query($sql, "i", $this->serviceId);
+        if (!$status) {
+            throw DatabaseException::confirmStatusIsFalse();
+        }
+        // Query succeeded
+        $result = $this->db->getResult();
+        if ($this->db->getAffectedRows() != 1){
+            throw ServiceException::failedToGetServiceData();
+        }
+        $service = $result[0];
+        $this->name = $service['Nome'];
+        $this->duration = $service['Durata'];
+        $this->cost = $service['Costo'];
+        $this->waitTime = $service['TempoPausa'];
+        $this->description = $service['Descrizione'];
+        $this->imageUrl = $service['ImmagineUrl'];
+        $this->bookableUntil = $service['BookableUntil'];
+        $this->isActive = $service['IsActive'];
+    }
+
+    /**
+     * Returns an array containing basic information of the initialized service
+     * @throws ServiceException
+     * @return array{
+     *          id: int,
+     *          Nome: string,
+     *          Durata: int,
+     *          Costo: int
+     *     }
+     */
+    public function getServiceInfo(): array {
+        if ($this->initialized) {
+            return ["id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
+                "Costo" => $this->cost];
+        } else {
+            throw ServiceException::failedToGetServiceData();
+        }
+
+    }
+
+    /**
+     * @throws DatabaseException
+     * @return array{
+     *          id: int,
+     *          Nome: string,
+     *          Durata: int,
+     *          Costo: int
+     *     }
+     * Gets the list of active services where there is at least one active employee
+     */
+    public static function getActiveServices(Database $db): array {
+        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
+        $status = $db->query($sql);
+        if (!$status) {
+            return [];
+        }
+        $result = $db->getResult();
+        $response = [];
+        foreach ($result as $r) {
+            $response[] = ['id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']];
+        }
+        return $response;
+    }
 
     /**
      * @return int
@@ -174,109 +272,67 @@ class Service {
         return $this->isActive;
     }
 
-
     /**
-     * @return array
-     * If the service is initialized correctly returns a list of ACTIVE employees associated to the service
-     * @throws DatabaseException
-     * @throws ServiceException
+     * @param int $serviceId
      */
-    function get_employees(): array {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        if (!$this->initialized) {
-            throw ServiceException::failedToGetServiceData();
-        }
-        $sql = 'SELECT Dipendente.id AS id, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS Nominativo FROM Dipendente, Offre WHERE (Dipendente.id = Offre.Dipendente_id AND Offre.Servizio_id = ? AND Dipendente.isActive = TRUE)';
-        $status = $this->db->query($sql, "i", $this->serviceId);
-        if (!$status) {
-            return [];
-        }
-        $result = $this->db->getResult();
-        $response = [];
-        foreach ($result as $r) {
-            $response[] = $r;
-        }
-        return $response;
+    public function setServiceId(int $serviceId): void {
+        $this->serviceId = $serviceId;
     }
 
     /**
-     * @return void
-     * @return void
-     * If we initialize the service by its serviceId this function will get all the service data from the database
-     * WARNING the service MUST be ACTIVE
-     * Its sets initialized to true if everything is ok
-     * @throws DatabaseException
+     * @param string $name
      */
-    private function setServiceInfo(): void {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "SELECT * FROM Servizio WHERE(id = ? AND IsActive = TRUE)";
-        $status = $this->db->query($sql, "i", $this->serviceId);
-        if ($status) {
-            // query succeeded
-            $service = ($this->db->getResult())[0];
-            $this->name = $service['Nome'];
-            $this->duration = $service['Durata'];
-            $this->cost = $service['Costo'];
-            $this->waitTime = $service['TempoPausa'];
-            $this->description = $service['Descrizione'];
-            $this->imageUrl = $service['ImmagineUrl'];
-            $this->bookableUntil = $service['BookableUntil'];
-            $this->isActive = $service['IsActive'];
-        } else {
-            // query failed
-            $this->name = "";
-            $this->duration = 0;
-            $this->cost = 0;
-            $this->waitTime = 0;
-            $this->description = "";
-            $this->imageUrl = "";
-            $this->bookableUntil = 0;
-            $this->initialized = false;
-        }
+    public function setName(string $name): void {
+        $this->name = $name;
     }
 
     /**
-     * Returns an array containing basic information of the initialized service
-     * @throws ServiceException
-     * @return array{
-     *          id: int,
-     *          Nome: string,
-     *          Durata: int,
-     *          Costo: int
-     *     }
+     * @param int $duration
      */
-    public function getServiceInfo(): array {
-        if ($this->initialized) {
-            return ["id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
-                "Costo" => $this->cost];
-        } else {
-            throw ServiceException::failedToGetServiceData();
-        }
-
+    public function setDuration(int $duration): void {
+        $this->duration = $duration;
     }
 
     /**
-     * @throws DatabaseException
-     * @return array{
-     *          id: int,
-     *          Nome: string,
-     *          Durata: int,
-     *          Costo: int
-     *     }
-     * Gets the list of active services where there is at least one active employee
+     * @param int $waitTime
      */
-    public static function getActiveServices(Database $db): array {
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = "SELECT Servizio.id, Servizio.Nome, Servizio.Durata, Servizio.Costo FROM Servizio, Offre, Dipendente WHERE(Servizio.IsActive = TRUE AND Dipendente.IsActive = TRUE AND Servizio.id = Offre.Servizio_id AND Offre.Dipendente_id = Dipendente.id) GROUP BY Servizio.id";
-        $status = $db->query($sql);
-        if (!$status) {
-            return [];
-        }
-        $result = $db->getResult();
-        $response = [];
-        foreach ($result as $r) {
-            $response[] = ['id' => $r['id'], 'Nome' => $r['Nome'], 'Durata' => $r['Durata'], 'Costo' => $r['Costo']];
-        }
-        return $response;
+    public function setWaitTime(int $waitTime): void {
+        $this->waitTime = $waitTime;
     }
+
+    /**
+     * @param int $cost
+     */
+    public function setCost(int $cost): void {
+        $this->cost = $cost;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription(string $description): void {
+        $this->description = $description;
+    }
+
+    /**
+     * @param string $imageUrl
+     */
+    public function setImageUrl(string $imageUrl): void {
+        $this->imageUrl = $imageUrl;
+    }
+
+    /**
+     * @param int $bookableUntil
+     */
+    public function setBookableUntil(int $bookableUntil): void {
+        $this->bookableUntil = $bookableUntil;
+    }
+
+    /**
+     * @param bool $isActive
+     */
+    public function setIsActive(bool $isActive): void {
+        $this->isActive = $isActive;
+    }
+
 }
