@@ -44,4 +44,8 @@ class DatabaseException extends Exception {
     public static function noResultFetched() {
         return new static("The result object isn't fetched");
     }
+
+    public static function confirmStatusIsFalse() {
+        return new static("There is a problem with the database connection that lead the database status variable to false");
+    }
 }
