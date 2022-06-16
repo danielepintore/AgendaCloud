@@ -21,8 +21,9 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
             $status = $db->query($sql, "s", $_POST['username']);
             if ($status) {
                 // check the number of results
-                $result = $db->getResult()[0];
+                $result = $db->getResult();
                 if ($db->getAffectedRows() > 0) {
+                    $result = $result[0];
                     // user exists
                     if (password_verify($_POST['pwd'], $result['Password'])) {
                         // correct credentials
