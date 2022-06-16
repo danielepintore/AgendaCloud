@@ -1,11 +1,20 @@
 <?php
+
+/**
+ * This class manages the working times of an employee or a service
+ */
 class workingTimes {
     /**
      * @param Database $db
      * @param $day
+     * @param $dateStr
      * @param $serviceId
      * @param $employeeId
-     * @return array|string[]
+     * @return array{
+     *     startTime: string,
+     *     endTime: string
+     * }
+     * @throws DatabaseException
      * Gets the interval of working time available considering the service working time and the
      * employee working time
      */
@@ -15,81 +24,67 @@ class workingTimes {
         $customServiceWorkTimes = \Admin\Services::getDayCustomWorkingTimes($db, $dateStr, $serviceId);
         $employeeWorkTimes = \Admin\Employee::getDayWorkingTimes($db, $day,  $employeeId);
         $customEmployeeWorkTimes = \Admin\Employee::getDayCustomWorkingTimes($db, $dateStr,  $employeeId);
-        if (!empty($customEmployeeWorkTimes)){
-            $employeeWorkTimes = $customEmployeeWorkTimes;
-        }
         if (!empty($customServiceWorkTimes)){
             $serviceWorkTimes = $customServiceWorkTimes;
         }
-        if (empty($serviceWorkTimes) || empty($employeeWorkTimes)) {
-            return ['startTime' => "00:00", 'endTime' => "00:00"];
+        if (!empty($customEmployeeWorkTimes)){
+            $employeeWorkTimes = $customEmployeeWorkTimes;
         }
-        if ($serviceWorkTimes["startTime"] >= $employeeWorkTimes["endTime"] || $employeeWorkTimes["startTime"] >= $serviceWorkTimes["endTime"]){
-            $startTime = "00:00";
-            $endTime = "00:00";
-            return array('startTime' => $startTime, 'endTime' => $endTime);
-        }
-        if ($serviceWorkTimes["startTime"] >= $employeeWorkTimes["startTime"] && $serviceWorkTimes["startTime"] <= $employeeWorkTimes["endTime"]) {
-            $startTime = $serviceWorkTimes["startTime"];
-        } else {
-            $startTime = $employeeWorkTimes["startTime"];
-        }
-        $endTime = min($employeeWorkTimes["endTime"], $serviceWorkTimes["endTime"]);
-        return array("startTime" => $startTime, "endTime" => $endTime);
+        return self::calculateInterval($serviceWorkTimes, $employeeWorkTimes);
+
     }
 
-    public static function getHolidayTimes(Database $db, $day, $dateStr, $serviceId, $employeeId){
+    /**
+     * @param Database $db
+     * @param $day
+     * @param $dateStr
+     * @param $serviceId
+     * @param $employeeId
+     * @return array
+     * @throws DatabaseException
+     * Gets the interval of free time available considering the service free time and the
+     * employee free time
+     */
+    public static function getHolidayTimes(Database $db, $day, $dateStr, $serviceId, $employeeId): array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $serviceHolidayTimes = \Admin\Services::getDayHolidayTimes($db, $day, $serviceId);
         $customServiceHolidayTimes = \Admin\Services::getDayCustomHolidayTimes($db, $dateStr, $serviceId);
         $employeeHolidayTimes = \Admin\Employee::getDayHolidayTimes($db, $day,  $employeeId);
         $customEmployeeHolidayTimes = \Admin\Employee::getDayCustomHolidayTimes($db, $dateStr,  $employeeId);
-        //print("serviceHolidayTimes:\n");
-        //var_dump($serviceHolidayTimes);
-        //print("employeeHolidayTimes:\n");
-        //var_dump($employeeHolidayTimes);
-        //print("customServiceHolidayTimes:\n");
-        //var_dump($customServiceHolidayTimes);
-        //print("customEmployeeHolidayTimes:\n");
-        //var_dump($customEmployeeHolidayTimes);
-        if (!empty($customEmployeeHolidayTimes)){
-            $employeeHolidayTimes = $customEmployeeHolidayTimes;
-        }
         if (!empty($customServiceHolidayTimes)){
             $serviceHolidayTimes = $customServiceHolidayTimes;
         }
-        if (empty($serviceHolidayTimes) || empty($employeeHolidayTimes)) {
-            return ['startTime' => "00:00", 'endTime' => "00:00"];
+        if (!empty($customEmployeeHolidayTimes)){
+            $employeeHolidayTimes = $customEmployeeHolidayTimes;
         }
-        if ($serviceHolidayTimes["startTime"] >= $employeeHolidayTimes["endTime"] || $employeeHolidayTimes["startTime"] >= $serviceHolidayTimes["endTime"]){
-            $startTime = "00:00";
-            $endTime = "00:00";
-            return [['startTime' => $startTime, 'endTime' => $endTime]];
-        }
-        if ($serviceHolidayTimes["startTime"] >= $employeeHolidayTimes["startTime"] && $serviceHolidayTimes["startTime"] <= $employeeHolidayTimes["endTime"]) {
-            $startTime = $serviceHolidayTimes["startTime"];
-        } else {
-            $startTime = $employeeHolidayTimes["startTime"];
-        }
-        $endTime = min($employeeHolidayTimes["endTime"], $serviceHolidayTimes["endTime"]);
-        return [["startTime" => $startTime, "endTime" => $endTime]];
+        return [self::calculateInterval($serviceHolidayTimes, $employeeHolidayTimes)];
     }
 
-    public static function getWorkingTimesBackup(Database $db, $day, $serviceId, $employeeId){
-        require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $serviceWorkTimes = \Admin\Services::getDayWorkingTimes($db, $day, $serviceId);
-        $employeeWorkTimes = \Admin\Employee::getDayWorkingTimes($db,$day,  $employeeId);
-        if ($serviceWorkTimes["startTime"] >= $employeeWorkTimes["endTime"] || $employeeWorkTimes["startTime"] >= $serviceWorkTimes["endTime"]){
+    /**
+     * @param $serviceTimes
+     * @param $employeeTimes
+     * @return array{
+     *     startTime: string,
+     *     endTime: string
+     * }
+     * Calculate the interval matching the service time and the employee time
+     */
+    private static function calculateInterval($serviceTimes, $employeeTimes): array {
+        if (empty($serviceTimes) || empty($employeeTimes)) {
+            return ['startTime' => "00:00", 'endTime' => "00:00"];
+        }
+        if ($serviceTimes["startTime"] >= $employeeTimes["endTime"] || $employeeTimes["startTime"] >= $serviceTimes["endTime"]){
             $startTime = "00:00";
             $endTime = "00:00";
-            return array('startTime' => $startTime, 'endTime' => $endTime);
+            return ['startTime' => $startTime, 'endTime' => $endTime];
         }
-        if ($serviceWorkTimes["startTime"] >= $employeeWorkTimes["startTime"] && $serviceWorkTimes["startTime"] <= $employeeWorkTimes["endTime"]) {
-            $startTime = $serviceWorkTimes["startTime"];
+        if ($serviceTimes["startTime"] >= $employeeTimes["startTime"] && $serviceTimes["startTime"] <= $employeeTimes["endTime"]) {
+            $startTime = $serviceTimes["startTime"];
         } else {
-            $startTime = $employeeWorkTimes["startTime"];
+            $startTime = $employeeTimes["startTime"];
         }
-        $endTime = min($employeeWorkTimes["endTime"], $serviceWorkTimes["endTime"]);
-        return array("startTime" => $startTime, "endTime" => $endTime);
+        $endTime = min($employeeTimes["endTime"], $serviceTimes["endTime"]);
+        return ["startTime" => $startTime, "endTime" => $endTime];
     }
+
 }
