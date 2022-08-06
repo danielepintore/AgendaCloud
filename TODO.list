@@ -46,6 +46,7 @@ Rimuovere la possibilità di inserire custom worktimes in conflitto tra di loro 
 -----------------------------------------------------------------
 
 TO DO:
+Check update user password and /api/getemployees for problem with service class
 Aggiungere tab vacanze
 Add is admin check to all admin pages / api via user class because if we remove an user the admin access it will be keeped granted till the next login
 Aggiungere la possibilità di cancellare i servizi con appuntamenti gia presi
