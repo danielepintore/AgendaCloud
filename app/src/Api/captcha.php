@@ -1,6 +1,12 @@
 <?php
 
 class Captcha {
+
+    /**
+     * @param $responseCode
+     * @return bool
+     * Given a response code it check if the captcha verification step is passed
+     */
     public static function isSuccess($responseCode) {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         try {
