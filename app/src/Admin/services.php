@@ -41,7 +41,7 @@ class Services {
     //TODO add and implements starttime and endtime
     public static function addServices(Database $db, $name, $duration, $startTime, $endTime, $cost, $waitTime, $bookableUntil, $isActive, $description = "") {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'INSERT INTO Servizio (id, Nome, Durata, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, NULL, ?, ?)';
+        $sql = 'INSERT INTO Servizio (id, Nome, Durata, Costo, TempoPausa, Descrizione, ImmagineUrl, IsActive, BookableUntil) VALUES (NULL, ?, ?, ?, ?, ?, "", ?, ?)';
         if ($isActive) {
             $isActive = 1;
         } else {
