@@ -4,11 +4,11 @@ namespace Admin;
 use Database;
 
 class User {
-    private $id;
-    private $isLogged;
-    private $username;
-    private $isAdmin;
-    private $db;
+    private int $id;
+    private bool $isLogged;
+    private string $username;
+    private bool $isAdmin;
+    private Database $db;
 
     /**
      * @param Database $db
@@ -26,37 +26,38 @@ class User {
     }
 
     /**
-     * @return mixed
+     * @return int
      */
-    public function getId() {
+    public function getId(): int {
         return $this->id;
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function IsLogged() {
+    public function IsLogged(): bool {
         return $this->isLogged;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getUsername() {
+    public function getUsername(): string {
         return $this->username;
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function IsAdmin() {
+    public function IsAdmin(): bool {
         return $this->isAdmin;
     }
 
     /**
      * @throws \DatabaseException
+     * Returns true if the user exist otherwise false
      */
-    public function exist() {
+    public function exist(): bool {
         $sql = 'SELECT Dipendente.id FROM Dipendente WHERE Dipendente.id = ?';
         $status = $this->db->query($sql, "i", $this->id);
         if ($status) {
@@ -74,8 +75,10 @@ class User {
 
     /**
      * @throws \DatabaseException
+     * Return true if the user is active otherwise false
      */
-    public function isActive() {
+    public function isActive(): bool {
+        //TODO migrate exist method here
         $sql = 'SELECT Dipendente.isActive FROM Dipendente WHERE Dipendente.id = ?';
         $status = $this->db->query($sql, "i", $this->id);
         if ($status) {
