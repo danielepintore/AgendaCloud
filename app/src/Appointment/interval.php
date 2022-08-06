@@ -1,10 +1,10 @@
 <?php
 
 class Interval {
-    private $startTime;
-    private $endTime;
-    private $serviceDuration;
-    private $waitInterval;
+    private DateTime $startTime;
+    private DateTime $endTime;
+    private DateInterval $serviceDuration;
+    private DateInterval $waitInterval;
 
     /**
      * @param string $startTime
@@ -53,10 +53,14 @@ class Interval {
     }
 
     /**
-     * @return array
      * @throws DateException
+     * @return array{
+     *     startTime: string,
+     *     endTime: string
+     * }
+     * Gets and array containing the info about the interval
      */
-    public function getArray() {
+    public function getArray(): array {
         try {
             $endTime = new DateTime($this->endTime->format('H:i'));
         } catch (Exception $e) {
