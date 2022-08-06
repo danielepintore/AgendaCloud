@@ -63,6 +63,6 @@ class Interval {
             throw DateException::wrongStartOrEndTime();
         }
         // we remove the wait time because the client shouldn't see it
-        return array("start_time" => $this->startTime->format('H:i'), "end_time" => $endTime->sub($this->waitInterval)->format('H:i'));
+        return array("startTime" => $this->startTime->format('H:i'), "endTime" => $endTime->sub($this->waitInterval)->format('H:i'));
     }
 }
