@@ -219,7 +219,7 @@ function getTimeSlots(date, serviceId, employeeId) {
             $('#lista-orari').empty()
             if (!data.error && data.length > 0) {
                 data.forEach(element => {
-                    $('#lista-orari').append('<option value="' + element.start_time + '-' + element.end_time + '">' + element.start_time + '-' + element.end_time + '</option>')
+                    $('#lista-orari').append('<option value="' + element.startTime + '-' + element.endTime + '">' + element.startTime + '-' + element.endTime + '</option>')
                 });
                 $('#lista-orari').prop('disabled', false);
             } else {
