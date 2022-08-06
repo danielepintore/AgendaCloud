@@ -118,10 +118,10 @@ class Appointment {
                 throw SlotException::unableToGetSlots();
             }
             $selected_slot = explode('-', $this->my_slot);
-            $my_slot = array("start_time" => $selected_slot[0], "end_time" => $selected_slot[1]);
+            $my_slot = array("startTime" => $selected_slot[0], "endTime" => $selected_slot[1]);
             $isAvailable = false;
             foreach ($slots as $s) {
-                if ($s["start_time"] == $my_slot["start_time"] && $s["end_time"] == $my_slot["end_time"]) {
+                if ($s["startTime"] == $my_slot["startTime"] && $s["endTime"] == $my_slot["endTime"]) {
                     $isAvailable = true;
                     break;
                 }
@@ -186,7 +186,7 @@ class Appointment {
             try {
                 $startDate = new DateTime($r["OraInizio"]);
                 $endDate = new DateTime($r["OraFine"]);
-                $bookedSlots[] = array("start_time" => $startDate->format('H:i'), "end_time" => $endDate->format('H:i'));
+                $bookedSlots[] = array("startTime" => $startDate->format('H:i'), "endTime" => $endDate->format('H:i'));
             } catch (Exception $e) {
                 throw DateException::wrongStartOrEndTime();
             }
