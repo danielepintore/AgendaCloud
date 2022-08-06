@@ -8,10 +8,17 @@ use MailClient;
 
 class Appointment {
     /**
+     * @param Database $db
+     * @param $isAdmin
+     * @param $date
+     * @param null $employeeId
+     * @return bool|array
      * @throws DatabaseException
      * @throws \DateException
+     * Gets the list of appointment booked: if we are admin we get the complete list otherwise we get our list, using
+     * logged employeeId
      */
-    public static function getAppointments(Database $db, $isAdmin, $date, $employeeId = null) {
+    public static function getAppointments(Database $db, $isAdmin, $date, $employeeId = null): bool|array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
             if (\DateCheck::isToday($date)) {
@@ -58,9 +65,14 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $isAdmin
+     * @param null $employeeId
+     * @return bool|array
      * @throws DatabaseException
+     * Returns an array of appointment request available for the logged employee, if it is an admin it gets all the requests
      */
-    public static function getAppointmentRequest(Database $db, $isAdmin, $employeeId = null) {
+    public static function getAppointmentRequest(Database $db, $isAdmin, $employeeId = null): bool|array {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
             $sql = 'SELECT CONCAT(Cliente.Nome, " ", Cliente.Cognome) AS NominativoC, CONCAT(Dipendente.Nome, " ", Dipendente.Cognome) AS NominativoD, Servizio.Nome AS NomeServizio, Cliente.Cellulare, Appuntamento.id, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, MetodoPagamento.Nome AS NomePagamento, Appuntamento.Stato AS Stato, MetodoPagamento.id AS TipoPagamento, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data FROM Cliente, Dipendente, Appuntamento, Servizio, MetodoPagamento WHERE (Cliente.id = Appuntamento.Cliente_id AND Dipendente.id = Appuntamento.Dipendente_id AND Servizio.id = Appuntamento.Servizio_id AND MetodoPagamento.id = Appuntamento.MetodoPagamento_id AND Appuntamento.MetodoPagamento_id = ? AND Appuntamento.Stato = ? AND CONCAT(Appuntamento.Data, Appuntamento.OraInizio) >= CONCAT(CURDATE(), CURTIME())) ORDER BY Appuntamento.Data, Appuntamento.OraInizio';
@@ -97,9 +109,15 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $isAdmin
+     * @param $appointmentId
+     * @param null $employeeId
+     * @return bool
      * @throws DatabaseException
+     * Accept an appointment request from the appointment id
      */
-    public static function acceptAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null) {
+    public static function acceptAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
@@ -128,9 +146,15 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $isAdmin
+     * @param $appointmentId
+     * @param null $employeeId
+     * @return bool
      * @throws DatabaseException
+     * Reject an appointment request from the appointment id
      */
-    public static function rejectAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null) {
+    public static function rejectAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Stato = ? AND Appuntamento.MetodoPagamento_id = 2';
@@ -159,9 +183,15 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $isAdmin
+     * @param $appointmentId
+     * @param null $employeeId
+     * @return bool
      * @throws DatabaseException
+     * Deletes an appointment
      */
-    public static function deleteAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null) {
+    public static function deleteAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
@@ -195,9 +225,14 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $appointmentId
+     * @return object|bool
      * @throws DatabaseException
+     * @throws \SessionException
+     * Returns an array containing all the information relative to an appointment
      */
-    public static function fetchAppointmentInfo(Database $db, $appointmentId) {
+    public static function fetchAppointmentInfo(Database $db, $appointmentId): object|bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id)';
         $status = $db->query($sql, "i", $appointmentId);
@@ -216,10 +251,14 @@ class Appointment {
     }
 
     /**
+     * @param Database $db
+     * @param $sessionId
+     * @return object|bool
      * @throws DatabaseException
      * @throws \SessionException
+     * Fetch all the info of an appointment using the sessionId field on db
      */
-    public static function fetchAppointmentInfoBySessionID(Database $db, $sessionId) {
+    public static function fetchAppointmentInfoBySessionID(Database $db, $sessionId): object|bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
         $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.SessionId = ? AND Appuntamento.Cliente_id = Cliente.id)';
         $status = $db->query($sql, "s", $sessionId);
