@@ -4,6 +4,9 @@ Date.prototype.addDays = function (days) {
     return date;
 }
 
+/**
+ * Calendar class used to handle all calendars in the webapp
+ */
 class Calendar {
     //var calendar_width = 480; // original value
     //#calendar_width = 336;

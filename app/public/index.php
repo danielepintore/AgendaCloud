@@ -2,12 +2,11 @@
 require_once realpath(dirname(__FILE__, 2)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 $db = new Database();
-error_reporting(E_ALL);
 ?>
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <title><?php print($config->company->name." - AgendaCloud");?></title>
+    <title><?php print($config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="img/favicon/favicon-16x16.png">
@@ -52,7 +51,7 @@ error_reporting(E_ALL);
                                     foreach ($services as $s) {
                                         print('<option value="' . $s["id"] . '">' . $s["Nome"] . '</option>');
                                     }
-                                } catch (DatabaseException | Exception $e){
+                                } catch (DatabaseException|Exception $e) {
                                     header("HTTP/1.1 303 See Other");
                                     header("Location: /error.php");
                                 }
@@ -60,7 +59,7 @@ error_reporting(E_ALL);
                             </select>
                         </div>
                         <div id="scelta_metodo_pagamento"
-                             class="blur active no-click col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                             class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
                             <h5 class="card-title">Scegli un metodo di pagamento:</h5>
                             <select id="tipoPagamento" class="form-select" aria-label="Default select example">
                                 <option value="-1" selected disabled hidden>Seleziona un metodo di pagamento</option>
@@ -71,7 +70,7 @@ error_reporting(E_ALL);
                                     foreach ($paymentMethods as $paymentMethod) {
                                         print('<option value="' . $paymentMethod["id"] . '">' . $paymentMethod["name"] . '</option>');
                                     }
-                                } catch (DatabaseException | Exception $e) {
+                                } catch (DatabaseException|Exception $e) {
                                     header("HTTP/1.1 303 See Other");
                                     header("Location: /error.php");
                                 }
@@ -79,12 +78,13 @@ error_reporting(E_ALL);
                             </select>
                         </div>
                     </div>
-                    <div id="scelta_dipendente" class="blur active no-click">
+                    <div id="scelta_dipendente">
                         <h5 class="card-title mt-2">Scegli un dipendente:</h5>
                         <select id="lista_dipendenti" class="form-select" disabled="true">
+                            <option value="-1" selected disabled hidden>Devi selezionare un servizio</option>
                         </select>
                     </div>
-                    <div id="info-servizio" class="mt-2 blur active no-click">
+                    <div id="info-servizio" class="mt-2">
                         <span>Durata servizio: </span>
                         <span id="time-lenght"></span>
                         <span>costo servizio: </span>
@@ -95,7 +95,7 @@ error_reporting(E_ALL);
         </div>
         <!--Calendar-->
         <div class="col-auto calendar-col mt-4">
-            <div id="bookings-calendar" class="calendar blur active no-click">
+            <div id="bookings-calendar" class="calendar">
                 <div class="calendar-header">
                     <i class="icon-chevron fa-solid fa-chevron-left"></i>
                     <h1></h1>
@@ -108,7 +108,7 @@ error_reporting(E_ALL);
         <!--Orari-->
         <div class="col-12 col-md mt-4">
             <!--Card servizi-->
-            <div class="card blur active no-click" id="orari">
+            <div class="card" id="orari">
                 <div class="card-header">
                     Orari disponibili:
                 </div>
@@ -119,7 +119,7 @@ error_reporting(E_ALL);
                 </div>
             </div>
             <!--Card i tuoi dati-->
-            <div class="card blur active no-click mt-4" id="dati_personali">
+            <div class="card mt-4" id="dati_personali">
                 <div class="card-header">
                     I tuoi dati:
                 </div>
@@ -158,10 +158,10 @@ error_reporting(E_ALL);
                 <input type="hidden" id="clientEmailPOST" name="clientEmail">
                 <input type="hidden" id="clientPhonePOST" name="clientPhone">
                 <input type="hidden" id="paymentMethodPOST" name="paymentMethod">
-                <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-2 w-100 blur active no-click"
+                <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-2 w-100"
                        value="Prenota" disabled>
                 <div class="h-captcha"
-                     data-sitekey="<?php print($config->captcha->pub_key)?>"
+                     data-sitekey="<?php print($config->captcha->pub_key) ?>"
                      data-callback="submitForm"
                      data-size="invisible">
                 </div>
@@ -174,7 +174,7 @@ error_reporting(E_ALL);
         </p>
     </div>
 </div>
-<div class="modal" id="errorModal" tabindex="-1">
+<div class="modal fade" id="errorModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -182,7 +182,7 @@ error_reporting(E_ALL);
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>Lo slot che hai selezionato non è più disponibile</p>
+                <p id="errorModalMessage"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>

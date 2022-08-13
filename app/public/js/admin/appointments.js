@@ -1,7 +1,12 @@
+/**
+ * This function loads all the service available for the user
+ */
 function loadServices() {
     // set the default selected service
     $("#tipoServizio").val(-1)
     $("#tipoPagamento").val($("#tipoPagamento option:eq(1)").val());
+    $("#lista_dipendenti").val(-1)
+    $("#lista_dipendenti").prop('disabled', true)
     var serviceId;
     $('#tipoServizio').on('change', function () {
         serviceId = $(this).val()
@@ -17,16 +22,6 @@ function loadServices() {
         // disabilita il pulsante
         $('#prenota_btn').prop('disabled', true);
         // selezionato il primo elemento che non ha valori
-        if (serviceId == -1) {
-            addBlur("#scelta_dipendente")
-            addBlur("#bookings-calendar")
-            addBlur("#orari")
-            addBlur("#prenota_btn")
-            addBlur("#dati_personali")
-            addBlur("#info-servizio")
-            addBlur("#scelta_metodo_pagamento")
-            return
-        }
         $.get("/api/get_employees.php", {serviceId: serviceId})
             .done(function (data) {
                 $('#lista_dipendenti').empty()
@@ -36,18 +31,9 @@ function loadServices() {
                     });
                     getSelectedServiceInfo(serviceId);
                     $('#lista_dipendenti').prop('disabled', false);
-                    removeBlur("#scelta_dipendente");
-                    removeBlur("#bookings-calendar");
-                    removeBlur("#info-servizio");
-                    removeBlur("#scelta_metodo_pagamento");
                 } else {
-                    addBlur("#scelta_dipendente");
-                    addBlur("#bookings-calendar");
-                    addBlur("#orari");
-                    addBlur("#prenota_btn");
-                    addBlur("#dati_personali");
-                    addBlur("#info-servizio");
-                    addBlur("#scelta_metodo_pagamento");
+                    $('#lista_dipendenti').append('<option value="-1" selected disabled hidden>Devi selezionare un servizio</option>')
+                    $('#lista_dipendenti').prop('disabled', true);
                 }
             })
             .fail(function () {
@@ -85,17 +71,21 @@ function loadServices() {
         })
         if ($("#form_dati_personali").valid()) {
             //start form
-            $.post("/admin/api/book.php", {serviceId: $("#tipoServizio").val(), date: $(".day-selected").attr("value"),
-                employeeId: $("#lista_dipendenti").val(), slot: $("#lista-orari").val(), clientNome: $("#nomeInput").val(),
-                clientCognome: $("#cognomeInput").val(), clientEmail: $("#emailInput").val(), clientPhone: $("#phoneInput").val()})
-                .done(function (data){
-                    if (!data.error){
+            $.post("/admin/api/book.php", {
+                serviceId: $("#tipoServizio").val(),
+                date: $(".day-selected").attr("value"),
+                employeeId: $("#lista_dipendenti").val(),
+                slot: $("#lista-orari").val(),
+                clientNome: $("#nomeInput").val(),
+                clientCognome: $("#cognomeInput").val(),
+                clientEmail: $("#emailInput").val(),
+                clientPhone: $("#phoneInput").val()
+            })
+                .done(function (data) {
+                    if (!data.error) {
                         // show confirmation modal
                         $("#successModal").modal("show");
                         // clean all the fields
-                        addBlur("#orari")
-                        addBlur("#prenota_btn")
-                        addBlur("#dati_personali")
                         $('#lista-orari').empty()
                         $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
                         $('#lista-orari').prop('disabled', true);
@@ -107,12 +97,10 @@ function loadServices() {
                         $("#emailInput").val("");
                         $("#phoneInput").val("");
                     } else {
-                        // show confirmation modal
+                        // show error modal
+                        $("#errorModalMessage").text("C'è stato un errore con la prenotazione, riprova");
                         $("#errorModal").modal("show");
                         // clean all the fields
-                        addBlur("#orari")
-                        addBlur("#prenota_btn")
-                        addBlur("#dati_personali")
                         $('#lista-orari').empty()
                         $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
                         $('#lista-orari').prop('disabled', true);
@@ -125,22 +113,20 @@ function loadServices() {
                         $("#phoneInput").val("");
                     }
                 }).fail(function () {
-                    // show confimation modal
-                    $("#errorModal").modal("show");
-                    // clean all the fields
-                    addBlur("#orari")
-                    addBlur("#prenota_btn")
-                    addBlur("#dati_personali")
-                    $('#lista-orari').empty()
-                    $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
-                    $('#lista-orari').prop('disabled', true);
-                    // disabilita il pulsante
-                    $('#prenota_btn').prop('disabled', true);
-                    $('.day-selected').removeClass('day-selected');
-                    $("#nomeInput").val("");
-                    $("#cognomeInput").val("");
-                    $("#emailInput").val("");
-                    $("#phoneInput").val("");
+                // show confimation modal
+                $("#errorModalMessage").text("C'è stato un errore con la prenotazione, riprova");
+                $("#errorModal").modal("show");
+                // clean all the fields
+                $('#lista-orari').empty()
+                $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
+                $('#lista-orari').prop('disabled', true);
+                // disabilita il pulsante
+                $('#prenota_btn').prop('disabled', true);
+                $('.day-selected').removeClass('day-selected');
+                $("#nomeInput").val("");
+                $("#cognomeInput").val("");
+                $("#emailInput").val("");
+                $("#phoneInput").val("");
             });
         }
     })
@@ -222,6 +208,7 @@ function getTimeSlots(date, serviceId, employeeId) {
                     $('#lista-orari').append('<option value="' + element.startTime + '-' + element.endTime + '">' + element.startTime + '-' + element.endTime + '</option>')
                 });
                 $('#lista-orari').prop('disabled', false);
+                $('#prenota_btn').prop('disabled', false);
             } else {
                 // nessuno slot libero oppure un errore nel caricamento degli slot
                 $('#lista-orari').append('<option selected disabled hidden>Nessuno slot libero</option>')
@@ -235,7 +222,7 @@ function getTimeSlots(date, serviceId, employeeId) {
         });
 }
 
-function onCalendarChange(){
+function onCalendarChange() {
     // rimuovo gli orari selezionati
     $('#lista-orari').empty()
     $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
@@ -244,18 +231,20 @@ function onCalendarChange(){
     $('#prenota_btn').prop('disabled', true);
     // aggiungo il gestore per dei click sulle giornate
     $(".enabled-date").on('click', function () {
-        removeBlur("#orari")
-        removeBlur("#prenota_btn")
-        removeBlur("#dati_personali")
-        $('#prenota_btn').prop('disabled', false);
-        getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+        if (!$("#lista_dipendenti").prop('disabled')){
+            getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+        } else {
+            $('.day-selected').removeClass('day-selected');
+            $("#errorModalMessage").text("Devi selezionare un servizio");
+            $("#errorModal").modal("show");
+        }
     })
 }
 
 // function to launch when the DOM is loaded
 $(function () {
     let calendar = new Calendar(336, "#bookings-calendar", onCalendarChange, true, false)
-    calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function (){
+    calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function () {
         if ($(this).attr("class").indexOf("left") != -1) {
             calendar.changeMonth('previous');
         } else {

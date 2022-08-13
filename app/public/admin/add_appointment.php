@@ -79,13 +79,14 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                             </div>
                         </div>
                         <?php if ($user->IsAdmin()) { ?>
-                            <div id="scelta_dipendente" class="blur active no-click">
+                            <div id="scelta_dipendente">
                                 <h5 class="card-title mt-2">Scegli un dipendente:</h5>
                                 <select id="lista_dipendenti" class="form-select" disabled="true">
+                                    <option value="-1" selected disabled hidden>Devi selezionare un servizio</option>
                                 </select>
                             </div>
                         <?php } ?>
-                        <div id="info-servizio" class="mt-2 blur active no-click">
+                        <div id="info-servizio" class="mt-2">
                             <span>Durata servizio: </span>
                             <span id="time-lenght"></span>
                             <span>costo servizio: </span>
@@ -96,7 +97,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             </div>
             <!--Calendar-->
             <div class="col-auto calendar-col mt-4">
-                <div id="bookings-calendar" class="calendar blur active no-click">
+                <div id="bookings-calendar" class="calendar">
                     <div class="calendar-header">
                         <i class="icon-chevron fa-solid fa-chevron-left"></i>
                         <h1></h1>
@@ -109,7 +110,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             <!--Orari-->
             <div class="col-12 col-md mt-4">
                 <!--Card servizi-->
-                <div class="card blur active no-click" id="orari">
+                <div class="card" id="orari">
                     <div class="card-header">
                         Orari disponibili:
                     </div>
@@ -120,7 +121,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     </div>
                 </div>
                 <!--Card i tuoi dati-->
-                <div class="card blur active no-click mt-4" id="dati_personali">
+                <div class="card mt-4" id="dati_personali">
                     <div class="card-header">
                         I dati del cliente:
                     </div>
@@ -158,7 +159,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                     <input type="hidden" id="clientCognomePOST" name="clientCognome">
                     <input type="hidden" id="clientEmailPOST" name="clientEmail">
                     <input type="hidden" id="clientPhonePOST" name="clientPhone">
-                    <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100 blur active no-click"
+                    <input type="button" id="prenota_btn" class="btn btn-success mt-4 mb-4 w-100"
                            value="Prenota" disabled>
                 </form>
             </div>
@@ -190,7 +191,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>C'è stato un errore con la prenotazione, riprova</p>
+                <p id="errorModalMessage"></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Chiudi</button>
