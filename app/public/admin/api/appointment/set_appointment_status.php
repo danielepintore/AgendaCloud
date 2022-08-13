@@ -4,11 +4,10 @@ use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged']) {
     // user is logged
     // create user object
     $db = new Database();
-    
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -40,19 +39,19 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                         $body = MailClient::getRejectAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                         $altBody = MailClient::getAltRejectOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                     }
-                    if (!empty($appointment->email)){
-                        MailClient::addMailToQueue($db,"La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
+                    if (!empty($appointment->email)) {
+                        MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
                     }
                     die(0);
                 } catch (Exception $e) {
-                    if (DEBUG){
-                        print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
-                        die(0);
+                    if (DEBUG) {
+                        Debug::printException($e);
                     }
                     $config = Config::getConfig();
-                    $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode();
+                    $body = Debug::getDebugMessage($e);
                     $phpMailer = new MailClient();
                     $phpMailer->sendEmail("There are problems to add mails in the queue", $body, $body, $config->mail->supervisor);
+                    die(0);
                 }
             } else {
                 if (DEBUG) {
@@ -63,11 +62,19 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 die(0);
             }
         } catch (DatabaseException|Exception $e) {
-            print(json_encode(array("error" => true)));
+            if (DEBUG) {
+                Debug::printException($e);
+            } else {
+                print(json_encode(array("error" => true)));
+            }
             die(0);
         }
     } else {
-        print(json_encode(array("error" => true)));
+        if (DEBUG) {
+            print("Something isn't setted up");
+        } else {
+            print(json_encode(array("error" => true)));
+        }
         die(0);
     }
 } else {
