@@ -43,6 +43,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     <script src="../js/jquery.min.js"></script>
     <script src="../js/bootstrap.bundle.min.js"></script>
     <script src="../js/calendar.js"></script>
+    <script src="../js/buttonLoader.js"></script>
     <script src="../js/admin/dashboard.js"></script>
 </head>
 <body>
@@ -96,7 +97,8 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-danger" id="deleteAppointmentBtn" data-bs-dismiss="modal">Si
+                <button type="button" class="btn btn-danger" id="deleteAppointmentBtn"><span
+                            class="ld ld-ring ld-cycle loading-circle d-none"></span> Si
                 </button>
             </div>
         </div>

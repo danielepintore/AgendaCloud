@@ -245,18 +245,26 @@ $(function () {
     today = new Date;
     getAppointments(today.getFullYear() + "-" + (today.getMonth() + 1) + "-" + today.getDate());
     $("#deleteAppointmentBtn").on("click", function () {
-        $.get("/admin/api/appointment/delete_appointment.php", {id: $(this).attr('value')})
-            .done(function (data) {
-                if (!data.error) {
-                    // Non c'è stato un errore
-                    // Reload appointments
-                    getAppointments($(".day-selected").attr("value"));
-                } else {
-                    // c'è stato nessun errore non fare nulla
-                }
-            })
-            .fail(function () {
-                // non fare nulla in modo tale da permettere all'utente di riprovare
-            });
+        let buttonLoader = new ButtonLoader("#deleteAppointmentBtn");
+        let appointmentId = $(this).attr('value');
+        buttonLoader.makeRequest(function () {
+            $.get("/admin/api/appointment/delete_appointment.php", {id: appointmentId})
+                .done(function (data) {
+                    if (!data.error) {
+                        // Non c'è stato un errore
+                        // Reload appointments
+                        getAppointments($(".day-selected").attr("value"));
+                        buttonLoader.hideLoadingAnimation();
+                        $("#deleteModal").modal("hide");
+                    } else {
+                        // c'è stato nessun errore non fare nulla
+                        buttonLoader.hideLoadingAnimation();
+                    }
+                })
+                .fail(function () {
+                    // non fare nulla in modo tale da permettere all'utente di riprovare
+                    buttonLoader.hideLoadingAnimation();
+                });
+        });
     });
 })
