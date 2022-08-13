@@ -4,11 +4,10 @@ use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 4)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged']) {
     // user is logged
     // create user object
     $db = new Database();
-    
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -28,6 +27,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             } else {
                 print(json_encode($slots));
             }
+            die(0);
         } catch (DatabaseException|DateException|SlotException|EmployeeException|Exception $e) {
             if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
