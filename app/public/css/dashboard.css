@@ -22,7 +22,8 @@ body {
     border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
     transition: 400ms;
 }
-.dropdown-item.active{
+
+.dropdown-item.active {
     color: #1e2125;
     background-color: #e9ecef;
 }
@@ -58,7 +59,7 @@ body {
     border-radius: 0.75rem 0.75rem 0.75rem 0.75rem;
     background: white;
     transition: 400ms;
-    color: rgba(0,0,0,.7);
+    color: rgba(0, 0, 0, .7);
     text-align: center;
 }
 
@@ -74,18 +75,21 @@ body {
 }
 
 .custom-toggler {
-    border: 0!important;
+    border: 0 !important;
 }
 
 .custom-toggler:focus {
     box-shadow: none;
 }
-.list-group-item{
+
+.list-group-item {
     cursor: default;
 }
-.delete-appointment{
+
+.delete-appointment {
     cursor: pointer;
 }
-small{
- text-align: end;
+
+small {
+    text-align: end;
 }

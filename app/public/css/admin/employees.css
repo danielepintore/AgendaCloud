@@ -1,47 +1,56 @@
-.mini-buttons{
+.mini-buttons {
     font-size: 1.5rem;
     color: black;
     transition: 400ms;
     cursor: pointer;
 }
-.mini-buttons.positive:hover{
+
+.mini-buttons.positive:hover {
     color: #198754;
     transition: 400ms;
 }
 
-.mini-buttons.negative:hover{
+.mini-buttons.negative:hover {
     color: #dc3545;
     transition: 400ms;
 }
 
-.mini-buttons.neutral:hover{
+.mini-buttons.neutral:hover {
     color: #4d4d4d;
     transition: 400ms;
 }
-.appointment-active{
+
+.appointment-active {
     background-color: #008759 !important;
     color: white !important;
     border-radius: .25rem !important;
 }
-.list-group-item{
+
+.list-group-item {
     cursor: default;
 }
-.delete-user, .edit-user, .working-times{
+
+.delete-user, .edit-user, .working-times {
     cursor: pointer;
 }
+
 .loading-circle {
     vertical-align: sub;
 }
-.name{
+
+.name {
     font-size: 1.4rem;
 }
-.status{
+
+.status {
     vertical-align: text-bottom;
 }
-.noEmployees{
+
+.noEmployees {
     font-size: 1.15rem;
 }
-.day-container{
+
+.day-container {
     display: flex;
     width: fit-content;
     margin-bottom: .5rem;
@@ -51,27 +60,32 @@
     border-radius: .5rem;
 
 }
-.day-selector{
+
+.day-selector {
     padding: .3rem;
     cursor: pointer;
     transition: .3s;
 }
-.day-selector.active{
+
+.day-selector.active {
     background-color: #198754;
     color: white;
 }
-.day-selector.first-day{
+
+.day-selector.first-day {
     border-left: none;
     padding: .3rem;
     border-top-left-radius: .5rem;
     border-bottom-left-radius: .5rem;
 }
-.day-selector.last-day{
+
+.day-selector.last-day {
     border-right: none;
     padding: .3rem;
     border-top-right-radius: .5rem;
     border-bottom-right-radius: .5rem;
 }
-#customWorkTimesTable{
+
+#customWorkTimesTable {
     overflow-x: auto;
 }

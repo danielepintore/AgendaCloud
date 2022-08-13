@@ -16,19 +16,23 @@ label.error {
     border-radius: .75rem .75rem .75rem .75rem;
 }
 
-.captcha-terms { text-align: justify;}
+.captcha-terms {
+    text-align: justify;
+}
+
 a {
     color: #008759;
     text-decoration: none;
 }
 
-a:hover{
+a:hover {
     color: #115938;
 }
 
-.love-footer{
+.love-footer {
     text-align: center;
 }
-.love{
+
+.love {
     color: red;
 }
