@@ -1,7 +1,12 @@
+/**
+ * Given a payment methodId, this function updates its status and then warns the user if the operation is successful or not
+ * @param status
+ * @param paymentMethodId
+ */
 function updatePaymentMethod(status, paymentMethodId) {
     $.get("/admin/api/payment/update_payment_method.php", {paymentMethodId: paymentMethodId, status: status})
         .done(function (data) {
-            if (data.error){
+            if (data.error) {
                 $("#errorAlert").html("Non è stato possibile effettuare l'operazione, contatta l'assistenza");
                 $("#errorAlert").removeClass('d-none');
             } else {
@@ -16,6 +21,9 @@ function updatePaymentMethod(status, paymentMethodId) {
         });
 }
 
+/**
+ * Gets the lists of all available payment methods
+ */
 function getPaymentMethods() {
     $.get("/admin/api/payment/get_payment_methods.php")
         .done(function (data) {
@@ -58,6 +66,9 @@ function getPaymentMethods() {
         });
 }
 
+/**
+ * Main function, it's executed when the DOM is loaded
+ */
 $(function () {
     getPaymentMethods()
 })

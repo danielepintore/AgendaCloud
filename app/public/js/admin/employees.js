@@ -8,8 +8,8 @@ $.validator.addMethod("strong_password", function (value, element) {
     return true;
 });
 
-$.validator.addMethod("time", function(value, element) {
-    if (value === ""){
+$.validator.addMethod("time", function (value, element) {
+    if (value === "") {
         return this.optional(element) || false;
     }
     if (!(/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value))) {
@@ -18,17 +18,19 @@ $.validator.addMethod("time", function(value, element) {
     return true;
 }, "Inserisci un orario corretto");
 
-$.validator.addMethod("timeGreaterThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("timeGreaterThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
         let isGreater = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isGreater = true;
                 continue;
             }
             isGreater = new Date("2000T" + value) > new Date("2000T" + $(params[i]).val());
-            if (!isGreater){
+            if (!isGreater) {
                 return isGreater;
             }
         }
@@ -38,17 +40,19 @@ $.validator.addMethod("timeGreaterThan", function(value, element, params) {
     }
 });
 
-$.validator.addMethod("timeLessThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("timeLessThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
         let isLess = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isLess = true;
                 continue;
             }
             isLess = new Date("2000T" + value) < new Date("2000T" + $(params[i]).val());
-            if (!isLess){
+            if (!isLess) {
                 return isLess;
             }
         }
@@ -58,17 +62,19 @@ $.validator.addMethod("timeLessThan", function(value, element, params) {
     }
 });
 
-$.validator.addMethod("dateEqualOrGreaterThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("dateEqualOrGreaterThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date(value + "T00:00:00.000Z"))) {
         let isGreater = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isGreater = true;
                 continue;
             }
             isGreater = new Date(value + "T00:00:00.000Z") >= new Date($(params[i]).val() + "T00:00:00.000Z");
-            if (!isGreater){
+            if (!isGreater) {
                 return isGreater;
             }
         }
@@ -78,6 +84,10 @@ $.validator.addMethod("dateEqualOrGreaterThan", function(value, element, params)
     }
 });
 
+/**
+ * Gets the employee info from the database and then populates the edit modal
+ * @param employeeId
+ */
 function populateEditModal(employeeId) {
     // clean all the fields
     $("#name-edit").val("");
@@ -109,6 +119,9 @@ function populateEditModal(employeeId) {
         });
 }
 
+/**
+ * Gets an employees list from the api, and then it shows it to the user
+ */
 function getEmployeesList() {
     $.get("/admin/api/employee/get_employees.php")
         .done(function (data) {
@@ -248,7 +261,7 @@ function generateWorkTimesTables(employeeId) {
                         '</tr>');
                     counter++;
                 });
-                $(".deleteCustomWorkTimeBtn").on('click', function (){
+                $(".deleteCustomWorkTimeBtn").on('click', function () {
                     $.get("/admin/api/employee/delete_custom_worktime.php", {id: $(this).attr('value')})
                         .done(function (data) {
                             if (!data.error) {
@@ -273,7 +286,7 @@ function generateWorkTimesTables(employeeId) {
                             className: 'dt-center'
                         }
                     ],
-                    "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"] ]
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"]]
                 });
             }
 
@@ -283,6 +296,9 @@ function generateWorkTimesTables(employeeId) {
         });
 }
 
+/**
+ * Main function, it's executed when the DOM is loaded, it includes all the on-xxx event type
+ */
 $(function () {
     getEmployeesList();
 
@@ -462,7 +478,7 @@ $(function () {
 
     $(".day-selector").on("click", function () {
         $(this).toggleClass("active");
-        if (!$("#workTimeAlert").hasClass('d-none')){
+        if (!$("#workTimeAlert").hasClass('d-none')) {
             $("#workTimeAlert").addClass('d-none');
         }
     });
@@ -496,12 +512,19 @@ $(function () {
             rules: {
                 startTime: {required: true, time: true},
                 endTime: {required: true, time: true, timeGreaterThan: ["#workTime-startTime"]},
-                startBreak: {required: function () {
+                startBreak: {
+                    required: function () {
                         return $("#workTime-endBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-startTime"], timeLessThan: ["#workTime-endTime", "#workTime-endBreak"]},
-                endBreak: {required: function () {
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-startTime"],
+                    timeLessThan: ["#workTime-endTime", "#workTime-endBreak"]
+                },
+                endBreak: {
+                    required: function () {
                         return $("#workTime-startBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-startBreak"], timeLessThan: ["#workTime-endTime"]},
+                    }, time: true, timeGreaterThan: ["#workTime-startBreak"], timeLessThan: ["#workTime-endTime"]
+                },
                 freeDayCheckbox: {required: false},
             },
             messages: {
@@ -511,11 +534,11 @@ $(function () {
                 endBreak: "Inserisci un'ora valida",
             }
         });
-        if (daysSelected.length === 0){
+        if (daysSelected.length === 0) {
             $("#workTimeAlert").removeClass('d-none');
         }
 
-        if ($("#updateWorkTimeForm").valid() && daysSelected.length > 0){
+        if ($("#updateWorkTimeForm").valid() && daysSelected.length > 0) {
             let jsonObject = new Object();
             jsonObject.timeType = "standard";
             jsonObject.userId = $("#editWorkingTimeButton").val();
@@ -569,12 +592,22 @@ $(function () {
                 endCustomDay: {required: true, date: true, dateEqualOrGreaterThan: ["#workTime-startCustomDay"]},
                 customStartTime: {time: true},
                 customEndTime: {time: true, timeGreaterThan: ["#workTime-customStartTime"]},
-                customStartBreak: {required: function () {
+                customStartBreak: {
+                    required: function () {
                         return $("#workTime-customEndBreak").val() != ""
-                    } ,time: true, timeGreaterThan: ["#workTime-customStartTime"], timeLessThan: ["#workTime-customEndTime", "#workTime-customEndBreak"]},
-                customEndBreak: {required: function () {
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-customStartTime"],
+                    timeLessThan: ["#workTime-customEndTime", "#workTime-customEndBreak"]
+                },
+                customEndBreak: {
+                    required: function () {
                         return $("#workTime-customStartBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-customStartBreak"], timeLessThan: ["#workTime-customEndTime"]},
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-customStartBreak"],
+                    timeLessThan: ["#workTime-customEndTime"]
+                },
                 freeDayCheckbox: {required: false},
             },
             messages: {
@@ -590,7 +623,7 @@ $(function () {
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        if ($("#addCustomWorkTimeForm").valid() && startDate >= today){
+        if ($("#addCustomWorkTimeForm").valid() && startDate >= today) {
             let jsonObject = new Object();
             jsonObject.timeType = "custom";
             jsonObject.userId = $("#addCustomWorkingTimeButton").val();
@@ -607,7 +640,7 @@ $(function () {
                 })
                     .done(function (data) {
                         buttonLoader.hideLoadingAnimation();
-                        if (data.warning === "conflict"){
+                        if (data.warning === "conflict") {
                             lastCustomWorkTimeRequest = jsonObject;
                             // show success modal to ask if the user wants to overwrite the current rule
                             $("#conflictWorkTimesModalTitle").html("È stato rilevato un conflitto");
@@ -650,10 +683,10 @@ $(function () {
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        if (!$("#customWorkTimeAlert").hasClass('d-none') && startDate >= today){
+        if (!$("#customWorkTimeAlert").hasClass('d-none') && startDate >= today) {
             $("#customWorkTimeAlert").addClass('d-none');
         }
-        if ($("#customWorkTimeAlert").hasClass('d-none') && startDate < today){
+        if ($("#customWorkTimeAlert").hasClass('d-none') && startDate < today) {
             $("#customWorkTimeAlert").removeClass('d-none');
         }
     });

@@ -1,6 +1,10 @@
 var timeout;
 var miniButtonQueque = 0
 
+/**
+ * Gets the appointment scheduled for a specific date and updates the pending appointment list
+ * @param date
+ */
 function getAppointments(date) {
     if (miniButtonQueque === 0) {
         getPendingAppointments(date)
@@ -63,6 +67,10 @@ function getAppointments(date) {
         });
 }
 
+/**
+ * Updates the list of appointment, and pending appointment if there isn't a pending request
+ * This is called by the calendar when we change the month
+ */
 function updateList() {
     clearTimeout(timeout);
     // aggiungo il gestore per dei click sulle giornate
@@ -73,6 +81,10 @@ function updateList() {
     })
 }
 
+/**
+ * This function gets the pending appointments for a specific date from the database
+ * @param date
+ */
 function getPendingAppointments(date) {
     $.get("/admin/api/appointment/get_pending_appointments.php", {date: date})
         .done(function (data) {
@@ -117,6 +129,9 @@ function getPendingAppointments(date) {
         });
 }
 
+/**
+ * This function sets the pending button handlers
+ */
 function setPendingButtons() {
     $('.mini-buttons.positive').on('click', function () {
         miniButtonQueque++;
@@ -202,7 +217,9 @@ function setPendingButtons() {
     })
 }
 
-// function to launch when the DOM is loaded
+/**
+ * Main function, it's executed when the DOM is loaded
+ */
 $(function () {
     let width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
     if (width < 380) {

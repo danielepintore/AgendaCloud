@@ -32,8 +32,8 @@ $.fn.extend({
         });
     }
 });
-$.validator.addMethod("time", function(value, element) {
-    if (value === ""){
+$.validator.addMethod("time", function (value, element) {
+    if (value === "") {
         return this.optional(element) || false;
     }
     if (!(/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value))) {
@@ -42,17 +42,19 @@ $.validator.addMethod("time", function(value, element) {
     return true;
 }, "Inserisci un orario corretto");
 
-$.validator.addMethod("timeGreaterThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("timeGreaterThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
         let isGreater = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isGreater = true;
                 continue;
             }
             isGreater = new Date("2000T" + value) > new Date("2000T" + $(params[i]).val());
-            if (!isGreater){
+            if (!isGreater) {
                 return isGreater;
             }
         }
@@ -62,17 +64,19 @@ $.validator.addMethod("timeGreaterThan", function(value, element, params) {
     }
 });
 
-$.validator.addMethod("timeLessThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("timeLessThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
         let isLess = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isLess = true;
                 continue;
             }
             isLess = new Date("2000T" + value) < new Date("2000T" + $(params[i]).val());
-            if (!isLess){
+            if (!isLess) {
                 return isLess;
             }
         }
@@ -82,17 +86,19 @@ $.validator.addMethod("timeLessThan", function(value, element, params) {
     }
 });
 
-$.validator.addMethod("dateEqualOrGreaterThan", function(value, element, params) {
-    if (value === "") { return this.optional(element) }
+$.validator.addMethod("dateEqualOrGreaterThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
     if (!/Invalid|NaN/.test(new Date(value + "T00:00:00.000Z"))) {
         let isGreater = false;
         for (let i = 0; i < params.length; i++) {
-            if ($(params[i]).val() === ""){
+            if ($(params[i]).val() === "") {
                 isGreater = true;
                 continue;
             }
             isGreater = new Date(value + "T00:00:00.000Z") >= new Date($(params[i]).val() + "T00:00:00.000Z");
-            if (!isGreater){
+            if (!isGreater) {
                 return isGreater;
             }
         }
@@ -203,7 +209,7 @@ function getEmployeesList(serviceId) {
 
 /**
  * @param serviceId
- * Populate the edit modal and enables the confirm edit button
+ * Fetch service info and populate the edit modal
  */
 function populateEditModal(serviceId) {
     $("#service-name-edit").val("");
@@ -232,7 +238,7 @@ function populateEditModal(serviceId) {
 }
 
 /**
- * Gets the list of all services
+ * Gets the list of all services and diplay them
  */
 function getServicesList() {
     $.get("/admin/api/service/get_services.php")
@@ -321,6 +327,10 @@ function getServicesList() {
         });
 }
 
+/**
+ * This function generates the worktime table, the table that contains all the information of the working times of a service
+ * @param serviceId
+ */
 function generateServiceWorkTimesTable(serviceId) {
     $.get('/admin/api/service/get_working_times.php', {serviceId: serviceId})
         .done(function (data) {
@@ -377,7 +387,7 @@ function generateServiceWorkTimesTable(serviceId) {
                         '</tr>');
                     counter++;
                 });
-                $(".deleteCustomServiceWorkTimeBtn").on('click', function (){
+                $(".deleteCustomServiceWorkTimeBtn").on('click', function () {
                     $.get("/admin/api/service/delete_custom_worktime.php", {id: $(this).attr('value')})
                         .done(function (data) {
                             if (!data.error) {
@@ -402,7 +412,7 @@ function generateServiceWorkTimesTable(serviceId) {
                             className: 'dt-center'
                         }
                     ],
-                    "lengthMenu": [ [5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"] ]
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Tutti"]]
                 });
             }
 
@@ -412,7 +422,9 @@ function generateServiceWorkTimesTable(serviceId) {
         });
 }
 
-// function to launch when the DOM is loaded
+/**
+ * Main function, it's executed when the DOM is loaded, it includes all the on-xxx event type
+ */
 $(function () {
     getServicesList();
 
@@ -631,7 +643,7 @@ $(function () {
 
     $(".day-selector").on("click", function () {
         $(this).toggleClass("active");
-        if (!$("#workTimeServiceAlert").hasClass('d-none')){
+        if (!$("#workTimeServiceAlert").hasClass('d-none')) {
             $("#workTimeServiceAlert").addClass('d-none');
         }
     });
@@ -665,12 +677,22 @@ $(function () {
             rules: {
                 serviceStartTime: {required: true, time: true},
                 serviceEndTime: {required: true, time: true, timeGreaterThan: ["#workTime-serviceStartTime"]},
-                serviceStartBreak: {required: function () {
+                serviceStartBreak: {
+                    required: function () {
                         return $("#workTime-serviceEndBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-serviceStartTime"], timeLessThan: ["#workTime-serviceEndTime", "#workTime-serviceEndBreak"]},
-                serviceEndBreak: {required: function () {
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-serviceStartTime"],
+                    timeLessThan: ["#workTime-serviceEndTime", "#workTime-serviceEndBreak"]
+                },
+                serviceEndBreak: {
+                    required: function () {
                         return $("#workTime-serviceStartBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-serviceStartBreak"], timeLessThan: ["#workTime-serviceEndTime"]},
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-serviceStartBreak"],
+                    timeLessThan: ["#workTime-serviceEndTime"]
+                },
                 closeDayCheckbox: {required: false},
             },
             messages: {
@@ -680,11 +702,11 @@ $(function () {
                 serviceEndBreak: "Inserisci un'ora valida",
             }
         });
-        if (daysSelected.length === 0){
+        if (daysSelected.length === 0) {
             $("#workTimeServiceAlert").removeClass('d-none');
         }
 
-        if ($("#updateServiceWorkTimeForm").valid() && daysSelected.length > 0){
+        if ($("#updateServiceWorkTimeForm").valid() && daysSelected.length > 0) {
             let jsonObject = new Object();
             jsonObject.timeType = "standard";
             jsonObject.serviceId = $("#editServiceWorkingTimeButton").val();
@@ -735,15 +757,29 @@ $(function () {
         $("#addCustomServiceWorkTimeForm").validate({
             rules: {
                 startServiceCustomDay: {required: true, date: true},
-                endServiceCustomDay: {required: true, date: true, dateEqualOrGreaterThan: ["#workTime-startServiceCustomDay"]},
+                endServiceCustomDay: {
+                    required: true,
+                    date: true,
+                    dateEqualOrGreaterThan: ["#workTime-startServiceCustomDay"]
+                },
                 serviceCustomStartTime: {time: true},
                 serviceCustomEndTime: {time: true, timeGreaterThan: ["#workTime-customServiceStartTime"]},
-                serviceCustomStartBreak: {required: function () {
+                serviceCustomStartBreak: {
+                    required: function () {
                         return $("#workTime-customServiceEndBreak").val() != ""
-                    } ,time: true, timeGreaterThan: ["#workTime-customServiceStartTime"], timeLessThan: ["#workTime-customServiceEndTime", "#workTime-customServiceEndBreak"]},
-                serviceCustomEndBreak: {required: function () {
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-customServiceStartTime"],
+                    timeLessThan: ["#workTime-customServiceEndTime", "#workTime-customServiceEndBreak"]
+                },
+                serviceCustomEndBreak: {
+                    required: function () {
                         return $("#workTime-customServiceStartBreak").val() != ""
-                    }, time: true, timeGreaterThan: ["#workTime-customServiceStartBreak"], timeLessThan: ["#workTime-customServiceEndTime"]},
+                    },
+                    time: true,
+                    timeGreaterThan: ["#workTime-customServiceStartBreak"],
+                    timeLessThan: ["#workTime-customServiceEndTime"]
+                },
                 closeDayCustomCheckbox: {required: false},
             },
             messages: {
@@ -761,7 +797,7 @@ $(function () {
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        if ($("#addCustomServiceWorkTimeForm").valid() && startDate >= today){
+        if ($("#addCustomServiceWorkTimeForm").valid() && startDate >= today) {
             let jsonObject = new Object();
             jsonObject.timeType = "custom";
             jsonObject.serviceId = $("#addCustomServiceWorkingTimeButton").val();
@@ -778,7 +814,7 @@ $(function () {
                 })
                     .done(function (data) {
                         buttonLoader.hideLoadingAnimation();
-                        if (data.warning === "conflict"){
+                        if (data.warning === "conflict") {
                             lastCustomWorkTimeRequest = jsonObject;
                             // show success modal to ask if the user wants to overwrite the current rule
                             $("#conflictWorkTimesModalTitle").html("È stato rilevato un conflitto");
@@ -821,10 +857,10 @@ $(function () {
         today.setMinutes(0);
         today.setSeconds(0);
         today.setMilliseconds(0);
-        if (!$("#customServiceWorkTimeAlert").hasClass('d-none') && startDate >= today){
+        if (!$("#customServiceWorkTimeAlert").hasClass('d-none') && startDate >= today) {
             $("#customServiceWorkTimeAlert").addClass('d-none');
         }
-        if ($("#customServiceWorkTimeAlert").hasClass('d-none') && startDate < today){
+        if ($("#customServiceWorkTimeAlert").hasClass('d-none') && startDate < today) {
             $("#customServiceWorkTimeAlert").removeClass('d-none');
         }
     });

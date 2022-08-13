@@ -86,11 +86,10 @@ function loadServices() {
     })
 }
 
-function submitForm() {
-    //start form
-    $("#paymentForm").trigger('submit');
-}
-
+/**
+ * Get the information of a service using its identifier
+ * @param serviceId
+ */
 function getSelectedServiceInfo(serviceId) {
     $.get("/api/get_service_info.php", {serviceId: serviceId})
         .done(function (data) {
@@ -139,24 +138,12 @@ function getSelectedServiceInfo(serviceId) {
         });
 }
 
-function removeBlur(element) {
-    // remove blur once the day is selected
-    if ($(element).hasClass("active")) {
-        $(element).removeClass("active")
-        $(element).removeClass("no-click")
-    }
-}
-
-function addBlur(element) {
-    // remove blur once the day is selected
-    if ($(element).hasClass("blur") && $(element).hasClass("active")) {
-    } else if ($(element).hasClass("blur")) {
-        $(element).addClass("active")
-        $(element).addClass("no-click")
-    }
-}
-
-// This function generates the slots
+/**
+ * Gets the available slots of the employee identified by the id, for a specific service on a specific day
+ * @param date
+ * @param serviceId
+ * @param employeeId
+ */
 function getTimeSlots(date, serviceId, employeeId) {
     $('#lista-orari').prop('disabled', true);
     $.get("api/get_slots.php", {date: date, serviceId: serviceId, employeeId: employeeId})
@@ -180,6 +167,9 @@ function getTimeSlots(date, serviceId, employeeId) {
         });
 }
 
+/**
+ * This function handles what should happen when we change the calendar page
+ */
 function onCalendarChange() {
     // rimuovo gli orari selezionati
     $('#lista-orari').empty()
@@ -189,7 +179,7 @@ function onCalendarChange() {
     $('#prenota_btn').prop('disabled', true);
     // aggiungo il gestore per dei click sulle giornate
     $(".enabled-date").on('click', function () {
-        if (!$("#lista_dipendenti").prop('disabled')){
+        if (!$("#lista_dipendenti").prop('disabled')) {
             getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val());
         } else {
             $('.day-selected').removeClass('day-selected');
@@ -199,7 +189,9 @@ function onCalendarChange() {
     })
 }
 
-// function to launch when the DOM is loaded
+/**
+ * Main function, it's executed when the DOM is loaded
+ */
 $(function () {
     let calendar = new Calendar(336, "#bookings-calendar", onCalendarChange, true, false)
     calendar.getHeader.find('i[class^="icon-chevron"]').on('click', function () {

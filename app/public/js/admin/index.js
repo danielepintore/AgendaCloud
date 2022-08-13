@@ -1,8 +1,8 @@
-function submitForm(){
-    $("#form_login").trigger("submit");
-}
+/**
+ * Main function, it's executed when the DOM is loaded
+ */
 $(function () {
-    $("#login-btn").on("click", function (){
+    $("#login-btn").on("click", function () {
         $("#form_login").validate({
             rules: {
                 username: {required: true, minlength: 3},
@@ -12,7 +12,7 @@ $(function () {
                 username: "Per favore inserisci il tuo username",
                 pwd: "Per favore inserisci la tua password",
             },
-            errorPlacement: function(error, element) {
+            errorPlacement: function (error, element) {
                 var placement = $(element).data('error');
                 if (placement) {
                     $(placement).append(error);

@@ -1,3 +1,6 @@
+/**
+ * This class manages the loading icon when a button is clicked
+ */
 class ButtonLoader {
     #buttonId;
     #loadingSpan
@@ -7,7 +10,7 @@ class ButtonLoader {
     constructor(buttonId, hasIcon = false) {
         this.#buttonId = buttonId;
         this.#hasIcon = hasIcon;
-        if (hasIcon){
+        if (hasIcon) {
             this.#icon = $(this.#buttonId).find('i[class*="fa-solid"]');
             this.#loadingSpan = $(this.#buttonId).find('span[class*="loading-circle"]');
         } else {
@@ -15,20 +18,21 @@ class ButtonLoader {
         }
     }
 
-    showLoadingAnimation(){
+    showLoadingAnimation() {
         this.#loadingSpan.removeClass("d-none");
-        if (this.#hasIcon){
+        if (this.#hasIcon) {
             this.#icon.addClass("d-none");
         }
     }
 
-    hideLoadingAnimation(){
+    hideLoadingAnimation() {
         this.#loadingSpan.addClass("d-none");
-        if (this.#hasIcon){
+        if (this.#hasIcon) {
             this.#icon.removeClass("d-none");
         }
     }
-    makeRequest(callback){
+
+    makeRequest(callback) {
         this.showLoadingAnimation();
         // make request
         callback();

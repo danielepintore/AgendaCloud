@@ -42,16 +42,16 @@ class Calendar {
         return this.#header;
     }
 
-    changeMonth(action){
-        if (action == "next"){
+    changeMonth(action) {
+        if (action == "next") {
             this.#month = this.#month + 1;
-            if (this.#month > 12){
+            if (this.#month > 12) {
                 this.#month = 1;
                 this.#year = this.#year + 1;
             }
         } else {
             this.#month = this.#month - 1;
-            if (this.#month < 1){
+            if (this.#month < 1) {
                 this.#month = 12;
                 this.#year = this.#year - 1;
             }
