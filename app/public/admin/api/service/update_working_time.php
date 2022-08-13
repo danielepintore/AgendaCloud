@@ -8,7 +8,6 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     // user is logged
     // create user object
     $db = new Database();
-
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -30,11 +29,10 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     !empty($data->endDay) && is_string($data->endDay) && !empty($data->serviceId) && is_string($data->serviceId) && is_bool($data->freeDay))) {
                     if (DEBUG) {
                         print("Something isn't setted up");
-                        die(0);
                     } else {
                         print(json_encode(array("error" => true)));
-                        die(0);
                     }
+                    die(0);
                 }
             } else {
                 if (!(!empty($data->timeType) && is_string($data->timeType) && isset($data->startTime) && is_string($data->startTime) &&
@@ -42,11 +40,10 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     isset($data->endBreak) && is_string($data->endBreak) && !empty($data->serviceId) && is_string($data->serviceId) && is_bool($data->freeDay))) {
                     if (DEBUG) {
                         print("Something isn't setted up");
-                        die(0);
                     } else {
                         print(json_encode(array("error" => true)));
-                        die(0);
                     }
+                    die(0);
                 }
             }
             if (isset($_POST["method"]) && !is_null($_POST["method"]) && is_string($_POST["method"]) && $_POST["method"] == "OVERRIDE") {
@@ -57,25 +54,31 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
             // se non ci sono stati errori fornisci la risposta
             if (!empty($update["warning"]) && $update["warning"] === "conflict") {
                 print(json_encode(array("warning" => "conflict")));
+                die(0);
             } elseif ($update) {
                 print(json_encode(array("error" => false)));
+                die(0);
+            } else {
+                print(json_encode(array("error" => true)));
+                die(0);
+            }
+        } catch
+        (DatabaseException|Exception $e) {
+            if (DEBUG) {
+                Debug::printException($e);
             } else {
                 print(json_encode(array("error" => true)));
             }
+            die(0);
         }
-catch
-    (DatabaseException | Exception $e) {
-        if (DEBUG) {
-            Debug::printException($e);
+    } else {
+        if (DEBUG){
+            print("Something isn't setted up or the json is invalid");
         } else {
             print(json_encode(array("error" => true)));
         }
-    die(0);
-}
-    } else {
-    print(json_encode(array("error" => true)));
-    die(0);
-}
+        die(0);
+    }
 } else {
     // user isn't logged
     // display error

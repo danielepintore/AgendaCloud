@@ -4,11 +4,10 @@ use Admin\User;
 
 require_once(realpath(dirname(__FILE__, 5)) . '/src/Api/loader.php');
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
-    
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -42,6 +41,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             } else {
                 print(json_encode(array("error" => true)));
             }
+            die(0);
         } catch (DatabaseException|Exception $e) {
             if (DEBUG) {
                 Debug::printException($e);
@@ -51,7 +51,11 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
             die(0);
         }
     } else {
-        print(json_encode(array("error" => true)));
+        if (DEBUG) {
+            print("Something isn't setted up");
+        } else {
+            print(json_encode(array("error" => true)));
+        }
         die(0);
     }
 } else {
