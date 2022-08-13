@@ -87,6 +87,14 @@ function loadServices() {
 }
 
 /**
+ * Function called after captcha verification
+ */
+function submitForm(){
+    //start form
+    $("#paymentForm").trigger('submit');
+}
+
+/**
  * Get the information of a service using its identifier
  * @param serviceId
  */
