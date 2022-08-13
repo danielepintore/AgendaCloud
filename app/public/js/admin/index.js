@@ -28,3 +28,10 @@ $(function () {
         }
     })
 })
+
+/**
+ * This function is called after the captcha verification
+ */
+function submitForm(){
+    $("#form_login").trigger("submit");
+}
