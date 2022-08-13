@@ -40,11 +40,14 @@ if ($event->type == 'checkout.session.completed') {
         $body = MailClient::getConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
         $altBody = MailClient::getAltConfirmAppointmentMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
         MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $session->customer_details->email, $appointment->name);
-    } catch (DatabaseException | Exception $e) {
+    } catch (DatabaseException|Exception $e) {
         // send email to supervisor if there are any problems
         $body = $e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode() . "\n" . $session;
-        MailClient::addMailToQueue($db, "There are problems sending emails to customers", $body, $body, $config->mail->supervisor);
+        try {
+            MailClient::addMailToQueue($db, "There are problems sending emails to customers", $body, $body, $config->mail->supervisor);
+        } catch (DatabaseException $e) {
+        }
     }
 }
 http_response_code(200);
-exit();
+exit(0);

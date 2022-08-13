@@ -7,11 +7,14 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
         $session = new Session($config->stripe->secret_api_key);
         $customer = $session->getCustomerData($_GET["sessionId"]);
         $method = CREDIT_CARD;
-    } catch (PaymentException | Exception $e) {
-        if (DEBUG){
+    } catch (PaymentException|Exception $e) {
+        if (DEBUG) {
             Debug::printException($e);
+            exit(0);
         }
-        $method = CASH;
+        header("HTTP/1.1 303 See Other");
+        header("Location: " . '/error.php');
+        exit(0);
     }
 } elseif (isset($_GET['paymentMethod']) && $_GET['paymentMethod'] == CASH) {
     $method = CASH;
@@ -23,7 +26,7 @@ if (isset($_GET["sessionId"]) && isset($_GET['paymentMethod']) && $_GET['payment
 ?>
 <html>
 <head>
-    <title><?php print("Conferma dell'appuntamento - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Conferma dell'appuntamento - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">

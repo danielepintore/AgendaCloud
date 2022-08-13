@@ -9,8 +9,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     isset($_POST['clientPhone']) && isset($_POST['paymentMethod']) && is_numeric($_POST['paymentMethod']) &&
     isset($_POST['h-captcha-response']) && !empty($_POST['h-captcha-response'])) {
 
-    //check if recaptcha is valid
-    if (!Captcha::isSuccess($_POST['h-captcha-response'])){
+    //check if captcha is valid
+    if (!Captcha::isSuccess($_POST['h-captcha-response'])) {
         header("HTTP/1.1 303 See Other");
         header("Location: /index.php");
         die(0);
@@ -18,8 +18,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     // the first thing to do is to check if the date is valid
     try {
         DateCheck::isValidDate($_POST['date']);
-    } catch (DateException | Exception $e) {
-        if (DEBUG){
+    } catch (DateException|Exception $e) {
+        if (DEBUG) {
             print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
         } else {
             header("HTTP/1.1 303 See Other");
@@ -29,11 +29,11 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     }
     $client = new Client($_POST['clientNome'], $_POST['clientCognome'], $_POST['clientEmail'], $_POST['clientPhone']);
     $db = new Database();
-    
+
     try {
-        $service = new Service($db,$_POST['serviceId']);
-    } catch (DatabaseException | Exception $e) {
-        if (DEBUG){
+        $service = new Service($db, $_POST['serviceId']);
+    } catch (DatabaseException|Exception $e) {
+        if (DEBUG) {
             Debug::printException($e);
         } else {
             header("HTTP/1.1 303 See Other");
@@ -44,7 +44,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     // we need to check if the selected payment method is cash or credit cart
     if (Payment::isAValidMethod($db, $_POST['paymentMethod']) && Payment::isCashSelected($_POST['paymentMethod'])) {
         // valid payment method, cash selected
-        // now we need to make the appointment as booked
+        // now we need to make the appointment booked
         $appointment = new Appointment($db, $_POST['serviceId'], $_POST['employeeId'], $_POST['date'], $_POST['slot'], $client, "", $_POST['paymentMethod'], WAITING_APPROVAL);
         try {
             // make the reservation
@@ -55,8 +55,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             header("HTTP/1.1 303 See Other");
             header("Location: " . $config->urls->baseUrl . "/payment/success.php?paymentMethod=" . $_POST['paymentMethod']);
             die(0);
-        } catch (DatabaseException | SlotException | Exception $e) {
-            if (DEBUG){
+        } catch (DatabaseException|SlotException|Exception $e) {
+            if (DEBUG) {
                 print($e->getMessage() . ": " . $e->getFile() . ":" . $e->getLine() . "\n" . $e->getTraceAsString() . "\n" . $e->getCode());
             } else {
                 header("HTTP/1.1 303 See Other");
@@ -67,10 +67,16 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
     } elseif (Payment::isAValidMethod($db, $_POST['paymentMethod'])) {
         // valid payment method, credit card selected
         // check price
-        if ($service->getCost() * 100 < 50) {
-            $price = 50;
-        } else {
-            $price = $service->getCost() * 100;
+        try {
+            if ($service->getCost() * 100 < 50) {
+                $price = 50;
+            } else {
+                $price = $service->getCost() * 100;
+            }
+        } catch (ServiceException $e) {
+            header("HTTP/1.1 303 See Other");
+            header("Location: /error.php");
+            die(0);
         }
         // This is a public sample test API key.
         // Don’t submit any personally identifiable information in requests made with this key.
@@ -137,8 +143,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
                     'cancel_url' => $domain,
                 ]);
             }
-        } catch (Exception $e){
-            if (DEBUG){
+        } catch (Exception $e) {
+            if (DEBUG) {
                 Debug::printException($e);
             } else {
                 header("HTTP/1.1 303 See Other");
@@ -156,8 +162,8 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
             header("HTTP/1.1 303 See Other");
             header("Location: " . $checkout_session->url);
             die(0);
-        } catch (DatabaseException | SlotException | Exception $e) {
-            if (DEBUG){
+        } catch (DatabaseException|SlotException|Exception $e) {
+            if (DEBUG) {
                 Debug::printException($e);
             } else {
                 header("HTTP/1.1 303 See Other");
@@ -167,7 +173,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         }
     } else {
         // invalid payment method, quit
-        if (DEBUG){
+        if (DEBUG) {
             print('invalid payment method, quit');
         } else {
             header("HTTP/1.1 303 See Other");
@@ -176,7 +182,7 @@ if (isset($_POST['serviceId']) && is_numeric($_POST['serviceId']) && isset($_POS
         die(0);
     }
 } else {
-    if (DEBUG){
+    if (DEBUG) {
         print("something isn't set");
     } else {
         header("HTTP/1.1 303 See Other");
