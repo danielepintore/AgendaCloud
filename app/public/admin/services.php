@@ -9,7 +9,6 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     // user is logged
     // create user object
     $db = new Database();
-
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -21,6 +20,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
     // redirect to login page
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
+    die(0);
 }
 ?>
 <!DOCTYPE html>
@@ -301,7 +301,8 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     <div id="serviceWorkTimesTab">
                         <ul class="nav nav-tabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#defaultServiceWorkTimes"
+                                <button class="nav-link active" data-bs-toggle="tab"
+                                        data-bs-target="#defaultServiceWorkTimes"
                                         type="button" role="tab" aria-controls="Orari standard" aria-selected="true">
                                     Orari standard
                                 </button>
@@ -317,14 +318,16 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             <div class="tab-pane fade show active" id="defaultServiceWorkTimes" role="tabpanel"
                                  aria-labelledby="defaultServiceWorkTimes">
                                 <div id="defaultServiceWorkTimesTable" class="mb-2"></div>
-                                <button id="showModalEditServiceWorkingTimeBtn" type="button" class="btn btn-success w-100"><i
+                                <button id="showModalEditServiceWorkingTimeBtn" type="button"
+                                        class="btn btn-success w-100"><i
                                             class="fa-solid fa-pen"></i> Modifica orari
                                 </button>
                             </div>
                             <div class="tab-pane fade" id="customServiceWorkTimes" role="tabpanel"
                                  aria-labelledby="customServiceWorkTimes">
                                 <div id="customServiceWorkTimesTable" class="mb-2 mt-2"></div>
-                                <button id="showModalCustomAddServiceWorkingTimeBtn" type="button" class="btn btn-success w-100 mt-2"><i
+                                <button id="showModalCustomAddServiceWorkingTimeBtn" type="button"
+                                        class="btn btn-success w-100 mt-2"><i
                                             class="fa-solid fa-plus"></i> Aggiungi orari
                                 </button>
                             </div>
@@ -358,21 +361,27 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     </div>
                     <form id="updateServiceWorkTimeForm">
                         <h6>Orario inizio lavoro:</h6>
-                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-serviceStartTime" name="serviceStartTime">
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-serviceStartTime"
+                               name="serviceStartTime">
                         <h6>Orario fine lavoro:</h6>
-                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-serviceEndTime" name="serviceEndTime">
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-serviceEndTime"
+                               name="serviceEndTime">
                         <h6>Orario inizio pausa:</h6>
-                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-serviceStartBreak" name="serviceStartBreak">
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-serviceStartBreak"
+                               name="serviceStartBreak">
                         <h6>Orario fine pausa:</h6>
-                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-serviceEndBreak" name="serviceEndBreak">
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-serviceEndBreak"
+                               name="serviceEndBreak">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="close-day-checkbox" name="closeDayCheckbox">
+                            <input class="form-check-input" type="checkbox" value="" id="close-day-checkbox"
+                                   name="closeDayCheckbox">
                             <label class="form-check-label">
                                 Giorno di chiusura
                             </label>
                         </div>
                     </form>
-                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeServiceAlert" role="alert">
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="workTimeServiceAlert"
+                         role="alert">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         <div>
                             Devi selezionare dei giorni dalla barra qui sopra!
@@ -400,25 +409,33 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <div class="modal-body">
                     <form id="addCustomServiceWorkTimeForm">
                         <h6>Data inizio:</h6>
-                        <input type="date" class="form-control mb-2" id="workTime-startServiceCustomDay" name="startServiceCustomDay">
+                        <input type="date" class="form-control mb-2" id="workTime-startServiceCustomDay"
+                               name="startServiceCustomDay">
                         <h6>Data fine:</h6>
-                        <input type="date" class="form-control mb-2" id="workTime-endServiceCustomDay" name="endServiceCustomDay">
+                        <input type="date" class="form-control mb-2" id="workTime-endServiceCustomDay"
+                               name="endServiceCustomDay">
                         <h6>Orario inizio lavoro:</h6>
-                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-customServiceStartTime" name="serviceCustomStartTime">
+                        <input type="time" value="08:00" class="form-control mb-2" id="workTime-customServiceStartTime"
+                               name="serviceCustomStartTime">
                         <h6>Orario fine lavoro:</h6>
-                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-customServiceEndTime" name="serviceCustomEndTime">
+                        <input type="time" value="17:00" class="form-control mb-2" id="workTime-customServiceEndTime"
+                               name="serviceCustomEndTime">
                         <h6>Orario inizio pausa:</h6>
-                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-customServiceStartBreak" name="serviceCustomStartBreak">
+                        <input type="time" value="13:00" class="form-control mb-2" id="workTime-customServiceStartBreak"
+                               name="serviceCustomStartBreak">
                         <h6>Orario fine pausa:</h6>
-                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-customServiceEndBreak" name="serviceCustomEndBreak">
+                        <input type="time" value="15:00" class="form-control mb-2" id="workTime-customServiceEndBreak"
+                               name="serviceCustomEndBreak">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="close-day-custom-checkbox" name="closeDayCustomCheckbox">
+                            <input class="form-check-input" type="checkbox" value="" id="close-day-custom-checkbox"
+                                   name="closeDayCustomCheckbox">
                             <label class="form-check-label">
                                 Giorno libero
                             </label>
                         </div>
                     </form>
-                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none" id="customServiceWorkTimeAlert" role="alert">
+                    <div class="alert alert-danger d-flex align-items-center mt-2 mb-0 d-none"
+                         id="customServiceWorkTimeAlert" role="alert">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>
                         <div>
                             Devi selezionare un giorno che non sia già passato!

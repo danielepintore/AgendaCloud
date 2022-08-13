@@ -5,11 +5,10 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged'] && $_SESSION['isAdmin']) {
     // user is logged
     // create user object
     $db = new Database();
-
     $user = new User($db);
     // check if user still exist in the database and is in active status
     if (!$user->exist() || !$user->isActive()) {
@@ -21,6 +20,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
     // redirect to login page
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
+    die(0);
 }
 ?>
 <!DOCTYPE html>

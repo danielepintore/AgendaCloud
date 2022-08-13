@@ -19,41 +19,42 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
             // make the query to check if the user exists
             $sql = "SELECT id, Username, Password, UserType FROM Dipendente WHERE (Username = ? AND isActive = TRUE)";
             $status = $db->query($sql, "s", $_POST['username']);
-            if ($status) {
-                // check the number of results
-                $result = $db->getResult();
-                if ($db->getAffectedRows() > 0) {
-                    $result = $result[0];
-                    // user exists
-                    if (password_verify($_POST['pwd'], $result['Password'])) {
-                        // correct credentials
-                        session_start();
-                        $_SESSION['logged'] = 1;
-                        $_SESSION['userId'] = $result['id'];
-                        $_SESSION['username'] = $result['Username'];
-                        if ($result['UserType'] == ADMIN_USER) {
-                            $_SESSION['isAdmin'] = 1;
-                        } else {
-                            $_SESSION['isAdmin'] = 0;
-                        }
-                        // redirect to dashboard
-                        header("HTTP/1.1 303 See Other");
-                        header("Location: /admin/dashboard.php");
+            if (!$status) {
+                throw DatabaseException::queryExecutionFailed();
+            }
+            // check the number of results
+            $result = $db->getResult();
+            if ($db->getAffectedRows() > 0) {
+                $result = $result[0];
+                // user exists
+                if (password_verify($_POST['pwd'], $result['Password'])) {
+                    // correct credentials
+                    session_start();
+                    $_SESSION['logged'] = 1;
+                    $_SESSION['userId'] = $result['id'];
+                    $_SESSION['username'] = $result['Username'];
+                    if ($result['UserType'] == ADMIN_USER) {
+                        $_SESSION['isAdmin'] = 1;
                     } else {
-                        // wrong credentials
-                        $credentialError = "wrongPwdOrUser";
+                        $_SESSION['isAdmin'] = 0;
                     }
+                    // redirect to dashboard
+                    header("HTTP/1.1 303 See Other");
+                    header("Location: /admin/dashboard.php");
+                    die(0);
                 } else {
-                    // no user is found
-                    $credentialError = "userNotFound";
+                    // wrong credentials
+                    $credentialError = "wrongPwdOrUser";
                 }
             } else {
-                throw DatabaseException::queryExecutionFailed();
+                // no user is found
+                $credentialError = "userNotFound";
             }
         }
     } catch (DatabaseException $e) {
         header("HTTP/1.1 303 See Other");
         header("Location: /error.php");
+        die(0);
     }
 } elseif (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged']) {
     $db = new Database();
@@ -63,6 +64,7 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
         if (!$user->exist() || !$user->isActive()) {
             header("HTTP/1.1 303 See Other");
             header("Location: /admin/logout.php");
+            die(0);
         }
     } catch (DatabaseException|Exception $e) {
         if (DEBUG) {
@@ -71,9 +73,11 @@ if (isset($_POST['username']) && !empty($_POST['username']) && isset($_POST['pwd
             header("HTTP/1.1 303 See Other");
             header("Location: /admin/logout.php");
         }
+        die(0);
     }
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/dashboard.php");
+    die(0);
 }
 // otherwise, let display the login page
 $displayError = false;

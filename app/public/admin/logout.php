@@ -15,4 +15,5 @@ session_destroy();
 // Redirect to login page
 header("HTTP/1.1 303 See Other");
 header("Location: /admin/index.php");
+die(0);
 ?>

@@ -5,28 +5,29 @@ use Admin\User;
 require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
 $config = Config::getConfig();
 session_start();
-if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_SESSION['logged']) {
+if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SESSION['logged']) {
     // user is logged
     // create user object
     $db = new Database();
-    
     $user = new User($db);
     // check if user still exist in the database and is in active status and is in active status
-    if (!$user->exist() || !$user->isActive()){
+    if (!$user->exist() || !$user->isActive()) {
         header("HTTP/1.1 303 See Other");
         header("Location: /admin/logout.php");
+        die(0);
     }
 } else {
     // user isn't logged
     // redirect to login page
     header("HTTP/1.1 303 See Other");
     header("Location: /admin/index.php");
+    die(0);
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?php print("Dashboard - ".$config->company->name." - AgendaCloud");?></title>
+    <title><?php print("Dashboard - " . $config->company->name . " - AgendaCloud"); ?></title>
     <link rel="apple-touch-icon" sizes="180x180" href="../img/favicon/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon/favicon-16x16.png">
@@ -46,7 +47,7 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
 </head>
 <body>
 <div class="container">
-    <?php Navbar::printNavBar($user, DASHBOARD);?>
+    <?php Navbar::printNavBar($user, DASHBOARD); ?>
     <div class="row">
         <!--Calendar-->
         <div class="col-sm-12 col-md-7 col-lg-6 col-xl-5 col-xxl-5 mt-2 mb-2">
@@ -90,11 +91,13 @@ if (session_status() == PHP_SESSION_ACTIVE &&  isset($_SESSION['logged']) && $_S
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>Vuoi cancellare la prenotazione?<br>(Ricordati che se il cliente ha pagato con la carta di credito devi emettere un riborso da <a href="https://stripe.com">Stripe</a>)</p>
+                <p>Vuoi cancellare la prenotazione?<br>(Ricordati che se il cliente ha pagato con la carta di credito
+                    devi emettere un riborso da <a href="https://stripe.com">Stripe</a>)</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-danger" id="deleteAppointmentBtn" data-bs-dismiss="modal">Si</button>
+                <button type="button" class="btn btn-danger" id="deleteAppointmentBtn" data-bs-dismiss="modal">Si
+                </button>
             </div>
         </div>
     </div>
