@@ -5,6 +5,7 @@ namespace Admin;
 use Database;
 use DatabaseException;
 use MailClient;
+use Session;
 
 class Appointment {
     /**
@@ -196,31 +197,31 @@ class Appointment {
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
             $status = $db->query($sql, "ii", CANCELED, $appointmentId);
-            if ($status) {
-                // Send mail to customer
-                $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
-                $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-                $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-                if (!empty($appointment->email)) {
-                    MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
-                }
-                return true;
-            }
         } else {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ? AND Appuntamento.Dipendente_id = ?';
             $status = $db->query($sql, "iii", CANCELED, $appointmentId, $employeeId);
-            if ($status) {
-                // Send mail to customer
-                $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
-                $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-                $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-                if (!empty($appointment->email)) {
-                    MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
-                }
-                return true;
-            }
         }
-
+        if ($status) {
+            $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
+            //if payment method is credit card emit a refund
+            if ($appointment->sessionId != "") {
+                $config = \Config::getConfig();
+                try {
+                    $session = new Session($config->stripe->secret_api_key);
+                    $session->emitRefund($appointment->sessionId);
+                } catch (\PaymentException $e) {
+                    // TODO handle the exception
+                    // Send a mail to the merchant asking him to make the refund
+                }
+            }
+            // Send mail to customer
+            $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+            $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+            if (!empty($appointment->email)) {
+                MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
+            }
+            return true;
+        }
         return false;
     }
 
@@ -234,7 +235,7 @@ class Appointment {
      */
     public static function fetchAppointmentInfo(Database $db, $appointmentId): object|bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
-        $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id)';
+        $sql = 'SELECT Cliente.Nome, Cliente.Email, DATE_FORMAT(Appuntamento.Data, "%e/%c/%Y") AS Data, TIME_FORMAT(Appuntamento.OraInizio, "%H:%i") AS OraInizio, TIME_FORMAT(Appuntamento.OraFine, "%H:%i") AS OraFine, Appuntamento.SessionId AS SessionId FROM Appuntamento, Cliente WHERE (Appuntamento.id = ? AND Appuntamento.Cliente_id = Cliente.id)';
         $status = $db->query($sql, "i", $appointmentId);
         if ($status) {
             //Success, we should find only one appointment
@@ -242,7 +243,7 @@ class Appointment {
             if ($db->getAffectedRows() == 1) {
                 $result = $result[0];
                 return (object)array("name" => $result["Nome"], "email" => $result["Email"], "date" => $result["Data"],
-                    "startTime" => $result["OraInizio"], "endTime" => $result["OraFine"]);
+                    "startTime" => $result["OraInizio"], "endTime" => $result["OraFine"], "sessionId" => $result["SessionId"]);
             } else {
                 throw \SessionException::moreAppointmentWithSameSessionId();
             }

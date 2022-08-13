@@ -17,4 +17,10 @@ class PaymentException extends Exception {
     public static function failedToRetrieveCustomerData() {
         return new static("Failed get customer data");
     }
+    public static function failedToRetrievePaymentIntent() {
+        return new static("Failed to get the payment intent");
+    }
+    public static function failedToEmitRefund() {
+        return new static("Failed to emit the refund to the client");
+    }
 }

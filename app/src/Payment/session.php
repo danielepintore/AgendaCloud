@@ -75,4 +75,55 @@ class Session {
             throw PaymentException::failedToRetrieveCustomerData();
         }
     }
+
+    /**
+     * @param $sessionId
+     * @return string
+     * @throws PaymentException
+     * Retrieve paymentIntent from a sessionId
+     */
+    private function getPaymentIntent($sessionId): mixed {
+        require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
+        try {
+            $stripe = new \Stripe\StripeClient(
+                $this->secretApiKey
+            );
+        } catch (Exception $e) {
+            throw PaymentException::failedToCreateStripeClient();
+        }
+        try {
+            $session = $stripe->checkout->sessions->retrieve(
+                $sessionId
+            );
+            return $session->payment_intent;
+        } catch (Exception $e){
+            throw PaymentException::failedToRetrievePaymentIntent();
+        }
+    }
+
+    /**
+     * @param $sessionId
+     * @return bool
+     * @throws PaymentException
+     * Emit a refund for the payment
+     */
+    public function emitRefund($sessionId): mixed {
+        require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
+        $paymentIntent = $this->getPaymentIntent($sessionId);
+        try {
+            $stripe = new \Stripe\StripeClient(
+                $this->secretApiKey
+            );
+        } catch (Exception $e) {
+            throw PaymentException::failedToCreateStripeClient();
+        }
+        try {
+            $stripe->refunds->create([
+                'payment_intent' => $paymentIntent,
+            ]);
+            return true;
+        } catch (Exception $e){
+            throw PaymentException::failedToEmitRefund();
+        }
+    }
 }
