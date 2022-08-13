@@ -17,6 +17,7 @@ $db = new Database();
     <link href='css/calendar.css' rel='stylesheet' type='text/css'>
     <link href='css/index.css' rel='stylesheet' type='text/css'>
     <link href='css/fontawesome.css' rel='stylesheet' type='text/css'>
+    <link href='css/loading.min.css' rel='stylesheet' type='text/css'>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery.validate.min.js"></script>
@@ -167,11 +168,12 @@ $db = new Database();
                 </div>
             </form>
         </div>
-        <p class="captcha-terms blur active">
+        <p class="captcha-terms blur active mt-2">
             Questo sito è protetto da hCaptcha e si applicano la sua
             <a href="https://hcaptcha.com/privacy">Privacy Policy</a> e i suoi
             <a href="https://hcaptcha.com/terms">Termini di servizio</a>
         </p>
+        <p class="mt-0 love-footer">Made with <i class="ld ld-beat love fa-solid fa-heart"></i> in Sardinia</p>
     </div>
 </div>
 <div class="modal fade" id="errorModal" tabindex="-1">

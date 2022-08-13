@@ -25,3 +25,10 @@ a {
 a:hover{
     color: #115938;
 }
+
+.love-footer{
+    text-align: center;
+}
+.love{
+    color: red;
+}
