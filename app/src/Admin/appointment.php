@@ -217,10 +217,12 @@ class Appointment {
             if (DEBUG) {
                 \Debug::printException($e);
             } else {
-                MailClient::addMailToQueue($db, "Problemi con l'emissione del rimborso", MailClient::getRefundProblemMail($paymentIntent),
-                    MailClient::getAltRefundProblemMail($paymentIntent), $config->mail->company, $config->company->name);
-                return false;
+                if (isset($paymentIntent) && $paymentIntent != ""){
+                    MailClient::addMailToQueue($db, "Problemi con l'emissione del rimborso", MailClient::getRefundProblemMail($paymentIntent),
+                        MailClient::getAltRefundProblemMail($paymentIntent), $config->mail->company, $config->company->name);
+                }
             }
+            return false;
         }
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
