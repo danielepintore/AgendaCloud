@@ -5,6 +5,7 @@ namespace Admin;
 use Database;
 use DatabaseException;
 use MailClient;
+use PHPMailer\PHPMailer\Exception;
 use Session;
 
 class Appointment {
@@ -194,6 +195,33 @@ class Appointment {
      */
     public static function deleteAppointment(Database $db, $isAdmin, $appointmentId, $employeeId = null): bool {
         require_once(realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php');
+        try {
+            $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
+        } catch (\SessionException $e) {
+            if (DEBUG) {
+                \Debug::printException($e);
+                return false;
+            } else {
+                return false;
+            }
+        }
+        $config = \Config::getConfig();
+        try {
+            if ($appointment->sessionId != "") {
+                $session = new Session($config->stripe->secret_api_key);
+                $paymentIntent = $session->getPaymentIntent($appointment->sessionId);
+                $session->emitRefund($appointment->sessionId);
+            }
+        } catch (\PaymentException $e) {
+            // Send a mail to the merchant asking him to make the refund
+            if (DEBUG) {
+                \Debug::printException($e);
+            } else {
+                MailClient::addMailToQueue($db, "Problemi con l'emissione del rimborso", MailClient::getRefundProblemMail($paymentIntent),
+                    MailClient::getAltRefundProblemMail($paymentIntent), $config->mail->company, $config->company->name);
+                return false;
+            }
+        }
         if ($isAdmin) {
             $sql = 'UPDATE Appuntamento SET Stato = ? WHERE Appuntamento.id = ?';
             $status = $db->query($sql, "ii", CANCELED, $appointmentId);
@@ -202,22 +230,10 @@ class Appointment {
             $status = $db->query($sql, "iii", CANCELED, $appointmentId, $employeeId);
         }
         if ($status) {
-            $appointment = \Admin\Appointment::fetchAppointmentInfo($db, $appointmentId);
-            //if payment method is credit card emit a refund
-            if ($appointment->sessionId != "") {
-                $config = \Config::getConfig();
-                try {
-                    $session = new Session($config->stripe->secret_api_key);
-                    $session->emitRefund($appointment->sessionId);
-                } catch (\PaymentException $e) {
-                    // TODO handle the exception
-                    // Send a mail to the merchant asking him to make the refund
-                }
-            }
             // Send mail to customer
-            $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
-            $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
             if (!empty($appointment->email)) {
+                $body = MailClient::getDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
+                $altBody = MailClient::getAltDeleteOrderMail($appointment->name, $appointment->date, $appointment->startTime, $appointment->endTime);
                 MailClient::addMailToQueue($db, "La tua prenotazione", $body, $altBody, $appointment->email, $appointment->name);
             }
             return true;
