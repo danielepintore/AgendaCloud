@@ -82,7 +82,7 @@ class Session {
      * @throws PaymentException
      * Retrieve paymentIntent from a sessionId
      */
-    private function getPaymentIntent($sessionId): mixed {
+    public function getPaymentIntent($sessionId): mixed {
         require_once realpath(dirname(__FILE__, 3)) . '/vendor/autoload.php';
         try {
             $stripe = new \Stripe\StripeClient(
