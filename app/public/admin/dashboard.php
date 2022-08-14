@@ -92,7 +92,7 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
             </div>
             <div class="modal-body">
-                <p>Vuoi cancellare la prenotazione?<br>(Se il cliente ha già pagato il rimborso verra effettuato automaticamente
+                <p>Vuoi cancellare la prenotazione?<br>(Se il cliente ha già pagato il rimborso verrà effettuato automaticamente
                     nella sua carta di credito)</p>
             </div>
             <div class="modal-footer">
