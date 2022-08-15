@@ -7,7 +7,7 @@ function loadServices() {
     $("#tipoPagamento").val($("#tipoPagamento option:eq(1)").val());
     $("#lista_dipendenti").val(-1)
     $("#lista_dipendenti").prop('disabled', true)
-    var serviceId;
+    let serviceId;
     $('#tipoServizio').on('change', function () {
         serviceId = $(this).val()
         // disabilita lista dipendenti
@@ -26,6 +26,7 @@ function loadServices() {
             .done(function (data) {
                 $('#lista_dipendenti').empty()
                 if (!data.error && data.length > 0) {
+                    $('#lista_dipendenti').append('<option value="-1" disabled hidden>Devi selezionare un servizio</option>')
                     data.forEach(element => {
                         $('#lista_dipendenti').append('<option value="' + element.id + '">' + element.Nominativo + '</option>');
                     });
@@ -62,8 +63,8 @@ function loadServices() {
                 phoneInput: {required: false, phoneUS: true}
             },
             messages: {
-                nomeInput: "Per favore inserisci il tuo nome",
-                cognomeInput: "Per favore inserisci il tuo cognome",
+                nomeInput: "Per favore inserisci il nome del cliente",
+                cognomeInput: "Per favore inserisci il cognome del cliente",
                 emailInput: "Per favore inserisci una email valida",
                 phoneInput: "Per favore inserisci numero di cellulare valido"
 
@@ -86,6 +87,10 @@ function loadServices() {
                         // show confirmation modal
                         $("#successModal").modal("show");
                         // clean all the fields
+                        $("#tipoServizio").val(-1)
+                        $("#lista_dipendenti").val(-1)
+                        $('#lista_dipendenti').prop('disabled', true);
+                        $('#info-servizio').addClass('d-none');
                         $('#lista-orari').empty()
                         $('#lista-orari').append('<option selected disabled hidden>Seleziona una data</option>')
                         $('#lista-orari').prop('disabled', true);
