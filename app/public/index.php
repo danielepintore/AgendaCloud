@@ -85,7 +85,7 @@ $db = new Database();
                             <option value="-1" selected disabled hidden>Devi selezionare un servizio</option>
                         </select>
                     </div>
-                    <div id="info-servizio" class="mt-2">
+                    <div id="info-servizio" class="mt-2 d-none">
                         <span>Durata servizio: </span>
                         <span id="time-lenght"></span>
                         <span>costo servizio: </span>
