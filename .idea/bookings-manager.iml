@@ -10,6 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-mbstring" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-ctype" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/vlucas/phpdotenv" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/phpmailer/phpmailer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
