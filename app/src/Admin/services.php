@@ -102,7 +102,7 @@ class Services {
             foreach ($result as $r) {
                 $services[] = array("id" => $r['id'], "name" => $r['Nome'], "duration" => $r['Durata'], "cost" => $r['Costo'],
                     "waitTime" => $r['TempoPausa'], "description" => $r['Descrizione'], "isActive" => $r['IsActive'],
-                    "bookableUntil" => $r['BookableUntil'], "employeesNumber" => $r['NumDipendenti']);
+                    "bookableUntil" => $r['BookableUntil'], "employeesNumber" => $r['NumDipendenti'], "needTimeSupervision" => 1); //TODO: get needTimeSupervisor from DB
             }
             return $services;
         }
