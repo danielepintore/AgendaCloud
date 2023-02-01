@@ -61,10 +61,23 @@ Code review
 Useful command:
 For debugging ->
 stripe listen --forward-to localhost:3000/payment/process_order.php
+
+install nodejs an npm: sudo apt install nodejs npm
+
+download needed node packages: cd app; npm install
+
+install php and some modules: sudo apt install php8.1 php-mysql php-curl php-xml php-mbstring php-imagick php-zip php-gd
+
+install composer: sudo apt install composer
+
+install composer packages: composer install (inside app folder)
+
+generate a .env file from the baseEnv file template
 For installation ->
 composer require stripe/stripe-php
 composer require vlucas/phpdotenv
 
+add required libraries from composer: composer install
 use this to add new classes to autoload 
 composer dump-autoload
 
