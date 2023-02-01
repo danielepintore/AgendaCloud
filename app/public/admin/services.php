@@ -131,6 +131,12 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                                 Servizio attivo istantaneamente
                             </label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="service-slot-supervisor">
+                            <label class="form-check-label" for="service-slot-supervisor">
+                                Supervisione degli orari
+                            </label>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -195,6 +201,12 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                             <input class="form-check-input" type="checkbox" value="" id="service-active-edit" checked>
                             <label class="form-check-label" for="service-active-edit">
                                 Servizio attivo
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="service-slot-supervisor-edit">
+                            <label class="form-check-label" for="service-slot-supervisor-edit">
+                                Supervisione degli orari
                             </label>
                         </div>
                     </form>

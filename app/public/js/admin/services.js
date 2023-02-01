@@ -219,6 +219,7 @@ function populateEditModal(serviceId) {
     $("#service-bookableUntilTime-edit").val("");
     $("#service-description-edit").val("");
     $("#service-active-edit").prop("checked", true);
+    $("#service-slot-supervisor-edit").prop("checked", false);
     $("#editServiceBtn").attr('disabled', true);
     $.get("/admin/api/service/get_services.php", {serviceId: serviceId})
         .done(function (data) {
@@ -230,10 +231,15 @@ function populateEditModal(serviceId) {
             $("#service-bookableUntilTime-edit").val(data.bookableUntil);
             $("#service-description-edit").val(data.description);
             $("#service-active-edit").prop("checked", data.isActive);
+            $("#service-slot-supervisor-edit").prop("checked", data.needTimeSupervision);
             $("#editServiceBtn").attr('disabled', false);
         })
         .fail(function () {
-
+            // set error modal data
+            $("#errorModalTitle").html("Servizio non caricato");
+            $("#errorModalMessage").html("Non è stato possibile recuperare le informazioni del servizio, per favore riprova");
+            // show confirmation modal
+            $("#errorModal").modal("show");
         });
 }
 
