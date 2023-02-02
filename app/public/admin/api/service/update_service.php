@@ -28,7 +28,8 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
         try {
             $serviceData = new Service($db, $_POST['id'], $_POST['serviceName'], $_POST['serviceDuration'],
                 $_POST['serviceWaitTime'], $_POST['serviceCost'], $_POST['serviceDescription'], $_POST['bookableUntil'],
-                filter_var($_POST['serviceActive'], FILTER_VALIDATE_BOOLEAN));
+                filter_var($_POST['serviceActive'], FILTER_VALIDATE_BOOLEAN),
+                filter_var($_POST['needTimeSupervision'], FILTER_VALIDATE_BOOLEAN));
             $service = \Admin\Services::updateService($db, $serviceData);
             // se non ci sono stati errori fornisci la risposta
             if ($service) {

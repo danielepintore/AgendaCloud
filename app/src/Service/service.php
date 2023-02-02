@@ -17,6 +17,7 @@ class Service {
     private string $imageUrl;
     private int $bookableUntil;
     private bool $isActive;
+    private bool $needTimeSupervision;
     private Database $db;
     private bool $initialized;
 
@@ -60,8 +61,8 @@ class Service {
      * @return void
      * This constructor initializes the service object using the data provided by the programmer
      */
-    public function __construct9($db, $serviceId, $name, $duration, $waitTime, $cost, $description, $bookableUntil,
-                                 $isActive): void {
+    public function __construct10($db, $serviceId, $name, $duration, $waitTime, $cost, $description, $bookableUntil,
+                                 $isActive, $needTimeSupervision): void {
         $this->db = $db;
         $this->serviceId = $serviceId;
         $this->name = $name;
@@ -71,6 +72,7 @@ class Service {
         $this->description = $description;
         $this->bookableUntil = $bookableUntil;
         $this->isActive = $isActive;
+        $this->needTimeSupervision = $needTimeSupervision;
         $this->initialized = true;
     }
 
@@ -126,6 +128,7 @@ class Service {
         $this->imageUrl = $service['ImmagineUrl'];
         $this->bookableUntil = $service['BookableUntil'];
         $this->isActive = $service['IsActive'];
+        $this->needTimeSupervision = 1; //TODO fetch data from the DB
     }
 
     /**
@@ -141,7 +144,7 @@ class Service {
     public function getServiceInfo(): array {
         if ($this->initialized) {
             return ["id" => $this->serviceId, "Nome" => $this->name, "Durata" => $this->duration,
-                "Costo" => $this->cost];
+                "Costo" => $this->cost, "needTimeSupervision" => $this->needTimeSupervision];
         } else {
             throw ServiceException::failedToGetServiceData();
         }

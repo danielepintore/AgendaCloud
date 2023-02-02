@@ -564,7 +564,8 @@ $(function () {
                     serviceWaitTime: $("#service-waitTime-edit").val(),
                     bookableUntil: $("#service-bookableUntilTime-edit").val(),
                     serviceDescription: $("#service-description-edit").val(),
-                    serviceActive: $("#service-active-edit").prop("checked")
+                    serviceActive: $("#service-active-edit").prop("checked"),
+                    needTimeSupervision: $("#service-slot-supervisor-edit").prop("checked")
                 })
                     .done(function (data) {
                         buttonLoader.hideLoadingAnimation();
