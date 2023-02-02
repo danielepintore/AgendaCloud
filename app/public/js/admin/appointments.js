@@ -1,3 +1,35 @@
+$.validator.addMethod("time", function (value, element) {
+    if (value === "") {
+        return this.optional(element) || false;
+    }
+    if (!(/^(([0-1]?[0-9])|([2][0-3])):([0-5]?[0-9])(:([0-5]?[0-9]))?$/i.test(value))) {
+        return false;
+    }
+    return true;
+}, "Inserisci un orario corretto");
+
+$.validator.addMethod("timeGreaterThan", function (value, element, params) {
+    if (value === "") {
+        return this.optional(element)
+    }
+    if (!/Invalid|NaN/.test(new Date("2000T" + value))) {
+        let isGreater = false;
+        for (let i = 0; i < params.length; i++) {
+            if ($(params[i]).val() === "") {
+                isGreater = true;
+                continue;
+            }
+            isGreater = new Date("2000T" + value) > new Date("2000T" + $(params[i]).val());
+            if (!isGreater) {
+                return isGreater;
+            }
+        }
+        return isGreater;
+    } else {
+        return this.optional(element);
+    }
+});
+
 /**
  * This function loads all the service available for the user
  */
@@ -55,6 +87,14 @@ function loadServices() {
     })
 
     $("#prenota_btn").on("click", function () {
+        // check if custom time slot selection is enabled
+        if ($("#add-custom-timeslot-switch").prop('checked')){
+            validateCustomTimeslotForm();
+            if (!isCustomTimeslotFormValid()){
+                // if the form isn't valid quit the function
+                return;
+            }
+        }
         $("#form_dati_personali").validate({
             rules: {
                 nomeInput: {required: true, minlength: 3},
@@ -138,6 +178,50 @@ function loadServices() {
 }
 
 /**
+ *
+ * @param {int} minutes
+ * @return {String} durationStr
+ * This function returns a string which indicate the duration of a service, it needs an integer representing the minutes
+ */
+function getDurationStr(minutes) {
+    if (minutes < 0) {
+        minutes = Math.abs(minutes);
+    }
+    let durationStr;
+    let minuteStr;
+    if (minutes >= 60) {
+        if (minutes % 60 !== 0) {
+            let ore = Math.floor(minutes / 60);
+            let remainingMinutes = minutes - (ore * 60);
+            if (remainingMinutes > 1) {
+                minuteStr = " minuti";
+            } else {
+                minuteStr = " minuto";
+            }
+            if (ore > 1) {
+                durationStr = ore + " ore e " + remainingMinutes + minuteStr;
+            } else if (ore === 1 && remainingMinutes !== 0) {
+                durationStr = ore + " ora e " + remainingMinutes + minuteStr;
+            }
+        } else {
+            let ore = minutes / 60
+            if (ore > 1) {
+                durationStr = String(ore) + " ore";
+            } else {
+                durationStr = String(ore) + " ora";
+            }
+        }
+    } else {
+        if (minutes > 1) {
+            durationStr = String(minutes) + " minuti";
+        } else {
+            durationStr = String(minutes) + " minuto";
+        }
+    }
+    return durationStr;
+}
+
+/**
  * Retrieves from the api the service info using it's id
  * @param serviceId
  */
@@ -148,36 +232,28 @@ function getSelectedServiceInfo(serviceId) {
                 // set durata
                 // we need to convert it if it's bigger than an hour
                 var durata = data.Durata
-                var minutiStr;
-                if (durata >= 60) {
-                    if (durata % 60 !== 0) {
-                        var ore = parseInt(durata / 60)
-                        var minuti = durata - (ore * 60)
-                        if (minuti > 1) {
-                            minutiStr = " minuti,"
-                        } else {
-                            minutiStr = " minuto,"
-                        }
-                        if (ore > 1) {
-                            $("#time-lenght").text(ore + " ore e " + minuti + minutiStr)
-                        } else if (ore === 1 && minuti !== 0) {
-                            $("#time-lenght").text(ore + " ora e " + minuti + minutiStr)
-                        }
-                    } else {
-                        $("#time-lenght").text(durata / 60 + " ora,")
-                    }
-                } else {
-                    if (durata > 1) {
-                        $("#time-lenght").text(durata + " minuti,")
-                    } else {
-                        $("#time-lenght").text(durata + " minuto,")
-                    }
-                }
+                let durationStr = getDurationStr(durata)
+                $("#time-lenght").text(durationStr + ",")
                 // set cost
                 $("#prezzo-servizio").text(data.Costo + "€")
                 // set div visible if it isn't
                 if ($("#info-servizio").hasClass("d-none")) {
                     $("#info-servizio").removeClass("d-none")
+                }
+                // if needTimeSupervision is true show the custom time picker
+                if (data.needTimeSupervision){
+                    $("#custom-timeslot-selector-div").removeClass("d-none");
+                    if (!$("#add-custom-timeslot-switch").prop('disabled')){
+                        $("#add-custom-timeslot-switch").prop('disabled', true);
+                        $("#customTimeslot-serviceStartTime").prop('disabled', true);
+                        $("#customTimeslot-serviceEndTime").prop('disabled', true);
+                    }
+                } else {
+                    $("#custom-timeslot-selector-div").addClass("d-none");
+                    $("#add-custom-timeslot-switch").prop('disabled', true);
+                    $("#customTimeslot-serviceStartTime").prop('disabled', true);
+                    $("#customTimeslot-serviceEndTime").prop('disabled', true);
+                    $("#add-custom-timeslot-switch").prop('checked', false);
                 }
             } else {
                 // hide the info
@@ -213,9 +289,11 @@ function getTimeSlots(date, serviceId, employeeId) {
                 $('#prenota_btn').prop('disabled', true);
 
             }
+            $("#add-custom-timeslot-switch").prop('disabled', false);
         })
         .fail(function () {
-            $('#lista-orari').empty()
+            $('#lista-orari').empty();
+            $("#add-custom-timeslot-switch").prop('disabled', false);
         });
 }
 
@@ -229,16 +307,78 @@ function onCalendarChange() {
     $('#lista-orari').prop('disabled', true);
     // disabilita il pulsante
     $('#prenota_btn').prop('disabled', true);
+    //disabilita il pulsante per aggiungere orari custom
+    $("#add-custom-timeslot-switch").prop('disabled', true);
+    $("#customTimeslot-serviceStartTime").prop('disabled', true);
+    $("#customTimeslot-serviceEndTime").prop('disabled', true);
+
     // aggiungo il gestore per dei click sulle giornate
     $(".enabled-date").on('click', function () {
         if (!$("#lista_dipendenti").prop('disabled')) {
-            getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+            // riabilita il pulsante per gli orari custom
+            if ($("#add-custom-timeslot-switch").prop('disabled')){
+                $("#add-custom-timeslot-switch").prop('disabled', false);
+                $("#customTimeslot-serviceStartTime").prop('disabled', false);
+                $("#customTimeslot-serviceEndTime").prop('disabled', false);
+            }
+            // se usa custom orario non è attivo
+            if (!$("#add-custom-timeslot-switch").prop('checked')){
+                getTimeSlots($(this).attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val())
+            } else {
+                // mostra informazioni
+                $('#lista-orari').empty();
+                $('#lista-orari').append('<option selected disabled hidden>Stai selezionando un orario a piacere</option>');
+                $('#lista-orari').prop('disabled', true);
+            }
         } else {
             $('.day-selected').removeClass('day-selected');
             $("#errorModalMessage").text("Devi selezionare un servizio");
             $("#errorModal").modal("show");
         }
     })
+}
+
+function validateCustomTimeslotForm(){
+    $("#customTimeslot-form").validate({
+        rules: {
+            customServiceStartTime: {required: true, time: true},
+            customServiceEndTime: {required: true, time: true, timeGreaterThan: ["#customTimeslot-serviceStartTime"]},
+        },
+        messages: {
+            customServiceStartTime: "L'orario non è valido",
+            customServiceEndTime: "L'orario non è valido"
+        },
+        errorLabelContainer: '.custom-timeslot-error-span'
+        //TODO add error management code because now it gives 2 errors
+    })
+}
+
+function isCustomTimeslotFormValid(){
+    return $("#customTimeslot-form").valid();
+}
+
+/**
+ * checks if the times inserted in custom timeslot are valid, then it calculate the time string and display the time string
+ */
+function calculateCustomTimeslotDuration(){
+    validateCustomTimeslotForm();
+    if (isCustomTimeslotFormValid()) {
+        // get time delta
+        let startTime;
+        let endTime;
+        startTime = $("#customTimeslot-serviceStartTime").val();
+        endTime = $("#customTimeslot-serviceEndTime").val();
+        let startTimeDate = new Date("2000T" + startTime);
+        let endTimeDate = new Date("2000T" + endTime);
+        // milliseconds to minutes
+        // delta should be < 0
+        let delta = (startTimeDate - endTimeDate) / (1000 * 60)
+        let durationStr = getDurationStr(delta);
+        $("#custom-timeslot-duration").text("Durata: " + durationStr);
+        $("#custom-timeslot-duration").removeClass('d-none');
+    } else {
+        $("#custom-timeslot-duration").addClass('d-none');
+    }
 }
 
 /**
@@ -253,5 +393,28 @@ $(function () {
             calendar.changeMonth('next');
         }
     })
+
+    $("#add-custom-timeslot-switch").on('change', function () {
+        $('#custom-timeslot').collapse('toggle');
+        $(this).prop('disabled', true);
+        var isChecked = $(this).prop('checked');
+        if (isChecked) {
+            $('#lista-orari').empty();
+            $('#lista-orari').append('<option selected disabled hidden>Stai selezionando un orario a piacere</option>');
+            $('#lista-orari').prop('disabled', true);
+        }
+    });
+    // custom timeslot switch base logic
+    $('#custom-timeslot').on('shown.bs.collapse', function () {
+        $("#add-custom-timeslot-switch").prop('disabled', false);
+    });
+    $('#custom-timeslot').on('hidden.bs.collapse', function () {
+        getTimeSlots($(".day-selected").attr('value'), $("#tipoServizio").val(), $("#lista_dipendenti").val());
+    });
+    // on custom timeslot changes time event
+    $(".customTimeslotFields").on('change', function () {
+        calculateCustomTimeslotDuration();
+    });
+    // loads service info data
     loadServices()
 })

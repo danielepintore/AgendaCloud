@@ -118,6 +118,26 @@ if (session_status() == PHP_SESSION_ACTIVE && isset($_SESSION['logged']) && $_SE
                     <h5 class="card-title">Scegli un orario da qua sotto:</h5>
                     <select id="lista-orari" class="form-select">
                     </select>
+                    <div id="custom-timeslot-selector-div" class="d-none">
+                        <div class="form-check form-switch">
+                            <input class="switch-success form-check-input mt-2" type="checkbox" id="add-custom-timeslot-switch" data-bs-toggle="" data-bs-target="#custom-timeslot" aria-expanded="false" aria-controls="custom-timeslot" disabled>
+                            <label class="form-check-label mt-1" for="Seleziona un orario a piacere">Seleziona un orario a piacere</label>
+                        </div>
+                        <div class="collapse mt-2" id="custom-timeslot">
+                            <div class="card card-body">
+                                <form class="d-flex" id="customTimeslot-form">
+                                    <span class="align-self-center me-1">Dalle:</span>
+                                    <input type="time" class="form-control me-2 w-auto customTimeslotFields" id="customTimeslot-serviceStartTime"
+                                           name="customServiceStartTime" disabled>
+                                    <span class="align-self-center me-1">Alle:</span>
+                                    <input type="time" class="form-control me-2 w-auto customTimeslotFields" id="customTimeslot-serviceEndTime"
+                                           name="customServiceEndTime" disabled>
+                                    <span class="align-self-center me-1" id="custom-timeslot-duration"></span>
+                                    <span class="align-content-center me-1 custom-timeslot-error-span"></span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!--Card i tuoi dati-->
