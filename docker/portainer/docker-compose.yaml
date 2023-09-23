@@ -11,7 +11,7 @@ services:
       VIRTUAL_HOST: portainer-${HOSTNAME}.agendacloud.it
       VIRTUAL_PORT: 9000
       LETSENCRYPT_HOST: portainer-${HOSTNAME}.agendacloud.it
-      LETSENCRYPT_EMAIL: pintdany@gmail.com
+      LETSENCRYPT_EMAIL: EMAIL@SOMETHING.COM
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
